@@ -1,0 +1,30 @@
+<div class="p-6">
+  <h1 class="text-3xl font-bold mb-6">Connected Steam Accounts</h1>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white border rounded-lg shadow-xl">
+      <thead>
+        <tr>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Steam ID</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Steam Web API Key</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Waxpeer API Key</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">CSGOEmpire API Key</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Market.CSGO API Key</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @steam_accounts.each do |steam_account| %>
+          <tr class="hover:bg-gray-100">
+            <td class="py-2 px-4 border-b border-gray-200"><%= steam_account.steam_id %></td>
+            <td class="py-2 px-4 border-b border-gray-200"><%= steam_account.steam_web_api_key %></td>
+            <td class="py-2 px-4 border-b border-gray-200"><%= steam_account.waxpeer_api_key %></td>
+            <td class="py-2 px-4 border-b border-gray-200"><%= steam_account.csgoempire_api_key %></td>
+            <td class="py-2 px-4 border-b border-gray-200"><%= steam_account.market_csgo_api_key %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <a href="<%= new_steam_account_path %>" class="mt-6 inline-block bg-blue-500 text-gray-100 font-bold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">Add New Steam Account</a>
+</div>
