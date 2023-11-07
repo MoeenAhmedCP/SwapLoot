@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_06_132845) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_06_185750) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "steam_accounts", force: :cascade do |t|
+    t.string "steam_id"
+    t.string "steam_web_api_key"
+    t.string "waxpeer_api_key"
+    t.string "csgoempire_api_key"
+    t.string "market_csgo_api_key"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
