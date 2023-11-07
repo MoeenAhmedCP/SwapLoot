@@ -12,6 +12,14 @@ class MarketcsgoService
     save_inventory(response)
   end
 
+  def fetch_balance
+    params = {
+      key: "#{ENV['MARKETCSGO_KEY']}"
+    }
+    res = self.class.get(BASE_URL + 'get-money', query: params)
+    res['money']
+  end
+
   def save_inventory(res)
     res['items'].each do |item|
       Inventory.create(item_id: item['id'], market_name: item['market_hash_name'], market_price: item['market_price'], tradable: item['tradable'])
