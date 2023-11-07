@@ -33,5 +33,13 @@ module SwapLoot
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    Bundler.require(*Rails.groups)
+
+    # Load dotenv only in development or test environment
+    if ['development', 'test'].include? ENV['RAILS_ENV']
+      Dotenv::Railtie.load
+    end
+
+    HOSTNAME = ENV['HOSTNAME']
   end
 end
