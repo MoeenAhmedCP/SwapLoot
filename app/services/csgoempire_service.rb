@@ -18,7 +18,7 @@ class CsgoempireService
 
   def save_inventory(res)
     res['data'].each do |item|
-      Inventory.create(item_id: item['asset_id'], market_name: item['market_name'], market_price: item['market_value'], tradable: item['tradable'])
+      Inventory.find_or_create_by(item_id: item['asset_id'], market_name: item['market_name'], market_price: item['market_value'], tradable: item['tradable'])
     end
   end
 end

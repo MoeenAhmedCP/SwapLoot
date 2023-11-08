@@ -22,7 +22,7 @@ class MarketcsgoService
 
   def save_inventory(res)
     res['items'].each do |item|
-      Inventory.create(item_id: item['id'], market_name: item['market_hash_name'], market_price: item['market_price'], tradable: item['tradable'])
+      Inventory.find_or_create_by(item_id: item['id'], market_name: item['market_hash_name'], market_price: item['market_price'], tradable: item['tradable'])
     end
   end
 end
