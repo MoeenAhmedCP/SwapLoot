@@ -2,18 +2,21 @@ class CsgoempireService
   include HTTParty
 
   BASE_URL = 'https://csgoempire.com/api/v2'
+  HEADERS = { 'Authorization' => "Bearer #{ENV['CSGOEMPIRE_TOKEN']}" }
 
   def fetch_my_inventory
-    headers = { 'Authorization' => "Bearer #{ENV['CSGOEMPIRE_TOKEN']}" }
-    response = self.class.get(BASE_URL + '/trading/user/inventory', headers: headers)
+    response = self.class.get(BASE_URL + '/trading/user/inventory', headers: HEADERS)
 
     save_inventory(response)
   end
 
   def fetch_balance
-    headers = { 'Authorization' => "Bearer #{ENV['CSGOEMPIRE_TOKEN']}" }
-    response = self.class.get(BASE_URL + '/metadata/socket', headers: headers)
+    response = self.class.get(BASE_URL + '/metadata/socket', headers: HEADERS)
     response['user']['balance']
+  end
+
+  def fetch_active_trade
+    response = self.class.get(BASE_URL + '/trading/user/trades', headers: HEADERS)
   end
 
   def save_inventory(res)

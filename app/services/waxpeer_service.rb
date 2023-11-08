@@ -12,6 +12,13 @@ class WaxpeerService
     self.class.get(BASE_URL + '/get-my-inventory', query: params)
   end
 
+  def fetch_active_trade
+    params = {
+      api: ENV['WAXPEER_API_KEY'],
+    }
+    res = self.class.get(BASE_URL + '/my-history', query: params)
+  end
+
   def fetch_balance
     params = {
       api: ENV['WAXPEER_API_KEY'],
