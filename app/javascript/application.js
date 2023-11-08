@@ -2,12 +2,9 @@
 import "@hotwired/turbo-rails"
 import "./controllers"
 
+var elements = document.querySelectorAll('.dataTables_length');
 
-$( document ).ready(function() {
-    const userMenuButton = document.getElementById("user-menu-button");
-    const userDropdown = document.getElementById("user-dropdown");
-  
-    userMenuButton.addEventListener("click", () => {
-        userDropdown.classList.toggle("hidden");
-    });
-});
+// Loop through the selected elements and remove each one
+for (var i = 0; i < elements.length; i++) {
+  elements[i].parentNode.removeChild(elements[i]);
+}
