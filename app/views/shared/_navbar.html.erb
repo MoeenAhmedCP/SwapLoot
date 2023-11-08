@@ -17,12 +17,12 @@
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
         <div class="flex flex-shrink-0 items-center">
           <h1 class="text-black-900 font-bold">Swap</h1>
-          <h1 class="text-gray-400 font-bold">loot</h1>
+          <h1 class="text-gray-400 font-bold">Loot</h1>
         </div>
         <div class="hidden sm:ml-6 sm:block">
           <div class="flex space-x-4">
-            <a href="#" class="<%= request.fullpath == "/" ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Dashboard</a>
-            <a href="#" class="<%= request.fullpath.include?("/inventories") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Inventory</a>
+            <a href="/" class="<%= request.fullpath == "/" ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Dashboard</a>
+            <a href="/inventories" class="<%= request.fullpath.include?("/inventories") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Inventory</a>
             <a href="#" class="<%= request.fullpath.include?("/services") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Services</a>
             <a href="#" class="<%= request.fullpath.include?("/setting") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Settings</a>
             <a href="#" class="<%= request.fullpath.include?("/contact") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Contact</a>
@@ -60,6 +60,17 @@
       <a href="#" class="text-gray-300 hover:bg-gray-200 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Projects</a>
       <a href="#" class="text-gray-300 hover:bg-gray-200 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Calendar</a>
     </div>
-  </div>
+  </div>git
 </nav>
 
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+  const userMenuButton = document.getElementById("user-menu-button");
+ const userDropdown = document.getElementById("user-dropdown");
+ 
+ userMenuButton.addEventListener("click", () => {
+                        userDropdown.classList.toggle("hidden");
+ });
+});
+</script>

@@ -1,0 +1,35 @@
+<div class="p-6">
+ <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+ <div style= "display: flex;">
+    <h2 class="text-2xl font-bold mb-4">Inventory</h2>
+    <i class="fa fa-refresh" aria-hidden="true"></i>
+    </div>
+
+<table id="dataTable" class="display" style="width:100%">
+ <thead>
+            <tr>
+                <th class="px-4 py-2">Item ID</th>
+                <th class="px-4 py-2">Market Name</th>
+                <th class="px-4 py-2">Market Price</th>
+                <th class="px-4 py-2">Tradable</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% 4.times do |i| %>
+            <tr>
+                <td class="border text-center px-4 py-2"><%= "#{i+1}" %></td>
+                <td class="border text-center px-4 py-2">Edinburgh</td>
+                <td class="border text-center px-4 py-2">$320,800</td>
+                <td class="border text-center px-4 py-2">true</td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>
+</div>
+
+
+
+<script>
+    $('#dataTable').DataTable();
+</script>
