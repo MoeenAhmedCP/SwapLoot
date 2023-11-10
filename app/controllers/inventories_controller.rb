@@ -1,3 +1,5 @@
 class InventoriesController < ApplicationController
-    def index; end
+    def index
+        @inventories = Inventory.all
+    end
 end

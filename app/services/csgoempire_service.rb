@@ -20,6 +20,7 @@ class CsgoempireService
   end
 
   def save_inventory(res)
+    debugger
     res['data'].each do |item|
       Inventory.find_or_create_by(item_id: item['asset_id'], market_name: item['market_name'], market_price: item['market_value'], tradable: item['tradable'])
     end
