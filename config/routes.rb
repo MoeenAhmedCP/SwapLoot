@@ -6,4 +6,5 @@ Rails.application.routes.draw do
   # root "articles#index"
   root to: "home#index"
   resources :steam_accounts
+  get 'inventories', to: 'inventories#index'
 end
