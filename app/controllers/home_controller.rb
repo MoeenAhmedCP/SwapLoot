@@ -4,6 +4,7 @@ class HomeController < ApplicationController
 
   def index
     @inventories = Inventory.all
+    @steam_accounts = SteamAccount.all
   end
 
   private
