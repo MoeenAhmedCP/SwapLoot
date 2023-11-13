@@ -14,18 +14,18 @@
                 <%= render "devise/shared/error_messages", resource: resource %>
                   <div>
                       <%= f.label :email, class: "block text-sm font-medium text-gray-900 mb-1 dark:text-white" %>
-                      <%= f.email_field :email, autofocus: true, autocomplete: "email", name: "email", id: "email", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-3", placeholder: "name@company.com", required: true %>
+                      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-3", placeholder: "name@company.com", required: true %>
                   </div>
                   <div>
                         <%= f.label :password, class: "block text-sm font-medium text-gray-900 mb-1 dark:text-white" %>
                         <% if @minimum_password_length %>
                         <em>(<%= @minimum_password_length %> characters minimum)</em>
                         <% end %>
-                        <%= f.password_field :password, autocomplete: "new-password", name: "password", id: "password", placeholder: "••••••••", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-3", required: true %>
+                        <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-3", required: true %>
                   </div>
                   <div>
                         <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-900 mb-1 dark:text-white" %>
-                        <%= f.password_field :password_confirmation, autocomplete: "new-password", name: "confirm-password", id: "confirm-password", placeholder: "••••••••", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-3", required: true %>
+                        <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "••••••••", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-3", required: true %>
                   </div>
                   <div class="flex items-start">
                       <div class="flex items-center h-5">

@@ -25,6 +25,6 @@ class WaxpeerService
       api: ENV['WAXPEER_API_KEY'],
     }
     res = self.class.get(BASE_URL + '/user', query: params)
-    res['user']['wallet']
+    res['user']['wallet'].to_f / 1000
   end
 end
