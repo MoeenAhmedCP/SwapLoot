@@ -10,6 +10,7 @@
  <thead>
             <tr>
                 <th class="px-4 py-2">Steam ID</th>
+                <th class="px-4 py-2">Name</th>
                 <th class="px-4 py-2">Steam Web API Key</th>
                 <th class="px-4 py-2">Waxpeer API Key</th>
                 <th class="px-4 py-2">CSGOEmpire API Key</th>
@@ -20,6 +21,7 @@
         <% @steam_accounts.each do |steam_account| %>
           <tr class="hover:bg-gray-100">
             <td class="border text-center px-4 py-2"><%= steam_account.steam_id %></td>
+             <td class="border text-center px-4 py-2"><%= steam_account.unique_name %></td>
             <td class="border text-center px-4 py-2"><%= steam_account.steam_web_api_key %></td>
             <td class="border text-center px-4 py-2"><%= steam_account.waxpeer_api_key %></td>
             <td class="border text-center px-4 py-2"><%= steam_account.csgoempire_api_key %></td>

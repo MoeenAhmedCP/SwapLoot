@@ -20,6 +20,6 @@ class SteamAccountsController < ApplicationController
   private
 
   def steam_account_params
-    params.require(:steam_account).permit(:steam_id, :steam_web_api_key, :waxpeer_api_key, :csgoempire_api_key, :market_csgo_api_key)
+    params.require(:steam_account).permit(:steam_id, :unique_name,:steam_web_api_key, :waxpeer_api_key, :csgoempire_api_key, :market_csgo_api_key)
   end
 end
