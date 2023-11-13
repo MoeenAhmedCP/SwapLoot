@@ -9,9 +9,9 @@ class SteamAccountsController < ApplicationController
 
   def create
     @steam_account = SteamAccount.new(steam_account_params)
-
     if @steam_account.save
-      redirect_to steam_accounts_path, notice: 'Steam account was successfully added.'
+      flash[:notice] = 'Steam account was successfully added.'
+      redirect_to steam_accounts_path 
     else
       render :new
     end
