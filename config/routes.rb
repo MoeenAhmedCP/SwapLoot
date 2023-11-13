@@ -7,4 +7,5 @@ Rails.application.routes.draw do
   root to: "home#index"
   resources :steam_accounts
   get 'inventories', to: 'inventories#index'
+  post '/home/update_active_account', to: 'home#update_active_account'
 end

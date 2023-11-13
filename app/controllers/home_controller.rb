@@ -3,8 +3,19 @@ class HomeController < ApplicationController
                 :fetch_active_trade, :fetch_inventory, only: %i[index]
 
   def index
-    @inventories = Inventory.all
+    @active_steam_account = SteamAccount.find_by(active: true) 
+    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id )
     @steam_accounts = SteamAccount.all
+  end
+
+  def update_active_account
+    selected_steam_id = params[:steam_id]
+    SteamAccount.transaction do
+      SteamAccount.update_all(active: false)
+      account = SteamAccount.find_by(id: selected_steam_id)
+      account.update(active: true) if account.present?
+    end
+    head :ok
   end
 
   private
