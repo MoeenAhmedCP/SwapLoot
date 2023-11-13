@@ -1,8 +1,18 @@
 <div class="p-6">
  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
- <div style= "display: flex;">
+    <div class="flex gap-5">
+    <h1 class="text-2xl font-bold mb-4">Balance</h1>
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+    </div>
+    <div class="mb-3">
+        <h2 class="font-bold">CSGO Empire Balance: <%= @csgo_empire_balance.nil? ? "$0" : "$#{@csgo_empire_balance}" %></h2>
+        <h2 class="font-bold">CSGO Market Balance: <%= @csgo_market_balance.nil? ? "$0" : "$#{@csgo_market_balance}" %></h2>
+        <h2 class="font-bold">Waxpeer Balance: <%= @waxpeer_balance.nil? ? "$0" : "$#{@waxpeer_balance}" %></h2>
+    </div>
+    <hr class="bg-gray-400 h-px w-full mb-3">
+    <div style= "display: flex;">
     <h2 class="text-2xl font-bold mb-4">Active Trades</h2>
-    <i class="fa fa-refresh" aria-hidden="true"></i>
+        <i class="fa fa-refresh" aria-hidden="true"></i>
     </div>
 
     <table id="dataTableActiveTrades" class="display" style="width:100%">
@@ -10,17 +20,21 @@
             <tr>
                 <th class="px-4 py-2">Item ID</th>
                 <th class="px-4 py-2">Item Name</th>
+                <th class="px-4 py-2">Type</th>
                 <th class="px-4 py-2">Current Price</th>
                 <th class="px-4 py-2">Status</th>
+                <th class="px-4 py-2">Date</th>
             </tr>
         </thead>
         <tbody>
-        <% 4.times do |i| %>
+        <% @active_trades.each do |active_trade| %>
             <tr>
-                <td class="border text-center px-4 py-2"><%= "#{i+1}" %></td>
-                <td class="border text-center px-4 py-2">Edinburgh</td>
-                <td class="border text-center px-4 py-2">$320,800</td>
-                <td class="border text-center px-4 py-2">true</td>
+                <td class="border text-center px-4 py-2"><%= active_trade["item_id"] %></td>
+                <td class="border text-center px-4 py-2"><%= active_trade["name"] %></td>
+                <td class="border text-center px-4 py-2"><%= active_trade["game"] %></td>
+                <td class="border text-center px-4 py-2"><%= "$#{active_trade["price"]}" %></td>
+                <td class="border text-center px-4 py-2"><%= active_trade["action"] %></td>
+                <td class="border text-center px-4 py-2"><%= Time.parse(active_trade["date"]).strftime("%d/%B/%Y") %></td>
             </tr>
             <% end %>
         </tbody>
@@ -32,9 +46,9 @@
 <div class="flex">
 <div class="table-1">
  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
- <div style= "display: flex;">
+    <div style= "display: flex;">
     <h2 class="text-2xl font-bold mb-4">Inventory</h2>
-    <i class="fa fa-refresh" aria-hidden="true"></i>
+        <i class="fa fa-refresh" aria-hidden="true"></i>
     </div>
 
     <table id="dataTableInvetory" class="display" style="width:100%">
@@ -47,13 +61,13 @@
             </tr>
         </thead>
         <tbody>
-        <% 4.times do |i| %>
-            <tr>
-                <td class="border text-center px-4 py-2"><%= "#{i+1}" %></td>
-                <td class="border text-center px-4 py-2">Edinburgh</td>
-                <td class="border text-center px-4 py-2">$320,800</td>
-                <td class="border text-center px-4 py-2">true</td>
-            </tr>
+            <% @inventories.each do |inventory| %>
+                <tr>
+                    <td class="border text-center px-4 py-2"><%= inventory.item_id %></td>
+                    <td class="border text-center px-4 py-2"><%= inventory.market_name %></td>
+                    <td class="border text-center px-4 py-2"><%= "$#{inventory.market_price}" %></td>
+                    <td class="border text-center px-4 py-2"><%= inventory.tradable %></td>
+                </tr>
             <% end %>
         </tbody>
     </table>
@@ -77,7 +91,7 @@
             </tr>
         </thead>
         <tbody>
-        <% 4.times do |i| %>
+        <% 24.times do |i| %>
             <tr>
                 <td class="border text-center px-4 py-2"><%= "#{i+1}" %></td>
                 <td class="border text-center px-4 py-2">Edinburgh</td>

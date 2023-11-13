@@ -11,6 +11,11 @@
 }
 
 */
+.bg-image{
+  background-image: url('<%= asset_path("background_image.jpg") %>');
+  background-size: cover;
+}
+
 
 .active_tab{
   background-color: black;

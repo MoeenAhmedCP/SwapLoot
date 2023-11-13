@@ -12,7 +12,7 @@ class CsgoempireService
 
   def fetch_balance
     response = self.class.get(BASE_URL + '/metadata/socket', headers: HEADERS)
-    response['user']['balance']
+    response['user']['balance'].to_f / 100
   end
 
   def fetch_active_trade

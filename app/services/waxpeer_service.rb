@@ -16,7 +16,8 @@ class WaxpeerService
     params = {
       api: ENV['WAXPEER_API_KEY'],
     }
-    res = self.class.get(BASE_URL + '/my-history', query: params)
+    res = self.class.post(BASE_URL + '/my-history', query: params)
+    res['data']['trades']
   end
 
   def fetch_balance
@@ -24,6 +25,6 @@ class WaxpeerService
       api: ENV['WAXPEER_API_KEY'],
     }
     res = self.class.get(BASE_URL + '/user', query: params)
-    res['user']['wallet']
+    res['user']['wallet'].to_f / 1000
   end
 end
