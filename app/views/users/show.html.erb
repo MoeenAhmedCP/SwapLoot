@@ -1,0 +1,16 @@
+<div class="max-w-2xl mx-auto mt-8">
+  <h1 class="text-3xl font-semibold mb-4">User Profile</h1>
+  <% @user_accounts_data.each do |user_account_data| %>
+    <div class="bg-white shadow-md p-4 rounded-md mb-4">
+      <h2 class="text-2xl font-semibold mb-2">Steam Account: <%= user_account_data[:steam_account].unique_name %></h2>
+      <p class="mb-2"><strong>Steam ID:</strong> <%= user_account_data[:data]['steam_id'] %></p>
+      <p class="mb-2"><strong>Steam Name:</strong> <%= user_account_data[:data]['steam_name'] %></p>
+      <p class="mb-2"><strong>Last Login:</strong> <%= user_account_data[:data]['last_login'] %></p>
+      <p class="mb-2"><strong>Steam Level:</strong> <%= user_account_data[:data]['steam_level'] %></p>
+      <p class="mb-2"><strong>Trade URL:</strong> <%= link_to user_account_data[:data]['trade_url'], target: '_blank', rel: 'noopener noreferrer', class: 'text-blue-500 hover:underline' %> </p>
+      <p class="mb-2"><strong>CsgoEmpire Balance:</strong> <%= number_with_precision(user_account_data[:data]['balance'].to_f / 100, precision: 2) %> Coins</p>
+      <p class="mb-2"><strong>Waxpeer Balance:</strong> $<%= user_account_data[:waxpeer_balance] %></p>
+      <p class="mb-2"><strong>Market.Csgo Balance:</strong> $<%= user_account_data[:market_csgo_balance] %></p>
+    </div>
+  <% end %>
+</div>

@@ -17,7 +17,7 @@ class MarketcsgoService
     params = {
       key: "#{ENV['MARKETCSGO_KEY']}"
     }
-    res = self.class.get(BASE_URL + 'get-money', query: params)
+    res = self.class.get(BASE_URL + '/get-money', query: params)
     res['money'] if res
   end
 
