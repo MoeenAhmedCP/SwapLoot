@@ -5,31 +5,33 @@
 </div>
   <a href="<%= new_steam_account_path %>" class="mt-6 float-right mb-3 inline-block bg-blue-500 text-gray-100 font-bold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">Add New Steam Account</a>
 
-
 <table id="dataTableSteamAccount" class="display" style="width:100%">
- <thead>
-            <tr>
-                <th class="px-4 py-2">Steam ID</th>
-                <th class="px-4 py-2">Name</th>
-                <th class="px-4 py-2">Steam Web API Key</th>
-                <th class="px-4 py-2">Waxpeer API Key</th>
-                <th class="px-4 py-2">CSGOEmpire API Key</th>
-                <th class="px-4 py-2">Market.CSGO API Key</th>
-            </tr>
-        </thead>
-        <tbody>
+    <thead>
+        <tr>
+            <th class="px-4 py-2">Steam ID</th>
+            <th class="px-4 py-2">Name</th>
+            <th class="px-4 py-2">Steam Web API Key</th>
+            <th class="px-4 py-2">Waxpeer API Key</th>
+            <th class="px-4 py-2">CSGOEmpire API Key</th>
+            <th class="px-4 py-2">Market.CSGO API Key</th>
+            <th class="px-4 py-2">Action</th>
+        </tr>
+    </thead>
+    <tbody>
         <% @steam_accounts.each do |steam_account| %>
-          <tr class="hover:bg-gray-100">
-            <td class="border text-center px-4 py-2"><%= steam_account.steam_id %></td>
-             <td class="border text-center px-4 py-2"><%= steam_account.unique_name %></td>
-            <td class="border text-center px-4 py-2"><%= steam_account.steam_web_api_key %></td>
-            <td class="border text-center px-4 py-2"><%= steam_account.waxpeer_api_key %></td>
-            <td class="border text-center px-4 py-2"><%= steam_account.csgoempire_api_key %></td>
-            <td class="border text-center px-4 py-2"><%= steam_account.market_csgo_api_key %></td>
-          </tr>
+            <tr class="hover:bg-gray-100">
+                <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.steam_id %></td>
+                <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.unique_name %></td>
+                <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.steam_web_api_key %></td>
+                <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.waxpeer_api_key %></td>
+                <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.csgoempire_api_key %></td>
+                <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.market_csgo_api_key %></td>
+                <td class="border text-center px-4 py-2 min-w-10 break-all"><%= link_to "Edit", edit_steam_account_path(id: steam_account) %></td>
+            </tr>
         <% end %>
-        </tbody>
-    </table>
+    </tbody>
+</table>
+
 </div>
 </div>
 
