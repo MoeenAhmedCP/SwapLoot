@@ -2,26 +2,36 @@ class CsgoempireService
   include HTTParty
 
   BASE_URL = 'https://csgoempire.com/api/v2'
-  HEADERS = { 'Authorization' => "Bearer #{ENV['CSGOEMPIRE_TOKEN']}" }
 
   def fetch_my_inventory
-    response = self.class.get(BASE_URL + '/trading/user/inventory', headers: HEADERS)
+    @headers = set_headers
+    response = self.class.get(BASE_URL + '/trading/user/inventory', headers: @headers)
 
     save_inventory(response)
   end
 
   def fetch_balance
-    response = self.class.get(BASE_URL + '/metadata/socket', headers: HEADERS)
-    response['user']['balance'].to_f / 100
+    @headers = set_headers
+    response = self.class.get(BASE_URL + '/metadata/socket', headers: @headers)    
+    response['user']['balance'].to_f / 100 if response['user']
   end
 
   def fetch_active_trade
-    response = self.class.get(BASE_URL + '/trading/user/trades', headers: HEADERS)
+    @headers = set_headers
+    response = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
   end
 
   def save_inventory(res)
-    res['data'].each do |item|
-      Inventory.find_or_create_by(item_id: item['asset_id'], market_name: item['market_name'], market_price: item['market_value'], tradable: item['tradable'])
+    @active_steam_account = SteamAccount.find_by(active: true)
+    if @active_steam_account
+      res['data']&.each do |item|
+        Inventory.find_or_create_by(item_id: item['asset_id'], steam_id: @active_steam_account&.steam_id, market_name: item['market_name'], market_price: item['market_value'], tradable: item['tradable'])
+      end
     end
+  end
+
+  def set_headers
+    @active_steam_account = SteamAccount.find_by(active: true)
+    @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
   end
 end

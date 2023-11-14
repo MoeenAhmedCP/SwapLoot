@@ -1,5 +1,12 @@
 <div class="p-6">
- <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex gap-5">
+        <h1 class="text-2xl font-bold">Steam Accounts <%= @active_steam_account&.unique_name  %></h1>
+    </div>
+<%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
+    <%= label_tag(:steamAccountSelect, 'Choose Steam Account:') %>
+    <%= select_tag('steam_id', options_for_select([['Select an account', nil]] + @steam_accounts.map { |steam_account| [ "#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id ] }, params["steam_account"]&.[]("unique_name")), id: 'steamAccountSelect', class: "w-[25%] rounded-lg p-2", onchange: 'submitForm()') %>
+<% end %>
+
     <div class="flex gap-5">
     <h1 class="text-2xl font-bold mb-4">Balance</h1>
         <i class="fa fa-refresh" aria-hidden="true"></i>
@@ -113,7 +120,9 @@
 <script>
     $(document).ready(function() {
         $('#dataTableItemsSold').DataTable();
-        $('#dataTableInvetory').DataTable();
+         $('#dataTableInvetory').DataTable({
+            "order": [[2, 'desc']],
+        });
         $('#dataTableActiveTrades').DataTable();
 
         const searchInputs = document.querySelectorAll('input[type="search"]');
@@ -128,7 +137,11 @@
 
         var elements = document.querySelectorAll('.dataTables_length');
         for (var i = 0; i < elements.length; i++) {
-        elements[i].parentNode.removeChild(elements[i]);
+            elements[i].parentNode.removeChild(elements[i]);
         }
     });
+
+        function submitForm() {
+            document.getElementById("postForm").submit();
+        }
 </script>
