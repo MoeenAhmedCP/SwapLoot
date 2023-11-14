@@ -3,8 +3,8 @@ class HomeController < ApplicationController
                 :fetch_active_trade, :fetch_inventory, only: %i[index]
 
   def index
-    @active_steam_account = SteamAccount.find_by(active: true) 
-    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id ).order(market_price: :desc)
+    @active_steam_account = SteamAccount.find_by(active: true)
+    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id).order(market_price: :desc)
     @steam_accounts = SteamAccount.all
   end
 
@@ -37,8 +37,6 @@ class HomeController < ApplicationController
   end
 
   def fetch_inventory
-    WaxpeerService.new.fetch_my_inventory
     MarketcsgoService.new.fetch_my_inventory
-    CsgoempireService.new.fetch_my_inventory
   end
 end
