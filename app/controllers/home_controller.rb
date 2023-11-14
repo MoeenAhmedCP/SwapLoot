@@ -3,8 +3,8 @@ class HomeController < ApplicationController
                 :fetch_active_trade, :fetch_inventory, only: %i[index]
 
   def index
-    @active_steam_account = SteamAccount.find_by(active: true)
-    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id)
+    @active_steam_account = SteamAccount.find_by(active: true) 
+    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id ).order(market_price: :desc)
     @steam_accounts = SteamAccount.all
   end
 

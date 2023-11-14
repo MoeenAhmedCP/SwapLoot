@@ -120,7 +120,9 @@
 <script>
     $(document).ready(function() {
         $('#dataTableItemsSold').DataTable();
-        $('#dataTableInvetory').DataTable();
+         $('#dataTableInvetory').DataTable({
+            "order": [[2, 'desc']],
+        });
         $('#dataTableActiveTrades').DataTable();
 
         const searchInputs = document.querySelectorAll('input[type="search"]');
