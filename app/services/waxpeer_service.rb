@@ -3,15 +3,6 @@ class WaxpeerService
 
   BASE_URL = 'https://api.waxpeer.com/v1'
 
-  def fetch_my_inventory
-    params = {
-      api: api_key,
-      skip: 0,
-      game: "csgo"
-    }
-    self.class.get(BASE_URL + '/get-my-inventory', query: params)
-  end
-
   def fetch_active_trade
     params = {
       api: api_key
