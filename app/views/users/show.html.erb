@@ -8,14 +8,14 @@
         <h2 class="text-2xl font-semibold mb-2">Steam Account: <%= user_account_data[:steam_account].unique_name %></h2>
       </h5>
       <p class="mb-4 text-base text-neutral-600 dark:text-neutral-200">
-      <p class=""><strong>Steam ID:</strong> <%= user_account_data[:data]['steam_id'] %></p>
-      <p class=""><strong>Steam Name:</strong> <%= user_account_data[:data]['steam_name'] %></p>
-      <p class=""><strong>Last Login:</strong> <%= user_account_data[:data]['last_login'] %></p>
-      <p class=""><strong>Steam Level:</strong> <%= user_account_data[:data]['steam_level'] %></p>
-      <p class=""><strong>Trade URL:</strong> <%= link_to user_account_data[:data]['trade_url'], target: '_blank', rel: 'noopener noreferrer', class: 'text-blue-500 hover:underline' %> </p>
-      <p class=""><strong>CsgoEmpire Balance:</strong> <%= number_with_precision(user_account_data[:data]['balance'].to_f / 100, precision: 2) %> Coins</p>
-      <p class=""><strong>Waxpeer Balance:</strong> $<%= user_account_data[:waxpeer_balance] %></p>
-      <p class=""><strong>Market.Csgo Balance:</strong> $<%= user_account_data[:market_csgo_balance] %></p>
+      <p><strong>Steam ID:</strong> <%= user_account_data[:data]['steam_id'] %></p>
+      <p><strong>Steam Name:</strong> <%= user_account_data[:data]['steam_name'] %></p>
+      <p><strong>Last Login:</strong> <%= user_account_data[:data]['last_login'] %></p>
+      <p><strong>Steam Level:</strong> <%= user_account_data[:data]['steam_level'] %></p>
+      <p><strong>Trade URL:</strong> <%= link_to user_account_data[:data]['trade_url'], target: '_blank', rel: 'noopener noreferrer', class: 'text-blue-500 hover:underline' %> </p>
+      <p><strong>CsgoEmpire Balance:</strong> <%= number_with_precision(user_account_data[:data]['balance'].to_f / 100, precision: 2) %> Coins</p>
+      <p><strong>Waxpeer Balance:</strong> $<%= user_account_data[:waxpeer_balance] %></p>
+      <p><strong>Market.Csgo Balance:</strong> $<%= user_account_data[:market_csgo_balance] %></p>
       </p>
     </div>
   </div>
