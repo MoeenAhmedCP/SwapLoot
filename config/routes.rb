@@ -8,4 +8,5 @@ Rails.application.routes.draw do
   resources :steam_accounts
   get 'inventories', to: 'inventories#index'
   post '/home/update_active_account', to: 'home#update_active_account'
+  resources :users, only: [:show]
 end

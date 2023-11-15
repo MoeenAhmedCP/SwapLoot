@@ -1,7 +1,7 @@
 class SteamAccountsController < ApplicationController
   before_action :set_steam_account, only: %i[edit update]
   def index
-    @steam_accounts = SteamAccount.all
+    @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
   def new
@@ -9,10 +9,10 @@ class SteamAccountsController < ApplicationController
   end
 
   def create
-    @steam_account = SteamAccount.new(steam_account_params)
+    @steam_account = current_user.steam_accounts.build(steam_account_params)
     if @steam_account.save
       flash[:notice] = 'Steam account was successfully added.'
-      redirect_to steam_accounts_path 
+      redirect_to steam_accounts_path
     else
       render :new
     end
