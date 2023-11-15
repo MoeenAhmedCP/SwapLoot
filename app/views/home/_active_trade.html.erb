@@ -1,0 +1,58 @@
+ <div style= "display: flex;">
+    <h2 class="text-2xl font-bold mb-4">Active Trades</h2>
+        <i id="refreshactiveTrade" class="fa fa-refresh" aria-hidden="true"></i>
+    </div>
+ <table id="dataTableActiveTrades" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th class="px-4 py-2">Item ID</th>
+                <th class="px-4 py-2">Item Name</th>
+                <th class="px-4 py-2">Type</th>
+                <th class="px-4 py-2">Current Price</th>
+                <th class="px-4 py-2">Status</th>
+                <th class="px-4 py-2">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% @active_trades.each do |active_trade| %>
+            <tr>
+                <td class="border text-center px-4 py-2"><%= active_trade["item_id"] %></td>
+                <td class="border text-center px-4 py-2"><%= active_trade["name"] %></td>
+                <td class="border text-center px-4 py-2"><%= active_trade["game"] %></td>
+                <td class="border text-center px-4 py-2"><%= "$#{active_trade["price"]}" %></td>
+                <td class="border text-center px-4 py-2"><%= active_trade["action"] %></td>
+                <td class="border text-center px-4 py-2"><%= Time.parse(active_trade["date"]).strftime("%d/%B/%Y") %></td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+
+    <script>
+    var dataTableActiveTrades = $('#dataTableActiveTrades').DataTable();
+      $('#refreshactiveTrade').click(function() {
+              $.ajax({
+                  url: '<%= root_path(format: :json) %>',
+                  method: 'GET',
+                  dataType: 'json',
+                  success: function(data) {
+                      dataTableActiveTrades.clear().draw();
+
+                      data.forEach(function(active_trade) {
+                          dataTableActiveTrades.row.add([
+                              active_trade.item_id,
+                              active_trade.name,
+                              "$" + active_trade.game,
+                              active_trade.price,
+                              active_trade.action,
+                              active_trade.date
+                          ]).draw();
+                      });
+
+                      console.log('Table refreshed');
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                      console.error('Error refreshing table', textStatus, errorThrown);
+                  }
+              });
+      });
+    </script>

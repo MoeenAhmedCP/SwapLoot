@@ -17,35 +17,8 @@
         <h2 class="font-bold">Waxpeer Balance: <%= @waxpeer_balance.nil? ? "$0" : "$#{@waxpeer_balance}" %></h2>
     </div>
     <hr class="bg-gray-400 h-px w-full mb-3">
-    <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Active Trades</h2>
-        <i class="fa fa-refresh" aria-hidden="true"></i>
-    </div>
 
-    <table id="dataTableActiveTrades" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Item ID</th>
-                <th class="px-4 py-2">Item Name</th>
-                <th class="px-4 py-2">Type</th>
-                <th class="px-4 py-2">Current Price</th>
-                <th class="px-4 py-2">Status</th>
-                <th class="px-4 py-2">Date</th>
-            </tr>
-        </thead>
-        <tbody>
-        <% @active_trades.each do |active_trade| %>
-            <tr>
-                <td class="border text-center px-4 py-2"><%= active_trade["item_id"] %></td>
-                <td class="border text-center px-4 py-2"><%= active_trade["name"] %></td>
-                <td class="border text-center px-4 py-2"><%= active_trade["game"] %></td>
-                <td class="border text-center px-4 py-2"><%= "$#{active_trade["price"]}" %></td>
-                <td class="border text-center px-4 py-2"><%= active_trade["action"] %></td>
-                <td class="border text-center px-4 py-2"><%= Time.parse(active_trade["date"]).strftime("%d/%B/%Y") %></td>
-            </tr>
-            <% end %>
-        </tbody>
-    </table>
+  <%= render partial: 'active_trade'%>
 </div>
 </div>
 
@@ -53,65 +26,13 @@
 <div class="flex">
 <div class="table-1">
  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Inventory</h2>
-        <i class="fa fa-refresh" aria-hidden="true"></i>
-    </div>
-
-    <table id="dataTableInvetory" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Item ID</th>
-                <th class="px-4 py-2">Market Name</th>
-                <th class="px-4 py-2">Market Price</th>
-                <th class="px-4 py-2">Tradable</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% @inventories.each do |inventory| %>
-                <tr>
-                    <td class="border text-center px-4 py-2"><%= inventory.item_id %></td>
-                    <td class="border text-center px-4 py-2"><%= inventory.market_name %></td>
-                    <td class="border text-center px-4 py-2"><%= "$#{inventory.market_price}" %></td>
-                    <td class="border text-center px-4 py-2"><%= inventory.tradable %></td>
-                </tr>
-            <% end %>
-        </tbody>
-    </table>
+    <%= render partial: 'inventories/inventory'%>
 </div>
 </div>
 
 <div class="table-2">
  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
- <div class="flex">
-    <h2 class="text-2xl font-bold mb-4">Items Sold</h2>
-    <i class="fa fa-refresh" aria-hidden="true"></i>
-    </div>
-
-    <table id="dataTableItemsSold" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Item ID</th>
-                <th class="px-4 py-2">Item Name</th>
-                <th class="px-4 py-2">Price Sold</th>
-                <th class="px-4 py-2">Profit</th>
-            </tr>
-        </thead>
-        <tbody>
-        <% 24.times do |i| %>
-            <tr>
-                <td class="border text-center px-4 py-2"><%= "#{i+1}" %></td>
-                <td class="border text-center px-4 py-2">Edinburgh</td>
-                <td class="border text-center px-4 py-2">$320,800</td>
-                <td class="border text-center px-4 py-2">true</td>
-            </tr>
-            <% end %>
-            
-
-
-            <!-- Add more rows as needed -->
-        </tbody>
-    </table>
+ <%= render partial: 'item_sold'%>
 </div>
 </div>
 
