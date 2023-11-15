@@ -3,9 +3,9 @@ class HomeController < ApplicationController
                 :fetch_active_trade, :fetch_inventory, only: %i[index]
 
   def index
-    @active_steam_account = SteamAccount.find_by(active: true)
+    @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
     @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id).order(market_price: :desc)
-    @steam_accounts = SteamAccount.all
+    @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
   def update_active_account
@@ -21,22 +21,27 @@ class HomeController < ApplicationController
   private
 
   def fetch_csgo_empire_balance
-    @csgo_empire_balance = CsgoempireService.new.fetch_balance
+    csgo_service = CsgoempireService.new(current_user)
+    @csgo_empire_balance = csgo_service.fetch_balance
   end
 
   def fetch_csgo_market_balance
-    @csgo_market_balance = MarketcsgoService.new.fetch_balance
+    marketcsgo_service = MarketcsgoService.new(current_user)
+    @csgo_market_balance = marketcsgo_service.fetch_balance
   end
 
   def fetch_waxpeer_balance
-    @waxpeer_balance = WaxpeerService.new.fetch_balance
+    waxpeer_service = WaxpeerService.new(current_user)
+    @waxpeer_balance = waxpeer_service.fetch_balance
   end
 
   def fetch_active_trade
-    @active_trades = WaxpeerService.new.fetch_active_trade
+    waxpeer_service = WaxpeerService.new(current_user)
+    @active_trades = waxpeer_service.fetch_active_trade
   end
 
   def fetch_inventory
-    MarketcsgoService.new.fetch_my_inventory
+    marketcsgo_service = MarketcsgoService.new(current_user)
+    marketcsgo_service.fetch_my_inventory
   end
 end

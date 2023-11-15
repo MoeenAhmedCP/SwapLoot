@@ -3,6 +3,10 @@ class WaxpeerService
 
   BASE_URL = 'https://api.waxpeer.com/v1'
 
+  def initialize(current_user)
+    @current_user = current_user
+  end
+
   def fetch_active_trade
     params = {
       api: api_key
@@ -20,7 +24,7 @@ class WaxpeerService
   end
 
   def api_key
-    @active_steam_account = SteamAccount.find_by(active: true)
+    @active_steam_account = SteamAccount.find_by(active: true, user_id: @current_user.id)
     @active_steam_account&.waxpeer_api_key
   end
 end
