@@ -8,5 +8,6 @@ Rails.application.routes.draw do
   resources :steam_accounts
   resources :inventories, only: [:index]
   post '/home/update_active_account', to: 'home#update_active_account'
+  get '/home/active_trades_reload', to: 'home#active_trades_reload'
   resources :users, only: [:show]
 end

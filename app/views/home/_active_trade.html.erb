@@ -31,7 +31,7 @@
     var dataTableActiveTrades = $('#dataTableActiveTrades').DataTable();
       $('#refreshactiveTrade').click(function() {
               $.ajax({
-                  url: '<%= root_path(format: :json) %>',
+                  url: '<%= home_active_trades_reload_path(format: :json) %>',
                   method: 'GET',
                   dataType: 'json',
                   success: function(data) {

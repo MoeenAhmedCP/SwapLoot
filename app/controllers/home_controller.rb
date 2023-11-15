@@ -6,11 +6,14 @@ class HomeController < ApplicationController
     @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
     @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id).order(market_price: :desc)
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
+  end
+
+  def active_trades_reload
+    fetch_active_trade
     respond_to do |format|
       format.html { render :index } # Assuming your HTML template is named index.html.erb
       format.json { render json: @active_trades }
     end
-
   end
 
   def update_active_account
