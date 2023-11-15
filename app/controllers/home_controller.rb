@@ -1,6 +1,6 @@
 class HomeController < ApplicationController
-  before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance,
-                :fetch_active_trade, :fetch_inventory, only: %i[index]
+  before_action :fetch_active_trade, :fetch_inventory, only: %i[index]
+  before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, only: %i[refresh_balance]
 
   def index
     @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
@@ -16,6 +16,12 @@ class HomeController < ApplicationController
       account.update(active: true) if account.present?
     end
     redirect_to root_path
+  end
+
+  def refresh_balance
+    respond_to do |format|
+      format.js
+    end
   end
 
   private
