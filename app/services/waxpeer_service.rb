@@ -15,6 +15,14 @@ class WaxpeerService
     res['data'].present? ? res['data']['trades'] : []
   end
 
+  def fetch_item_listed_for_sale
+    params = {
+      api: api_key
+    }
+    res = self.class.get(BASE_URL + '/list-items-steam', query: params)
+    res['items'].present? ? res['items'] : []
+  end
+
   def fetch_balance
     params = {
       api: api_key

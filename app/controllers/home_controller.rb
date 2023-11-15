@@ -1,6 +1,6 @@
 class HomeController < ApplicationController
   before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance,
-                :fetch_active_trade, :fetch_inventory, only: %i[index]
+                :fetch_active_trade, :fetch_inventory, :fetch_waxpeer_item_listed_for_sale, only: %i[index]
 
   def index
     @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
@@ -43,5 +43,13 @@ class HomeController < ApplicationController
   def fetch_inventory
     marketcsgo_service = MarketcsgoService.new(current_user)
     marketcsgo_service.fetch_my_inventory
+  end
+
+  def fetch_waxpeer_item_listed_for_sale
+    waxpeer_service = WaxpeerService.new(current_user)
+    item_listed_for_sale = waxpeer_service.fetch_item_listed_for_sale
+    @item_listed_for_sale_hash = item_listed_for_sale.map do |item|
+      item.merge('site' => 'Waxpeer')
+    end
   end
 end

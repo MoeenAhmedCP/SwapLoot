@@ -54,7 +54,7 @@
 <div class="table-1">
  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Inventory</h2>
+    <h2 class="text-2xl font-bold mb-4">Item listed for sale</h2>
         <i class="fa fa-refresh" aria-hidden="true"></i>
     </div>
 
@@ -63,17 +63,19 @@
             <tr>
                 <th class="px-4 py-2">Item ID</th>
                 <th class="px-4 py-2">Market Name</th>
-                <th class="px-4 py-2">Market Price</th>
-                <th class="px-4 py-2">Tradable</th>
+                <th class="px-4 py-2">Price</th>
+                <th class="px-4 py-2">Site</th>
+                <th class="px-4 py-2">Date</th>
             </tr>
         </thead>
         <tbody>
-            <% @inventories.each do |inventory| %>
+            <% @item_listed_for_sale_hash.each do |item_listed_for_sale_hash| %>
                 <tr>
-                    <td class="border text-center px-4 py-2"><%= inventory.item_id %></td>
-                    <td class="border text-center px-4 py-2"><%= inventory.market_name %></td>
-                    <td class="border text-center px-4 py-2"><%= "$#{inventory.market_price}" %></td>
-                    <td class="border text-center px-4 py-2"><%= inventory.tradable %></td>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['item_id'] %></td>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['market_name'] %></td>
+                    <td class="border text-center px-4 py-2"><%= "$#{item_listed_for_sale_hash['price'].to_f / 1000}" %></td>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['site'] %></td>
+                    <td class="border text-center px-4 py-2"><%= Time.parse(item_listed_for_sale_hash['date']).strftime("%d/%B/%Y") %></td>
                 </tr>
             <% end %>
         </tbody>
