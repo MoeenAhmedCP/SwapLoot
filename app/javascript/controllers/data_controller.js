@@ -6,7 +6,6 @@ import consumer from "../channels/consumer"
 export default class extends Controller {
   connect() {
      this.fetchCsGoEmpireData()
-    // this.fetchWaxPeerData()
   }
 
   async fetch_user_data() {
