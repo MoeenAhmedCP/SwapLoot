@@ -11,5 +11,6 @@ Rails.application.routes.draw do
   get '/refresh_balance', to: 'home#refresh_balance', as: 'refresh_balance'
   get '/home/active_trades_reload', to: 'home#active_trades_reload'
   get '/home/fetch_user_data', to: 'home#fetch_user_data'
+  post '/home/csgo_socket_events', to: 'home#csgo_socket_events'
   resources :users, only: [:show]
 end

@@ -15,12 +15,10 @@ class CsgoempireService
   end
 
   def fetch_user_data
-    response = self.class.get(BASE_URL + '/metadata/socket', headers: @headers)
-    response['user'] if response['user']
+    self.class.get(BASE_URL + '/metadata/socket', headers: @headers)
   end
 
   def fetch_active_trade
     self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
   end
-
 end

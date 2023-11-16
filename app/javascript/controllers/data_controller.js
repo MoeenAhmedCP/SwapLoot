@@ -1,49 +1,48 @@
 import { Controller } from "@hotwired/stimulus"
-
+import $ from "jquery";
 // Connects to data-controller="csgo"
 export default class extends Controller {
   connect() {
-    console.log("Connected to CSGO Empire controller")
     this.fetchCsGoEmpireData()
     // this.fetchWaxPeerData()
   }
 
+  async fetch_user_data() {
+    let userData = null;
+
+    try {
+      const data = await $.ajax({
+        url: "/home/fetch_user_data",
+        method: "GET",
+        dataType: "json",
+        success: (response) => {
+          userData = {
+            user: {
+              id: response.user.id,
+            },
+            socket_token: response.socket_token,
+            socket_signature: response.socket_signature,
+          };
+        },
+        error: (xhr, status, error) => {
+          console.error("Error:", error);
+        },
+      });
+
+      return userData;
+    } catch (error) {
+      console.error("Error while fetching user data:", error);
+    }
+  }
+
   async fetchCsGoEmpireData() {
-    const csgoempireApiKey = "812bb8bd18af87a449b183c6075117f1";
     const socketEndpoint = "wss://trade.csgoempire.com/trade";
-    // axios.defaults.headers.common['Authorization'] = `Bearer ${csgoempireApiKey}`;
 
     console.log("Connecting to websocket...");
 
     try {
-      // const userData = (await axios.get("https://csgoempire.com/api/v2/metadata/socket", {
-      //   headers: {
-      //     'Authorization': `Bearer ${csgoempireApiKey}`
-      //   },
-      // })).data;
 
-//       var myHeaders = new Headers();
-// myHeaders.append("Authorization", "Bearer 812bb8bd18af87a449b183c6075117f1");
-// myHeaders.append("Cookie", "__cf_bm=wuH4fyTGQlA4jR8fPSDnVU30sKpAjrzZaXPBIKrfHE4-1700148335-0-AYJfyT7XjxzAFhBer0yKAqhpXvC+4Zc9G5Jo4jrm0cvcWYIFG7vz5twaJLoNLqyxx3p2vI24yE1wxN1I4TjlH/8=");
-
-// var requestOptions = {
-//   method: 'GET',
-//   headers: myHeaders,
-//   redirect: 'follow'
-// };
-
-// fetch("https://csgoempire.com/api/v2/metadata/socket", requestOptions)
-//   .then(response => response.text())
-//   .then(result => console.log(result))
-//   .catch(error => console.log('error', error));
-
-      const userData = {
-        user: {
-          id: 8065093
-        },
-        socket_token: "seEQvWcTjIQUmuZYJJJuC7oYsfQ1fTJcDkWt1pKISrVF",
-        socket_signature: "47cf69f2b29c35bbde5de0dffbc4aae130c4eb43aee8e361504baf8c1a8a61221fa513f20e6928e11810ec3caf8ff24bbf88e16088d9a18a3e0bc1538ba57a6e"
-      }
+      const userData = await this.fetch_user_data();
 
       const socket = io(
         socketEndpoint,
@@ -83,11 +82,26 @@ export default class extends Controller {
 
         // Listen for the following event to be emitted by the socket after we've identified the user
         socket.on('timesync', (data) => console.log(`Timesync: ${JSON.stringify(data)}`));
-        socket.on('new_item', (data) => console.log(`new_item: ${JSON.stringify(data)}`));
-        socket.on('updated_item', (data) => console.log(`updated_item: ${JSON.stringify(data)}`));
-        socket.on('auction_update', (data) => console.log(`auction_update: ${JSON.stringify(data)}`));
-        socket.on('deleted_item', (data) => console.log(`deleted_item: ${JSON.stringify(data)}`));
-        socket.on('trade_status', (data) => console.log(`trade_status: ${JSON.stringify(data)}`));
+        socket.on('new_item', (data) => {
+          console.log(`new_item: ${JSON.stringify(data)}`)
+          this.send_csgo_events(data, "new_item")
+        });
+        socket.on('updated_item', (data) => {
+          console.log(`updated_item: ${JSON.stringify(data)}`)
+          this.send_csgo_events(data, "updated_item")
+        });
+        socket.on('auction_update', (data) => {
+          console.log(`auction_update: ${JSON.stringify(data)}`)
+          this.send_csgo_events(data, "auction_update")
+        });
+        socket.on('deleted_item', (data) => {
+          console.log(`deleted_item: ${JSON.stringify(data)}`)
+          this.send_csgo_events(data, "deleted_item")
+        });
+        socket.on('trade_status', (data) => {
+          console.log(`trade_status: ${JSON.stringify(data)}`)
+          this.send_csgo_events(data, "trade_status")
+        });
         socket.on("disconnect", (reason) => console.log(`Socket disconnected: ${reason}`));
       });
 
@@ -97,6 +111,28 @@ export default class extends Controller {
       socket.on('connect_error', (data) => console.log(`Connect Error: ${data}`));
     } catch (e) {
       console.log(`Error while initializing the Socket. Error: ${e}`);
+    }
+  }
+
+  async send_csgo_events(eventData, event) {
+    try {
+      const data = await $.ajax({
+        url: "/home/csgo_socket_events",
+        method: "POST",
+        dataType: "json",
+        headers: {
+          // Include the CSRF token in the headers
+          "X-CSRF-Token": $('meta[name="csrf-token"]').attr("content"),
+        },
+        data: { data: eventData, event: event },
+        success: (response) => {
+        },
+        error: (xhr, status, error) => {
+          console.error("Error:", error);
+        },
+      });
+    } catch (error) {
+      console.error("Error while fetching user data:", error);
     }
   }
 
