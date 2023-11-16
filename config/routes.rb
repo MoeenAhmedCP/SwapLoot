@@ -10,5 +10,6 @@ Rails.application.routes.draw do
   post '/home/update_active_account', to: 'home#update_active_account'
   get '/refresh_balance', to: 'home#refresh_balance', as: 'refresh_balance'
   get '/home/active_trades_reload', to: 'home#active_trades_reload'
+  get '/home/fetch_user_data', to: 'home#fetch_user_data'
   resources :users, only: [:show]
 end

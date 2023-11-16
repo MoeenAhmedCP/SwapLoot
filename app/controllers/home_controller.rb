@@ -8,6 +8,11 @@ class HomeController < ApplicationController
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
+  def fetch_user_data
+    csgo_service = CsgoempireService.new(current_user)
+    csgo_service.fetch_balance
+  end
+
   def active_trades_reload
     fetch_active_trade
     respond_to do |format|
