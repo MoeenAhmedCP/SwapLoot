@@ -1,5 +1,5 @@
 <% if flash[:notice] %>
-    <div id="notice-top-right" class="absolute flex justify-between items-center w-full max-w-xs p-4 space-x-4 text-white bg-white divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 text-white mt-[50px] dark:divide-gray-700 space-x dark:bg-green-800" role="alert" onClick="hidePopup()">
+    <div id="notice-top-right" class="absolute flex justify-between items-center w-full max-w-xs p-4 space-x-4 divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 text-white mt-[50px] divide-gray-700 space-x bg-green-800" role="alert" onClick="hidePopup()">
         <div>
             <%= flash[:notice] %>
         </div>
@@ -8,7 +8,7 @@
 <% end %>
 
 <% if flash[:alert] %>
-    <div id="alert-top-right" class="absolute flex justify-between items-center w-full max-w-xs p-4 space-x-4 text-white bg-white divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 text-white mt-[50px] dark:divide-gray-700 space-x dark:bg-red-800" role="alert" onClick="hidePopup()">
+    <div id="alert-top-right" class="absolute flex justify-between items-center w-full max-w-xs p-4 space-x-4 divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 text-white mt-[50px] divide-gray-700 space-x bg-red-800" role="alert" onClick="hidePopup()">
         <div>
             <%= flash[:alert] %>
         </div>

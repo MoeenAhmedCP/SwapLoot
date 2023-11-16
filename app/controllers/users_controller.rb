@@ -35,14 +35,16 @@ class UsersController < ApplicationController
       headers = { 'Authorization' => "Bearer #{steam_account.csgoempire_api_key}" }
       response = self.class.get(BASE_URL_CSGOEMPIRE + '/metadata/socket', headers: headers)
 
-      user_account_data = {
-        steam_account: steam_account,
-        data: JSON.parse(response.body)['user'],
-        waxpeer_balance: fetch_balance_waxpeer(steam_account),
-        market_csgo_balance: fetch_balance_marketcsgo(steam_account)
-      }
+      if JSON.parse(response.body)['user'].present?
+        user_account_data = {
+          steam_account: steam_account,
+          data: JSON.parse(response.body)['user'],
+          waxpeer_balance: fetch_balance_waxpeer(steam_account),
+          market_csgo_balance: fetch_balance_marketcsgo(steam_account)
+        }
 
-      user_accounts_data << user_account_data
+        user_accounts_data << user_account_data
+      end
     end
 
     user_accounts_data
