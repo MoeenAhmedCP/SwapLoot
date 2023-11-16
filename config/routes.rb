@@ -14,5 +14,6 @@ Rails.application.routes.draw do
   get '/home/active_trades_reload', to: 'home#active_trades_reload'
   get '/home/reload_item_listed_for_sale', to: 'home#reload_item_listed_for_sale'
   get '/home/fetch_user_data', to: 'home#fetch_user_data'
+  post '/home/csgo_socket_events', to: 'home#csgo_socket_events'
   resources :users, only: [:show]
 end

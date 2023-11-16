@@ -10,7 +10,13 @@ class HomeController < ApplicationController
 
   def fetch_user_data
     csgo_service = CsgoempireService.new(current_user)
-    csgo_service.fetch_balance
+    respond_to do |format|
+      format.js { render json: csgo_service.fetch_user_data }
+    end
+  end
+
+  def csgo_socket_events
+    puts params
   end
 
   def active_trades_reload
