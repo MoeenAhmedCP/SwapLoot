@@ -14,8 +14,11 @@ class CsgoempireService
     response['user']['balance'].to_f / 100 if response['user']
   end
 
+  def fetch_user_data
+    self.class.get(BASE_URL + '/metadata/socket', headers: @headers)
+  end
+
   def fetch_active_trade
     self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
   end
-
 end
