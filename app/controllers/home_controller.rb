@@ -1,11 +1,18 @@
 class HomeController < ApplicationController
-  before_action :fetch_active_trade, :fetch_inventory, only: %i[index]
+  before_action :fetch_active_trade, :fetch_inventory, :fetch_waxpeer_item_listed_for_sale, only: %i[index]
   before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, only: %i[refresh_balance]
 
   def index
     @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
     @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id).order(market_price: :desc)
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
+  end
+
+  def active_trades_reload
+    fetch_active_trade
+    respond_to do |format|
+      format.js
+    end
   end
 
   def update_active_account
@@ -49,5 +56,13 @@ class HomeController < ApplicationController
   def fetch_inventory
     marketcsgo_service = MarketcsgoService.new(current_user)
     marketcsgo_service.fetch_my_inventory
+  end
+
+  def fetch_waxpeer_item_listed_for_sale
+    waxpeer_service = WaxpeerService.new(current_user)
+    item_listed_for_sale = waxpeer_service.fetch_item_listed_for_sale
+    @item_listed_for_sale_hash = item_listed_for_sale.map do |item|
+      item.merge('site' => 'Waxpeer')
+    end
   end
 end

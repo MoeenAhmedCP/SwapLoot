@@ -6,8 +6,9 @@ Rails.application.routes.draw do
   # root "articles#index"
   root to: "home#index"
   resources :steam_accounts
-  get 'inventories', to: 'inventories#index'
+  resources :inventories, only: [:index]
   post '/home/update_active_account', to: 'home#update_active_account'
   get '/refresh_balance', to: 'home#refresh_balance', as: 'refresh_balance'
+  get '/home/active_trades_reload', to: 'home#active_trades_reload'
   resources :users, only: [:show]
 end

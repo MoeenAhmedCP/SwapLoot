@@ -13,35 +13,13 @@
     </div>
 
     <hr class="bg-gray-400 h-px w-full mb-3">
-    <div style= "display: flex;">
+     <div style= "display: flex;">
     <h2 class="text-2xl font-bold mb-4">Active Trades</h2>
-        <i class="fa fa-refresh" aria-hidden="true"></i>
+        <i id="refreshactiveTrade" class="fa fa-refresh" aria-hidden="true"></i>
     </div>
-
-    <table id="dataTableActiveTrades" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Item ID</th>
-                <th class="px-4 py-2">Item Name</th>
-                <th class="px-4 py-2">Type</th>
-                <th class="px-4 py-2">Current Price</th>
-                <th class="px-4 py-2">Status</th>
-                <th class="px-4 py-2">Date</th>
-            </tr>
-        </thead>
-        <tbody>
-        <% @active_trades.each do |active_trade| %>
-            <tr>
-                <td class="border text-center px-4 py-2"><%= active_trade["item_id"] %></td>
-                <td class="border text-center px-4 py-2"><%= active_trade["name"] %></td>
-                <td class="border text-center px-4 py-2"><%= active_trade["game"] %></td>
-                <td class="border text-center px-4 py-2"><%= "$#{active_trade["price"]}" %></td>
-                <td class="border text-center px-4 py-2"><%= active_trade["action"] %></td>
-                <td class="border text-center px-4 py-2"><%= Time.parse(active_trade["date"]).strftime("%d/%B/%Y") %></td>
-            </tr>
-            <% end %>
-        </tbody>
-    </table>
+ 
+    <%= render partial: 'active_trade' , locals:{ active_trades: @active_trades }%>
+       
 </div>
 </div>
 
@@ -50,7 +28,7 @@
 <div class="table-1">
  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Inventory</h2>
+    <h2 class="text-2xl font-bold mb-4">Item listed for sale</h2>
         <i class="fa fa-refresh" aria-hidden="true"></i>
     </div>
 
@@ -59,17 +37,19 @@
             <tr>
                 <th class="px-4 py-2">Item ID</th>
                 <th class="px-4 py-2">Market Name</th>
-                <th class="px-4 py-2">Market Price</th>
-                <th class="px-4 py-2">Tradable</th>
+                <th class="px-4 py-2">Price</th>
+                <th class="px-4 py-2">Site</th>
+                <th class="px-4 py-2">Date</th>
             </tr>
         </thead>
         <tbody>
-            <% @inventories.each do |inventory| %>
+            <% @item_listed_for_sale_hash.each do |item_listed_for_sale_hash| %>
                 <tr>
-                    <td class="border text-center px-4 py-2"><%= inventory.item_id %></td>
-                    <td class="border text-center px-4 py-2"><%= inventory.market_name %></td>
-                    <td class="border text-center px-4 py-2"><%= "$#{inventory.market_price}" %></td>
-                    <td class="border text-center px-4 py-2"><%= inventory.tradable %></td>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['item_id'] %></td>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['market_name'] %></td>
+                    <td class="border text-center px-4 py-2"><%= "$#{item_listed_for_sale_hash['price'].to_f / 1000}" %></td>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['site'] %></td>
+                    <td class="border text-center px-4 py-2"><%= Time.parse(item_listed_for_sale_hash['date']).strftime("%d/%B/%Y") %></td>
                 </tr>
             <% end %>
         </tbody>
@@ -94,18 +74,7 @@
             </tr>
         </thead>
         <tbody>
-        <% 24.times do |i| %>
-            <tr>
-                <td class="border text-center px-4 py-2"><%= "#{i+1}" %></td>
-                <td class="border text-center px-4 py-2">Edinburgh</td>
-                <td class="border text-center px-4 py-2">$320,800</td>
-                <td class="border text-center px-4 py-2">true</td>
-            </tr>
-            <% end %>
-            
-
-
-            <!-- Add more rows as needed -->
+        <%= render partial: 'item_sold'%>
         </tbody>
     </table>
 </div>
@@ -148,9 +117,20 @@
         for (var i = 0; i < elements.length; i++) {
             elements[i].parentNode.removeChild(elements[i]);
         }
-    });
+     });
 
         function submitForm() {
             document.getElementById("postForm").submit();
         }
-</script>
+  
+    var dataTableActiveTrades = $('#dataTableActiveTrades').DataTable();
+      $('#refreshactiveTrade').click(function() {
+        $.ajax({
+            url: '<%= home_active_trades_reload_path(format: :js) %>',
+            method: 'GET',
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error refreshing table', textStatus, errorThrown);
+            }
+        });
+      });
+    </script>
