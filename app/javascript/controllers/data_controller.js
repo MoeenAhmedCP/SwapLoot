@@ -36,6 +36,34 @@ export default class extends Controller {
     }
   }
 
+  async fetch_user_data() {
+    let userData = null;
+
+    try {
+      const data = await $.ajax({
+        url: "/home/fetch_user_data",
+        method: "GET",
+        dataType: "json",
+        success: (response) => {
+          userData = {
+            user: {
+              id: response.user.id,
+            },
+            socket_token: response.socket_token,
+            socket_signature: response.socket_signature,
+          };
+        },
+        error: (xhr, status, error) => {
+          console.error("Error:", error);
+        },
+      });
+
+      return userData;
+    } catch (error) {
+      console.error("Error while fetching user data:", error);
+    }
+  }
+
   async fetchCsGoEmpireData() {
     const socketEndpoint = "wss://trade.csgoempire.com/trade";
 
