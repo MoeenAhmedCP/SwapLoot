@@ -8,6 +8,13 @@ class HomeController < ApplicationController
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
+  def active_trades_reload
+    fetch_active_trade
+    respond_to do |format|
+      format.js
+    end
+  end
+
   def update_active_account
     selected_steam_id = params[:steam_id]
     SteamAccount.transaction do
