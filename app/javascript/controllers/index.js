@@ -4,5 +4,8 @@
 
 import { application } from "./application"
 
+import CsgoEmpireController from "./csgo_empire_controller"
+application.register("csgo_empire", CsgoEmpireController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
