@@ -1,1 +1,42 @@
-<%= render partial: 'inventory'%>
+<div class="p-6">
+ <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+ <div style= "display: flex;">
+    <h2 class="text-2xl font-bold mb-4">Inventory</h2>
+    <i id="refreshTable" class="fa fa-refresh" aria-hidden="true"></i>
+    </div>
+         <%= render partial: 'inventory' , locals:{ inventories: @inventories }%>     
+</div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var dataTable = $('#dataTable').DataTable({
+            "order": [[2, 'desc']], // Assuming market_price is the third column (zero-based index)
+        });
+
+        const searchInputs = document.querySelectorAll('input[type="search"]');
+        searchInputs.forEach(function(input) {
+            input.style.marginBottom = '10px';
+        });
+
+        const dataTables = document.querySelectorAll('.dataTable');
+        dataTables.forEach((el) => {
+            el.style.border = '1px solid black';
+        });
+
+        var elements = document.querySelectorAll('.dataTables_length');
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].parentNode.removeChild(elements[i]);
+        }
+
+      $('#refreshTable').click(function() {
+            $.ajax({
+                url: '<%= inventories_path(format: :js) %>',
+                method: 'GET',
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error refreshing table', textStatus, errorThrown);
+                }
+            });
+        });
+    });
+</script>

@@ -11,8 +11,7 @@ class HomeController < ApplicationController
   def active_trades_reload
     fetch_active_trade
     respond_to do |format|
-      format.html { render :index } # Assuming your HTML template is named index.html.erb
-      format.json { render json: @active_trades }
+      format.js
     end
   end
 
