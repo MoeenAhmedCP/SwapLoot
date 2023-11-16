@@ -1,12 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 import $ from "jquery";
-
 import consumer from "../channels/consumer"
+
 // Connects to data-controller="csgo"
 export default class extends Controller {
   connect() {
      this.fetchCsGoEmpireData()
-    // this.fetchWaxPeerData()
   }
 
   async fetch_user_data() {
