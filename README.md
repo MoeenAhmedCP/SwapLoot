@@ -1,24 +1,23 @@
 # README
+Swaploot Tech Stack Details
+Rails version: 7.0.8
+Ruby version: 3.2.2
+Postgresql: 1.1
+tailwind: > 2.0
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+How to install the app
+**Run "Bundle Install"
+Run "rails tailwindcss:install"**
 
-Things you may want to cover:
+if getting issue in the application.js file or to reflect change in the assets and Javascript directory run
+**"rails assets:precompile"**
 
-* Ruby version
+For installation of jQuery run
+**"yarn add jquery"**
 
-* System dependencies
+**"rails db:create"
+"rails db:migrate"**
 
-* Configuration
+**"bin/dev"** for starting the server [ we are not using rails s since sometimes changes are not refelcted due to tailwind ]
 
-* Database creation
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
