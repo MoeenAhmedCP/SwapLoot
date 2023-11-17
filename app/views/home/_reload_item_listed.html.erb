@@ -1,0 +1,30 @@
+  <table id="dataItemListed" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th class="px-4 py-2">Item ID</th>
+                <th class="px-4 py-2">Market Name</th>
+                <th class="px-4 py-2">Price</th>
+                <th class="px-4 py-2">Site</th>
+                <th class="px-4 py-2">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% item_listed_for_sale_hash.each do |item_listed_for_sale_hash| %>
+                <tr>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['item_id'] %></td>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['market_name'] %></td>
+                    <td class="border text-center px-4 py-2"><%= "$#{item_listed_for_sale_hash['price'].to_f / 1000}" %></td>
+                    <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['site'] %></td>
+                    <td class="border text-center px-4 py-2"><%= Time.parse(item_listed_for_sale_hash['date']).strftime("%d/%B/%Y") %></td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+
+    <script>
+    $('#dataItemListed').DataTable({
+        paging: true,
+        pageLength: 10, // Number of records per page
+        // Other DataTables options...
+    });
+</script>

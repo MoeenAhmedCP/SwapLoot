@@ -15,6 +15,13 @@ class HomeController < ApplicationController
     end
   end
 
+  def reload_item_listed_for_sale
+    fetch_waxpeer_item_listed_for_sale
+    respond_to do |format|
+      format.js
+    end
+  end
+
   def update_active_account
     selected_steam_id = params[:steam_id]
     SteamAccount.transaction do
