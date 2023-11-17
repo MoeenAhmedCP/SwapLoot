@@ -1,4 +1,4 @@
-<table id="dataTable" class="display" style="width:100%">
+<table id="inventoryTable" class="display" style="width:100%">
  <thead>
     <tr>
         <th class="px-4 py-2">Item ID</th>
@@ -18,5 +18,13 @@
      <% end %>    
  </tbody>
 </table>
+
+<script>
+    $('#inventoryTable').DataTable({
+        paging: true,
+        pageLength: 10, // Number of records per page
+        // Other DataTables options...
+    });
+</script>
 
     
