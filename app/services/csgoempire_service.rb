@@ -14,6 +14,10 @@ class CsgoempireService
     response['user']['balance'].to_f / 100 if response['user']
   end
 
+  def socket_data(data)
+    puts data
+  end
+
   def fetch_user_data
     self.class.get(BASE_URL + '/metadata/socket', headers: @headers)
   end
