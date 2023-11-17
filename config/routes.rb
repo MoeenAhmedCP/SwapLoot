@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   root to: "home#index"
   resources :steam_accounts
   resources :inventories, only: [:index]
+  get '/services', to: "services#index"
+  get '/trigger_service', to: "services#trigger_service"
   post '/home/update_active_account', to: 'home#update_active_account'
   get '/refresh_balance', to: 'home#refresh_balance', as: 'refresh_balance'
   get '/home/active_trades_reload', to: 'home#active_trades_reload'
