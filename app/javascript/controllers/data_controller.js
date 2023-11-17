@@ -1,9 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 import $ from "jquery";
+
+import consumer from "../channels/consumer"
 // Connects to data-controller="csgo"
 export default class extends Controller {
   connect() {
-    this.fetchCsGoEmpireData()
+     this.fetchCsGoEmpireData()
     // this.fetchWaxPeerData()
   }
 
@@ -57,52 +59,61 @@ export default class extends Controller {
       );
 
       socket.on('connect', async () => {
-        console.log(`Connected to websocket`);
 
-        // Handle the Init event
-        socket.on('init', (data) => {
-            if (data && data.authenticated) {
-                console.log(`Successfully authenticated as ${data.name}`);
-                
-                // Emit the default filters to ensure we receive events
-                socket.emit('filters', {
-                    price_max: 9999999
-                });
-                
-            } else {
-                // When the server asks for it, emit the data we got earlier to the socket to identify this client as the user
-                socket.emit('identify', {
-                    uid: userData.user.id,
-                    model: userData.user,
-                    authorizationToken: userData.socket_token,
-                    signature: userData.socket_signature
-                });
-            }
-        })
+        consumer.subscriptions.create({ channel: "CsgosocketChannel" }, {
+          connected() {
+            // Called when the subscription is ready for use on the server
+            console.log(`Connected to websocket`);
 
-        // Listen for the following event to be emitted by the socket after we've identified the user
-        socket.on('timesync', (data) => console.log(`Timesync: ${JSON.stringify(data)}`));
-        socket.on('new_item', (data) => {
-          console.log(`new_item: ${JSON.stringify(data)}`)
-          this.send_csgo_events(data, "new_item")
+            // Handle the Init event
+            socket.on('init', (data) => {
+                if (data && data.authenticated) {
+                    console.log(`Successfully authenticated as ${data.name}`);
+                    
+                    // Emit the default filters to ensure we receive events
+                    socket.emit('filters', {
+                        price_max: 9999999
+                    });
+                    
+                } else {
+                    // When the server asks for it, emit the data we got earlier to the socket to identify this client as the user
+                    socket.emit('identify', {
+                        uid: userData.user.id,
+                        model: userData.user,
+                        authorizationToken: userData.socket_token,
+                        signature: userData.socket_signature
+                    });
+                }
+            })
+
+            // Listen for the following event to be emitted by the socket after we've identified the user
+            socket.on('timesync', (data) => console.log(`Timesync: ${JSON.stringify(data)}`));
+            socket.on('new_item', (data) => {
+              this.perform("get_user_data", { item_data: data, event:"new_item" });
+            });
+            socket.on('updated_item', (data) => {
+              this.perform("get_user_data", { item_data: data, event:"updated_item" });
+            });
+            socket.on('auction_update', (data) => {
+              this.perform("get_user_data", { item_data: data, event:"auction_update" });
+            });
+            socket.on('deleted_item', (data) => {
+              this.perform("get_user_data", { item_data: data, event:"deleted_item" });
+            });
+            socket.on('trade_status', (data) => {
+              this.perform("get_user_data", { item_data: data, event:"trade_status" });
+            });
+            socket.on("disconnect", (reason) => console.log(`Socket disconnected: ${reason}`));
+          },
+    
+          disconnected() {
+            // Called when the subscription has been terminated by the server
+          },
+    
+          received(data) {
+            // Called when there's incoming data on the websocket for this channel
+          }
         });
-        socket.on('updated_item', (data) => {
-          console.log(`updated_item: ${JSON.stringify(data)}`)
-          this.send_csgo_events(data, "updated_item")
-        });
-        socket.on('auction_update', (data) => {
-          console.log(`auction_update: ${JSON.stringify(data)}`)
-          this.send_csgo_events(data, "auction_update")
-        });
-        socket.on('deleted_item', (data) => {
-          console.log(`deleted_item: ${JSON.stringify(data)}`)
-          this.send_csgo_events(data, "deleted_item")
-        });
-        socket.on('trade_status', (data) => {
-          console.log(`trade_status: ${JSON.stringify(data)}`)
-          this.send_csgo_events(data, "trade_status")
-        });
-        socket.on("disconnect", (reason) => console.log(`Socket disconnected: ${reason}`));
       });
 
       // Listen for the following event to be emitted by the socket in error cases
