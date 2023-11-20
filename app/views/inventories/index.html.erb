@@ -10,10 +10,6 @@
 
 <script>
     $(document).ready(function() {
-        var dataTable = $('#dataTable').DataTable({
-            "order": [[2, 'desc']], // Assuming market_price is the third column (zero-based index)
-        });
-
         const searchInputs = document.querySelectorAll('input[type="search"]');
         searchInputs.forEach(function(input) {
             input.style.marginBottom = '10px';
