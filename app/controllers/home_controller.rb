@@ -8,6 +8,17 @@ class HomeController < ApplicationController
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
+  def fetch_user_data
+    csgo_service = CsgoempireService.new(current_user)
+    respond_to do |format|
+      format.js { render json: csgo_service.fetch_user_data }
+    end
+  end
+
+  def csgo_socket_events
+    puts params
+  end
+
   def active_trades_reload
     fetch_active_trade
     respond_to do |format|

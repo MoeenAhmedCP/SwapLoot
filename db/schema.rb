@@ -9,7 +9,7 @@
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
-ActiveRecord::Schema[7.0].define(version: 2023_11_07_133231) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_14_165301) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,8 +18,23 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_07_133231) do
     t.string "market_name"
     t.integer "market_price"
     t.boolean "tradable"
+    t.string "steam_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "steam_accounts", force: :cascade do |t|
+    t.string "unique_name", null: false
+    t.string "steam_id", null: false
+    t.string "steam_web_api_key", null: false
+    t.string "waxpeer_api_key"
+    t.string "csgoempire_api_key"
+    t.string "market_csgo_api_key"
+    t.boolean "active", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_steam_accounts_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -34,4 +49,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_07_133231) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "steam_accounts", "users"
 end

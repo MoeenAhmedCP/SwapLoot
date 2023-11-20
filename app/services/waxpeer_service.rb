@@ -14,7 +14,7 @@ class WaxpeerService
   def fetch_sold_items
     res = self.class.post(BASE_URL + '/my-history', query: @params)
     item_sold = []
-    return unless res['success']
+    return item_sold unless res['success']
 
     if res['data'].present?
       res['data']['trades'].each do |trade|
