@@ -1,7 +1,6 @@
 class MarketcsgoService
-  include HTTParty
-
-  BASE_URL = 'https://market.csgo.com/api/v2'
+  include HTTParty  
+  BASE_URL = 'https://market.csgo.com/api/v2' 
 
   def initialize(current_user)
     @current_user = current_user
@@ -20,11 +19,14 @@ class MarketcsgoService
     res = self.class.get(BASE_URL + '/get-money', query: @params)
     res['money'] if res
   end
-
+  
   def save_inventory(res)
     if @active_steam_account
       res['items']&.each do |item|
-        Inventory.find_or_create_by(item_id: item['id'], steam_id: @active_steam_account&.steam_id, market_name: item['market_hash_name'], market_price: item['market_price'], tradable: item['tradable'])
+        inventory = Inventory.find_by(item_id: item['id'])
+        unless inventory.present?
+          Inventory.create(item_id: item['id'], steam_id: @active_steam_account&.steam_id, market_name: item['market_hash_name'], market_price: item['market_price'], tradable: item['tradable'])
+        end
       end
     end
   end

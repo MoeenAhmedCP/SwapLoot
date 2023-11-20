@@ -20,11 +20,11 @@
 </table>
 
 <script>
-    $('#inventoryTable').DataTable({
-        paging: true,
-        pageLength: 10, // Number of records per page
-        // Other DataTables options...
-    });
+    var dataTable = $('#inventoryTable').DataTable({
+            "order": [[2, 'desc']],
+            paging: true,
+            pageLength: 10,
+        });
 </script>
 
     
