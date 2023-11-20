@@ -18,6 +18,16 @@ class CsgoempireService
     puts data
   end
 
+  def fetch_item_listed_for_sale
+    res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
+    if res["success"] == true
+      res["data"]["deposits"]
+    else
+      []
+    end
+  end
+
+
   def fetch_user_data
     self.class.get(BASE_URL + '/metadata/socket', headers: @headers)
   end
