@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: inventories
@@ -13,5 +11,9 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #
-class Inventory < ApplicationRecord
+# spec/factories/inventories.rb
+FactoryBot.define do
+  factory :inventory do
+    # Add other attributes as needed
+  end
 end

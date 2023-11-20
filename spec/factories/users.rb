@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: users
@@ -13,10 +11,11 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
-class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
-  has_many :steam_accounts
+# spec/factories/users.rb
+FactoryBot.define do
+  factory :user do
+    # Define attributes as needed
+    email { Faker::Internet.email }
+    password { Faker::Internet.password(min_length: 8) }
+  end
 end

@@ -71,3 +71,7 @@ end
 
 
 gem "tailwindcss-rails", "~> 2.0"
+gem 'rspec-rails'
+gem 'factory_bot_rails'
+gem 'faker'
+gem 'rails-controller-testing'
