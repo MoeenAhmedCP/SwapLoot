@@ -2,8 +2,8 @@ class InventoriesController < ApplicationController
   before_action :fetch_inventory, only: %i[index]
 
   def index
-    @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
-    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id, sold_at: nil)
+    @active_steam_account = SteamAccount.active_steam_account(current_user)
+    @inventories = Inventory.steam_inventories(@active_steam_account)
     respond_to do |format|
       format.html
       format.js
@@ -13,7 +13,6 @@ class InventoriesController < ApplicationController
   private
 
   def fetch_inventory
-    marketcsgo_service = MarketcsgoService.new(current_user)
-    marketcsgo_service.fetch_my_inventory
+    Inventory.fetch_inventory_for_user(current_user)
   end
 end

@@ -3,8 +3,7 @@ class HomeController < ApplicationController
   before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, only: %i[refresh_balance]
 
   def index
-    @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
-    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id, sold_at: nil).order(market_price: :desc)
+    @active_steam_account = SteamAccount.active_steam_account(current_user)
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
