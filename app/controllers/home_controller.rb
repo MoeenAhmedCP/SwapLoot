@@ -1,10 +1,9 @@
 class HomeController < ApplicationController
-  before_action :fetch_active_trade, :fetch_inventory, :fetch_waxpeer_item_listed_for_sale, :fetch_sold_items, only: %i[index]
+  before_action :fetch_active_trade, :fetch_waxpeer_item_listed_for_sale, :fetch_sold_items, only: %i[index]
   before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, only: %i[refresh_balance]
 
   def index
     @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
-    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id).order(market_price: :desc)
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
@@ -13,10 +12,6 @@ class HomeController < ApplicationController
     respond_to do |format|
       format.js { render json: csgo_service.fetch_user_data }
     end
-  end
-
-  def csgo_socket_events
-    puts params
   end
 
   def active_trades_reload
@@ -68,11 +63,6 @@ class HomeController < ApplicationController
 
   def fetch_active_trade
     @active_trades = []
-  end
-
-  def fetch_inventory
-    marketcsgo_service = MarketcsgoService.new(current_user)
-    marketcsgo_service.fetch_my_inventory
   end
 
   def fetch_sold_items
