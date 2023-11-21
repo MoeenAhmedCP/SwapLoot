@@ -158,7 +158,6 @@ class CsgoempireSellingService
         "suggested_price" => deposit["suggested_price"]
       }
     end
-
     items_for_resale = []
     items_listed_for_sale.each do |item|
       if updated_at_hours_from_now?(item["updated_at"], 12) && item["auction_number_of_bids"] == 0
@@ -234,5 +233,4 @@ class CsgoempireSellingService
      end
      result
   end
-
 end
