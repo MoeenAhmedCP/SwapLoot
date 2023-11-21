@@ -4,7 +4,7 @@ class HomeController < ApplicationController
 
   def index
     @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
-    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id).order(market_price: :desc)
+    @inventories = Inventory.where(steam_id: @active_steam_account&.steam_id, sold_at: nil).order(market_price: :desc)
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
