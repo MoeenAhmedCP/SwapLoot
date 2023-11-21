@@ -1,5 +1,5 @@
 class SteamAccountsController < ApplicationController
-  before_action :set_steam_account, only: %i[edit update]
+  before_action :set_steam_account, only: %i[edit update destroy]
   def index
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
@@ -27,6 +27,10 @@ class SteamAccountsController < ApplicationController
     else
       render :edit
     end
+  end
+
+  def destroy
+    redirect_to steam_accounts_path, notice: 'Steam account was successfully deleted.' if @steam_account.delete
   end
 
   private

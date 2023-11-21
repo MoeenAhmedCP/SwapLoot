@@ -1,17 +1,20 @@
-
-<table id="dataTableActiveTrades" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Item ID</th>
-                <th class="px-4 py-2">Item Name</th>
-                <th class="px-4 py-2">Type</th>
-                <th class="px-4 py-2">Current Price</th>
-                <th class="px-4 py-2">Status</th>
-                <th class="px-4 py-2">Date</th>
-            </tr>
-        </thead>
-        <tbody>
-        <% active_trades.each do |active_trade| %>
+<table id="activeTradePartial" class="dis({
+        paging: true,
+        pageLength: 10, // Number of records per page
+        // Other DataTables options...
+    });y" style="width:100%">
+    <thead>
+        <tr>
+            <th class="px-4 py-2">Item ID</th>
+            <th class="px-4 py-2">Item Name</th>
+            <th class="px-4 py-2">Type</th>
+            <th class="px-4 py-2">Current Price</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Date</th>
+        </tr>
+    </thead>
+    <tbody>
+    <% active_trades.each do |active_trade| %>
     <tr>
         <td class="border text-center px-4 py-2"><%= active_trade["item_id"] %></td>
         <td class="border text-center px-4 py-2"><%= active_trade["name"] %></td>
@@ -21,5 +24,12 @@
         <td class="border text-center px-4 py-2"><%= Time.parse(active_trade["date"]).strftime("%d/%B/%Y") %></td>
     </tr>
     <% end %>
-        </tbody>
-    </table>
+    </tbody>
+</table>
+<script>
+    $('#activeTradePartial').DataTable({
+        paging: true,
+        pageLength: 10, // Number of records per page
+        // Other DataTables options...
+    });
+</script>
