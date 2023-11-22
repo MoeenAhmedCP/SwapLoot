@@ -25,9 +25,9 @@ class CsgoempireSellingService
       "Cookie" => "__cf_bm=UC0VagvyDsTU3NW.KuK6WbrcI5ni5ci043TTwYyk_OQ-1700497991-0-ASt0QjgTlGMcECzgNGFufCXeTENyMhxT+GX8Ghjk3odvvJMUrcbAHMbDgfDw9ylq/rOBPZBDj6gsKNFnw3XTHic="
     }
     response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
-    items_listed_for_sale = []
     api_response = JSON.parse(response.read_body)
     # Sample API response is at the end of the file, You can use it for testing (here).
+    items_listed_for_sale = []
     items_listed_for_sale = api_response["data"]["deposits"].map do |deposit|
       {
         deposit_id: deposit["id"],
@@ -41,28 +41,38 @@ class CsgoempireSellingService
       }
     end
     
+    items_for_resale = []
     items_listed_for_sale.each do |item|
-      if item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0
+      if !item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0
         cancel_item_deposit(item)
+        items_for_resale << item
       end
     end
     cutting_price_and_list_again(items_for_resale, 10)
   end
 
   def cancel_item_deposit(item)
-    items_for_resale = []
     headers = {
       'Authorization' => "Bearer #{SteamAccount.last.csgoempire_api_key}",
       "Cookie" => "__cf_bm=yAIsU9h5U_O_l3yUPZIgzGItYspo533di02Gn.dHsY4-1700564804-0-ARdWAD5NLqEeMUL2rCEelGWstnMtReqLU1I+oaaAZvH9S7mLTToJnPncNRU7tKcHHo3f5+RtnxbL0TzRLEloDBc="
     }
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
     puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
-    items_for_resale << item
   end
   
   def cutting_price_and_list_again(items, percentage)
-    items_to_deposit = items.map { |item| { :id => item["id"], :coin_value => ( item["average"]/100 ) * ( percentage ).to_f } }
+    filtered_items_for_deposit = []
+    items.map do |item|
+      deposit_value = calculate_pricing(item, percentage)
+      market_price = Inventory.find_by(market_name: item[:market_name])&.market_price || -1
+      filtered_items_for_deposit << item if deposit_value >= market_price && market_price >= 0
+    end
+    items_to_deposit = filtered_items_for_deposit.map { |item| { :id => item[:item_id], :coin_value => calculate_pricing(item, percentage) } }
     deposit_items_for_sale(items_to_deposit)
+  end
+
+  def calculate_pricing(item, percentage)
+    deposit_value = (item[:total_value]) - (( item[:total_value] * percentage )/100).to_f
   end
 
   def item_ready_to_price_cutting?(updated_at, no_of_hours)
@@ -235,4 +245,4 @@ end
 #     ],
 #     "withdrawals" => []
 #   }
-#     }
+# }
