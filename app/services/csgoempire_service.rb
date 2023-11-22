@@ -1,7 +1,7 @@
 class CsgoempireService
   include HTTParty
 
-  BASE_URL = 'https://csgoempire.com/api/v2'
+  BASE_URL = ENV['CSGO_EMPIRE_API_BASE_URL']
 
   def initialize(current_user)
     @active_steam_account = SteamAccount.active_steam_account(current_user)
@@ -14,7 +14,14 @@ class CsgoempireService
   end
 
   def socket_data(data)
-    puts data
+    if data['event'] == 'new_item'
+      new_items = data['item_data']
+
+      new_items.each do |item|
+        # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
+        CsgoEmpireBuyingJob.perform_now(@current_user, item, 20, 100)
+      end
+    end
   end
 
   def fetch_item_listed_for_sale
