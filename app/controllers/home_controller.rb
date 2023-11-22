@@ -1,6 +1,7 @@
 class HomeController < ApplicationController
   before_action :fetch_active_trade, :fetch_inventory, :fetch_waxpeer_item_listed_for_sale, :fetch_sold_items, only: %i[index]
   before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, only: %i[refresh_balance]
+  protect_from_forgery with: :exception, except: [:fetch_user_data, :refresh_balance]
 
   def index
     @active_steam_account = SteamAccount.find_by(active: true, user_id: current_user.id)
