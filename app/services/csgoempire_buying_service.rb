@@ -12,7 +12,7 @@ class CsgoempireBuyingService
     price_check_result = check_price(data['market_name'], data['market_value'], max_percentage, specific_price)
 
     if price_check_result[:status] == 'success'
-      bid_value = data['market_value'] + (data['market_value'] * CSGO_EMPIRE_BID_FACTOR / 100.0).round(2);
+      bid_value = data['market_value'] + (data['market_value'] * CSGO_EMPIRE_BID_FACTOR / 100.0).round(2)
 
       response = self.class.post("#{CSGO_EMPIRE_API_BASE_URL}/trading/deposit/#{data['id']}/bid", {
         headers: @headers,

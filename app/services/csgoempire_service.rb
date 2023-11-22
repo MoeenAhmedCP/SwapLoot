@@ -15,12 +15,8 @@ class CsgoempireService
 
   def socket_data(data)
     if data['event'] == 'new_item'
-      new_items = data['item_data']
-
-      new_items.each do |item|
-        # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
-        CsgoEmpireBuyingJob.perform_later(@current_user, item, 20, 100)
-      end
+      # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
+      CsgoEmpireBuyingInitiateJob.perform_later(@current_user, data['item_data'], 20, 100)
     end
   end
 
