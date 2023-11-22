@@ -19,7 +19,7 @@ class CsgoempireService
 
       new_items.each do |item|
         # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
-        CsgoEmpireBuyingJob.perform_now(@current_user, item, 20, 100)
+        CsgoEmpireBuyingJob.perform_later(@current_user, item, 20, 100)
       end
     end
   end

@@ -1,9 +1,10 @@
 class CsgoempireBuyingService
   WAXPEER_API_BASE_URL = ENV['WAXPEER_API_BASE_URL']
+  CSGO_EMPIRE_API_BASE_URL = ENV['CSGO_EMPIRE_API_BASE_URL']
+  CSGO_EMPIRE_BID_FACTOR = ENV['CSGO_EMPIRE_BID_FACTOR']
 
   def initialize(user)
-    @current_user = user
-    @active_steam_account = SteamAccount.find_by(active: true, user_id: @current_user.id)
+    @active_steam_account = SteamAccount.find_by(active: true, user_id: user.id)
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
   end
 
@@ -11,7 +12,9 @@ class CsgoempireBuyingService
     price_check_result = check_price(data['market_name'], data['market_value'], max_percentage, specific_price)
 
     if price_check_result[:status] == 'success'
-      response = self.class.post("/deposit/#{deposit_id}/bid", {
+      bid_value = data['market_value'] + (data['market_value'] * CSGO_EMPIRE_BID_FACTOR / 100.0).round(2);
+
+      response = self.class.post("#{CSGO_EMPIRE_API_BASE_URL}/trading/deposit/#{data['id']}/bid", {
         headers: @headers,
         body: { 'bid_value' => bid_value }.to_json
       })
@@ -36,10 +39,12 @@ class CsgoempireBuyingService
       item = data['items'].find { |item| item['name'] == name }
       
       if item
-        if price <= (item['average'] * (100 - max_percentage) / 100.0) && price <= specific_price
+        suggested_price = item['average'] * (100 - max_percentage) / 100.0
+
+        if price <= suggested_price && price <= specific_price
           return { status: 'success', message: 'Price within acceptable range', item: item }
         else
-          return { status: 'error', message: 'Price is too high', suggested_price: item['average'] * (100 - max_percentage) / 100.0 }
+          return { status: 'error', message: 'Price is too high', suggested_price: suggested_price }
         end
       else
         return { status: 'error', message: 'Item not found' }
