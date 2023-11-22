@@ -3,10 +3,13 @@
 # spec/controllers/home_controller_spec.rb
 
 require 'rails_helper'
+require 'webmock/minitest'
+require 'webmock/rspec'
+require 'spec_helper'
 
 RSpec.describe HomeController, type: :controller do
   let(:user) { create(:user) }
-  let(:active_steam_account) { create(:steam_account, active: true, user: user) }
+  let(:active_steam_account) { create(:steam_account, active: true, user: user, csgoempire_api_key: '812bb8bd18af87a449b183c6075117f1') }
 
   before do
     puts "User: #{user}"
@@ -14,6 +17,13 @@ RSpec.describe HomeController, type: :controller do
     puts '========================='
 
     sign_in user
+  end
+  before do
+    WebMock.allow_net_connect!
+  end
+
+  after do
+    WebMock.disable_net_connect!
   end
 
   describe 'GET #index' do
@@ -30,10 +40,17 @@ RSpec.describe HomeController, type: :controller do
 
   describe 'GET #fetch_user_data' do
     it 'responds with success' do
-      request.headers['X-CSRF-Token'] = controller.send(:form_authenticity_token)
+      stub_request(:get, 'https://csgoempire.com/api/v2/metadata/socket')
+        .with(headers: { 'Authorization' => 'Bearer 812bb8bd18af87a449b183c6075117f1' })
+        .to_return(status: 200, body: '{"user": {"id": 8065093, "steam_name": "swaploot78"}}', headers: {})
+      # Your existing test code
 
-      get :fetch_user_data, format: :js
-      expect(response).to be_successful
+      csgo_empire = CsgoempireService.new(user)
+      response = JSON.parse(csgo_empire.fetch_user_data)
+
+      expect(response).to be_kind_of(Hash)
+      expect(response['user']['id']).to eq(8065093)
+      expect(response['user']['steam_name']).to eq('swaploot78')
     end
   end
 
