@@ -52,14 +52,14 @@ class CsgoempireSellingService
         market_name: deposit["item"]["market_name"],
         total_value: deposit["total_value"],
         market_value: deposit["item"]["market_value"],
-        updated_at: deposit["updated_at"],
+        updated_at: deposit["item"]["updated_at"],
         auction_number_of_bids: deposit["metadata"]["auction_number_of_bids"],
         suggested_price: deposit["suggested_price"]
       }
     end
     items_for_resale = []
     items_listed_for_sale.each do |item|
-        if item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0 # variable
+        if !item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0 # variable
         items_for_resale << item
       end
     end
@@ -83,22 +83,24 @@ class CsgoempireSellingService
       suggested_prices["items"].each do |suggested_item|
         cheapest_price << suggested_item["lowest_price"] if suggested_item["name"] ==  item[:market_name]
       end
-      if deposit_value >= cheapest_price.first && deposit_value >= (item[:market_value] + (item[:market_value]/100) * 2) #variable
-        items_by_names_search = search_items_by_names(item)
-        items_by_names_search["items"].each do |search_item|
-          if search_item["item_id"] == item[:item_id]
-            next
-          else
-            filtered_items_for_deposit << item
-            cancel_item_deposit(item)
-          end
-        end
+      if deposit_value >= ((cheapest_price.first.to_f / 1000) * 0.614 * 100).round && deposit_value >= (item[:market_value] + (item[:market_value]/100) * 2) #variable
+        # cheapest_owned = false
+        # items_by_names_search = search_items_by_names(item)
+        # items_by_names_search["items"].each do |search_item|
+        #   if search_item["item_id"] == item[:item_id] && search_item["price"] == cheapest_price.first
+        #     cheapest_owned = true
+        #   end
+        # end
+        filtered_items_for_deposit << item
       else
         next
       end
     end
+    filtered_items_for_deposit.each do |item_to_deposit|
+      cancel_item_deposit(item_to_deposit)
+    end
     items_to_deposit = filtered_items_for_deposit.map { |item| { "id"=> item[:item_id], "coin_value"=> calculate_pricing(item, percentage) } }
-    deposit_items_for_sale(items_to_deposit)
+    deposit_items_for_sale(items_to_deposit[0])
   end
 
   def search_items_by_names(item)
@@ -107,11 +109,11 @@ class CsgoempireSellingService
   end
 
   def calculate_pricing(item, percentage)
-    deposit_value = (item[:total_value]) - (( item[:total_value] * percentage )/100).to_f
+    deposit_value = (item[:total_value]) - (( item[:total_value] * percentage )/100)
   end
 
   def item_ready_to_price_cutting?(updated_at, no_of_hours)
-    updated_time = Time.parse(updated_at)
+    updated_time = updated_at.to_datetime
     twelve_hours_from_now = Time.current + no_of_hours.seconds
     updated_time >= twelve_hours_from_now
   end
