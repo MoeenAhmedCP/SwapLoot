@@ -23,6 +23,15 @@ module SwapLoot
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
+    config.active_job.queue_adapter = :sidekiq
+    config.autoload_paths += %W(#{config.root}/lib)
+
+    config.after_initialize do
+      if Rails.env.production? || Rails.env.development?
+        PermanentDeleteJob.set(wait_until: Date.tomorrow.to_time).perform_later
+      end
+    end
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
