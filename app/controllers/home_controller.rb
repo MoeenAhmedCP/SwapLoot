@@ -21,7 +21,7 @@ class HomeController < ApplicationController
   end
 
   def reload_item_listed_for_sale
-    fetch_waxpeer_item_listed_for_sale
+    fetch_item_listed_for_sale
     respond_to do |format|
       format.js
     end

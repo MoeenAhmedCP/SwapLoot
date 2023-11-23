@@ -4,6 +4,11 @@ class InventoriesController < ApplicationController
   def index
     @active_steam_account = SteamAccount.active_steam_account(current_user)
     @inventories = Inventory.steam_inventories(@active_steam_account)
+    begin
+      @missing_items = MissingItemsService.new(current_user).missing_items
+    rescue StandardError => e
+      flash[:notice] = "Something went wrong: #{e.message}"
+    end
     respond_to do |format|
       format.html
       format.js
