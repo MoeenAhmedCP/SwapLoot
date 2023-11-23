@@ -33,4 +33,9 @@ class WaxpeerService
     res = self.class.get(BASE_URL + '/user', query: @params)
     res['user'].present? ? res['user']['wallet'].to_f / 1000 : 0
   end
+
+  def remove_item(item_id)
+    res = self.class.get("#{BASE_URL}/remove-items", query: @params.merge(id: item_id))
+    res['removed'].count&.positive?
+  end
 end

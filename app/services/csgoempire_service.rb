@@ -35,4 +35,8 @@ class CsgoempireService
   def fetch_active_trade
     self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
   end
+
+  def remove_item(deposit_id)
+    self.class.get("#{BASE_URL}/trading/deposit/#{deposit_id}/cancel", headers: @headers)
+  end
 end
