@@ -2,27 +2,44 @@ class CsgoempireSellingService
   include HTTParty
   require 'json'
 
+  # def initialize(steam_account)
+  #   @steam_account = steam_account
+  # end
+  
   def fetch_inventory
-    headers = { 'Authorization' => "Bearer #{SteamAccount.last.csgoempire_api_key}" }
+    headers = { 'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}" }
     response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers)
+    response = response["data"].select { |item| item["market_value"] != -1 }
+    online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
+    online_trades = JSON.parse(online_trades_response.read_body)
+    api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
+    filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
   end
 
-  def find_matching_items
+  def find_matching_data
     response_items = fetch_items
-    inventory = JSON.parse(fetch_inventory.read_body)["data"]
-    matching_items = find_matching_items(response_items, inventory)
+    inventory = fetch_inventory 
+    inventory ? matching_items = find_matching_items(response_items, inventory) : []
   end
   
   def sell_csgoempire
-    matching_items = find_matching_items
-    items_to_deposit = matching_items.map { |item| { :id => item["id"], :coin_value => item["average"] } }
-    deposit_items_for_sale(items_to_deposit)
+    matching_items =  find_matching_data 
+    unless matching_items
+      sell_csgoempire
+    end
+    items_to_deposit = matching_items.map do |item|
+      if item["average"] > item["coin_to_dollar"]
+        { "id" => item["id"], "coin_value" => ((item["average"] / 0.614) * 100).round }
+      else
+        next
+      end
+    end
+    deposit_items_for_sale(items_to_deposit.last)
   end
 
   def price_cutting_down_for_listed_items
     headers = {
-      'Authorization' => "Bearer #{SteamAccount.last.csgoempire_api_key}",
-      "Cookie" => "__cf_bm=UC0VagvyDsTU3NW.KuK6WbrcI5ni5ci043TTwYyk_OQ-1700497991-0-ASt0QjgTlGMcECzgNGFufCXeTENyMhxT+GX8Ghjk3odvvJMUrcbAHMbDgfDw9ylq/rOBPZBDj6gsKNFnw3XTHic="
+      'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}",
     }
     response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
     api_response = JSON.parse(response.read_body)
@@ -35,40 +52,58 @@ class CsgoempireSellingService
         market_name: deposit["item"]["market_name"],
         total_value: deposit["total_value"],
         market_value: deposit["item"]["market_value"],
-        updated_at: deposit["created_at"],
+        updated_at: deposit["updated_at"],
         auction_number_of_bids: deposit["metadata"]["auction_number_of_bids"],
         suggested_price: deposit["suggested_price"]
       }
     end
-    
     items_for_resale = []
     items_listed_for_sale.each do |item|
-      if !item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0
-        cancel_item_deposit(item)
+        if item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0 # variable
         items_for_resale << item
       end
     end
-    cutting_price_and_list_again(items_for_resale, 10)
+    cutting_price_and_list_again(items_for_resale, 10) #variable
   end
 
   def cancel_item_deposit(item)
     headers = {
-      'Authorization' => "Bearer #{SteamAccount.last.csgoempire_api_key}",
-      "Cookie" => "__cf_bm=yAIsU9h5U_O_l3yUPZIgzGItYspo533di02Gn.dHsY4-1700564804-0-ARdWAD5NLqEeMUL2rCEelGWstnMtReqLU1I+oaaAZvH9S7mLTToJnPncNRU7tKcHHo3f5+RtnxbL0TzRLEloDBc="
+      'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}",
     }
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
     puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
   end
   
   def cutting_price_and_list_again(items, percentage)
+    suggested_prices = fetch_items
+    cheapest_price = []
     filtered_items_for_deposit = []
     items.map do |item|
       deposit_value = calculate_pricing(item, percentage)
-      market_price = Inventory.find_by(market_name: item[:market_name])&.market_price || -1
-      filtered_items_for_deposit << item if deposit_value >= market_price && market_price >= 0
+      suggested_prices["items"].each do |suggested_item|
+        cheapest_price << suggested_item["lowest_price"] if suggested_item["name"] ==  item[:market_name]
+      end
+      if deposit_value >= cheapest_price.first && deposit_value >= (item[:market_value] + (item[:market_value]/100) * 2) #variable
+        items_by_names_search = search_items_by_names(item)
+        items_by_names_search["items"].each do |search_item|
+          if search_item["item_id"] == item[:item_id]
+            next
+          else
+            filtered_items_for_deposit << item
+            cancel_item_deposit(item)
+          end
+        end
+      else
+        next
+      end
     end
-    items_to_deposit = filtered_items_for_deposit.map { |item| { :id => item[:item_id], :coin_value => calculate_pricing(item, percentage) } }
+    items_to_deposit = filtered_items_for_deposit.map { |item| { "id"=> item[:item_id], "coin_value"=> calculate_pricing(item, percentage) } }
     deposit_items_for_sale(items_to_deposit)
+  end
+
+  def search_items_by_names(item)
+    url = "https://api.waxpeer.com/v1/search-items-by-name?api=#{SteamAccount.last.waxpeer_api_key}&game=csgo&names=#{item[:market_name]}&minified=0"
+    response = HTTParty.get(url)
   end
 
   def calculate_pricing(item, percentage)
@@ -77,18 +112,19 @@ class CsgoempireSellingService
 
   def item_ready_to_price_cutting?(updated_at, no_of_hours)
     updated_time = Time.parse(updated_at)
-    twelve_hours_from_now = Time.now + no_of_hours.hours
+    twelve_hours_from_now = Time.current + no_of_hours.seconds
     updated_time >= twelve_hours_from_now
   end
 
   def deposit_items_for_sale(items)
     headers = {
       'Content-Type' => 'application/json',
-      'Authorization' => "Bearer #{SteamAccount.last.csgoempire_api_key}",
-      'Cookie' => '__cf_bm=XdZ7YnR8xpnNOaggQ3Ui4N8aSMrcul_hvZzAPKFDseQ-1700236581-0-AWeGBjA6LlO2w87YE5IBwTNwC1WYhKYpWwo+j+CIA4IWYZ0L1bCFLg0/ttVIUvE2DpkIixc11qhcXa8mNQvKnI4='
+      'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}",
     }
-    body = {items: items}
-    response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: body.to_json)
+    array = []
+    array << items
+    hash = {"items"=> array} 
+    response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: hash.to_json)
     if response.code == SUCCESS_CODE
       result = JSON.parse(response.body)
     else
