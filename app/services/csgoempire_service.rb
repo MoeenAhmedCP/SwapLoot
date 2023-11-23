@@ -4,8 +4,7 @@ class CsgoempireService
   BASE_URL = 'https://csgoempire.com/api/v2'
 
   def initialize(current_user)
-    @current_user = current_user
-    @active_steam_account = SteamAccount.find_by(active: true, user_id: @current_user.id)
+    @active_steam_account = SteamAccount.active_steam_account(current_user)
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
   end
 
