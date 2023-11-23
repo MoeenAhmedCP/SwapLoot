@@ -91,6 +91,7 @@ class CsgoempireSellingService
         #     cheapest_owned = true
         #   end
         # end
+        #cheapest price filter code
         filtered_items_for_deposit << item
       else
         next
