@@ -4,7 +4,6 @@
     <th class="px-4 py-2">Item ID</th>
     <th class="px-4 py-2">Market Name</th>
     <th class="px-4 py-2">Market Price</th>
-    <th class="px-4 py-2">Tradable</th>
   </tr>
   </thead>
   <tbody>
@@ -13,7 +12,6 @@
       <td class="border text-center px-4 py-2"><%= item.item_id %></td>
       <td class="border text-center px-4 py-2"><%= item.market_name %></td>
       <td class="border text-center px-4 py-2"><%= "$#{item.market_price}" %></td>
-      <td class="border text-center px-4 py-2"><%= item.tradable %></td>
     </tr>
   <% end %>
   </tbody>
