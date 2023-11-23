@@ -1,6 +1,5 @@
 class CsgosocketChannel < ApplicationCable::Channel
   def subscribed
-    # stream_from "some_channel"
     stream_from 'csgosocket_channel'
   end
 
@@ -8,7 +7,7 @@ class CsgosocketChannel < ApplicationCable::Channel
     # Any cleanup needed when channel is unsubscribed
   end
 
-  def get_user_data(data)
+  def send_csgo_empire_event(data)
     CsgoempireService.new(current_user).socket_data(data)
   end
 end

@@ -4,8 +4,7 @@ class WaxpeerService
   BASE_URL = 'https://api.waxpeer.com/v1'
 
   def initialize(current_user)
-    @current_user = current_user
-    @active_steam_account = SteamAccount.find_by(active: true, user_id: @current_user.id)
+    @active_steam_account = SteamAccount.active_steam_account(current_user)
     @params = {
       api: @active_steam_account&.waxpeer_api_key
     }
@@ -32,5 +31,10 @@ class WaxpeerService
   def fetch_balance
     res = self.class.get(BASE_URL + '/user', query: @params)
     res['user'].present? ? res['user']['wallet'].to_f / 1000 : 0
+  end
+
+  def remove_item(item_id)
+    res = self.class.get("#{BASE_URL}/remove-items", query: @params.merge(id: item_id))
+    res['removed'].count&.positive?
   end
 end

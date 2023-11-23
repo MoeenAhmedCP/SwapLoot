@@ -1,19 +1,21 @@
 <div class="p-6">
- <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
- <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Inventory</h2>
-    <i id="refreshTable" class="fa fa-refresh" aria-hidden="true"></i>
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div style= "display: flex;">
+      <h2 class="text-2xl font-bold mb-4">Inventory</h2>
+      <i id="refreshTable" class="fa fa-refresh" aria-hidden="true"></i>
     </div>
-         <%= render partial: 'inventory' , locals:{ inventories: @inventories }%>     
-</div>
+         <%= render partial: 'inventory' , locals:{ inventories: @inventories }%>
+  </div>
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div style= "display: flex;">
+      <h2 class="text-2xl font-bold mb-4">Missing Items</h2>
+    </div>
+      <%= render partial: 'missing_items' , locals:{ missing_items: @missing_items }%>
+  </div>
 </div>
 
 <script>
     $(document).ready(function() {
-        var dataTable = $('#dataTable').DataTable({
-            "order": [[2, 'desc']], // Assuming market_price is the third column (zero-based index)
-        });
-
         const searchInputs = document.querySelectorAll('input[type="search"]');
         searchInputs.forEach(function(input) {
             input.style.marginBottom = '10px';
