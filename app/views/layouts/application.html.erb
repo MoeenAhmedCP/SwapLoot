@@ -7,13 +7,14 @@
     <%= csp_meta_tag %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <%= javascript_include_tag 'rails-ujs', 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script 
@@ -29,6 +30,11 @@
       <% if current_user %>
         <%= render 'shared/navbar' %>
       <% end %>
+
+      <div id= 'searchingModal'></div>
+      <%= render partial: '/layouts/failure_toast'%>
+      <%= render partial: '/layouts/success_toast'%>
+
     <%= yield %>
   </body>
 </html>
