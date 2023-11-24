@@ -5,19 +5,23 @@ class CsgoempireBuyingService
 
   def initialize(user)
     @active_steam_account = SteamAccount.find_by(active: true, user_id: user.id)
-    @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
+    @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}", 'Content-Type' => 'application/json' }
   end
 
   def buy_item(data, max_percentage, specific_price)
     price_check_result = check_price(data['market_name'], data['market_value'], max_percentage, specific_price)
 
     if price_check_result[:status] == 'success'
-      bid_value = data['market_value'] + (data['market_value'] * CSGO_EMPIRE_BID_FACTOR / 100.0).round(2)
+      bid_value = data['market_value'] + (data['market_value'] * CSGO_EMPIRE_BID_FACTOR.to_f / 100.0).round(2)
+      url = "#{CSGO_EMPIRE_API_BASE_URL}/trading/deposit/#{data['id']}/bid"
 
-      response = self.class.post("#{CSGO_EMPIRE_API_BASE_URL}/trading/deposit/#{data['id']}/bid", {
+      response = HTTParty.post(
+        url,
         headers: @headers,
-        body: { 'bid_value' => bid_value }.to_json
-      })
+        body: {
+          bid_value: bid_value.to_i
+        }.to_json
+      )
 
       if response.code == 200
         return { status: 'success', message: 'Item purchased successfully', purchase_details: JSON.parse(response.body) }

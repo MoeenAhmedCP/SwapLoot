@@ -4,6 +4,7 @@ class CsgoempireService
   BASE_URL = ENV['CSGO_EMPIRE_API_BASE_URL']
 
   def initialize(current_user)
+    @current_user = current_user
     @active_steam_account = SteamAccount.active_steam_account(current_user)
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
   end
