@@ -1,7 +1,7 @@
 class CsgoempireService
   include HTTParty
   
-  BASE_URL = ENV['CSGO_EMPIRE_API_BASE_URL']
+  BASE_URL = CSGO_EMPIRE_BASE_URL 
 
   def initialize(current_user)
     @current_user = current_user

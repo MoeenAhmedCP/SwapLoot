@@ -18,7 +18,7 @@ class CsgoempireSellingService
 
   def find_matching_data
     response_items = fetch_items
-    inventory = fetch_inventory 
+    inventory = (fetch_inventory.map {|item| item if item["tradable"] == true }.compact)
     inventory ? matching_items = find_matching_items(response_items, inventory) : []
   end
   
