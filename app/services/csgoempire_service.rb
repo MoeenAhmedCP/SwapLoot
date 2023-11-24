@@ -1,6 +1,6 @@
 class CsgoempireService
   include HTTParty
-
+  
   BASE_URL = ENV['CSGO_EMPIRE_API_BASE_URL']
 
   def initialize(current_user)
@@ -10,7 +10,7 @@ class CsgoempireService
   end
 
   def fetch_balance
-    response = self.class.get(BASE_URL + '/metadata/socket', headers: @headers)
+    response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
     response['user']['balance'].to_f / 100 if response['user']
   end
 
@@ -20,7 +20,7 @@ class CsgoempireService
       CsgoEmpireBuyingInitiateJob.perform_later(@current_user, data['item_data'], 20, 100)
     end
   end
-
+  
   def fetch_item_listed_for_sale
     res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
     if res["success"] == true
@@ -36,7 +36,7 @@ class CsgoempireService
   end
 
   def fetch_active_trade
-    self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
+    self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
   end
 
   def remove_item(deposit_id)
