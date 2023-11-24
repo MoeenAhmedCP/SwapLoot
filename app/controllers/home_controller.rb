@@ -7,9 +7,14 @@ class HomeController < ApplicationController
   end
 
   def fetch_user_data
-    csgo_service = CsgoempireService.new(current_user)
-    respond_to do |format|
-      format.js { render json: csgo_service.fetch_user_data }
+    steam_account = SteamAccount.active_accounts.find_by(id: params[:id].to_i)
+    
+    if steam_account
+      csgo_service_response = CsgoempireService.new(current_user).fetch_user_data(steam_account)
+
+      respond_to do |format|
+        format.js { render json: csgo_service_response }
+      end
     end
   end
 
