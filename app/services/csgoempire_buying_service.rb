@@ -1,7 +1,7 @@
 class CsgoempireBuyingService
-  WAXPEER_API_BASE_URL = ENV['WAXPEER_API_BASE_URL']
-  CSGO_EMPIRE_API_BASE_URL = ENV['CSGO_EMPIRE_API_BASE_URL']
-  CSGO_EMPIRE_BID_FACTOR = ENV['CSGO_EMPIRE_BID_FACTOR']
+  WAXPEER_API_BASE_URL = WAXPEER_BASE_URL
+  CSGO_EMPIRE_API_BASE_URL = CSGO_EMPIRE_BASE_URL
+  CSGO_EMPIRE_BID_FACTOR = 0.1
 
   def initialize(user)
     @active_steam_account = SteamAccount.find_by(active: true, user_id: user.id)
