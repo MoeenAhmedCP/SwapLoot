@@ -84,15 +84,14 @@ class CsgoempireSellingService
         cheapest_price << suggested_item["lowest_price"] if suggested_item["name"] ==  item[:market_name]
       end
       if deposit_value >= ((cheapest_price.first.to_f / 1000) * 0.614 * 100).round && deposit_value >= (item[:market_value] + (item[:market_value]/100) * 2) #variable
-        # cheapest_owned = false
-        # items_by_names_search = search_items_by_names(item)
-        # items_by_names_search["items"].each do |search_item|
-        #   if search_item["item_id"] == item[:item_id] && search_item["price"] == cheapest_price.first
-        #     cheapest_owned = true
-        #   end
-        # end
-        #cheapest price filter code
-        filtered_items_for_deposit << item
+        cheapest_owned = false
+        items_by_names_search = search_items_by_names(item)
+        items_by_names_search["items"].each do |search_item|
+          if search_item["item_id"] == item[:item_id] && search_item["price"] == cheapest_price.first
+            cheapest_owned = true
+          end
+        end
+        filtered_items_for_deposit << item unless cheapest_owned
       else
         next
       end
@@ -168,120 +167,3 @@ class CsgoempireSellingService
      result
   end
 end
-
-# api_response = {
-#   "success" => true,
-#   "data" => {
-#     "deposits" => [
-#       {
-#         "id" => 206100868,
-#         "total_value" => 64,
-#         "item_id" => 4121724676,
-#         "item" => {
-#           "app_id" => 730,
-#           "context_id" => 2,
-#           "type" => "users",
-#           "asset_id" => 34262627883,
-#           "created_at" => "2021-08-31 11:28:23",
-#           "full_position" => 2,
-#           "icon_url" => "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgposbaqKAxfwPz3YzhG09C_k4if2aajMeqJlzgF6ZF10r2RrNyg3Qzjrkptazj7IYaVdwE4NFHRqFHtk-fxxcjr1j3fJ1k",
-#           "id" => 4121724676,
-#           "is_commodity" => false,
-#           "market_name" => "Glock-18 | Candy Apple (Minimal Wear)",
-#           "market_value" => 0.60,
-#           "name_color" => "D2D2D2",
-#           "position" => nil,
-#           "preview_id" => "3c8f2fe3c8f6",
-#           "price_is_unreliable" => false,
-#           "stickers" => [],
-#           "suggested_price" => 0.64,
-#           "tradable" => true,
-#           "tradelock" => false,
-#           "updated_at" => "2023-11-20 15:43:53",
-#           "wear" => 0.104
-#         },
-#         "status" => 3,
-#         "status_message" => "Sending",
-#         "tradeoffer_id" => 21865198,
-#         "metadata" => {
-#           "item_validation" => {
-#             "numWrongItemDetections" => 0,
-#             "validItemDetected" => false
-#           },
-#           "expires_at" => 1700540888,
-#           "trade_url" => "https://steamcommunity.com/tradeoffer/new/?partner=914464333&token=yVAbpbd1",
-#           "item_inspected" => true,
-#           "partner" => {
-#             "id" => 7812864,
-#             "steam_id" => "76561198874730061",
-#             "steam_name" => "",
-#             "avatar" => "https://avatars.steamstatic.com/80613086b2449013946bd8608bc8e3a377b996f8.jpg",
-#             "avatar_full" => "https://avatars.steamstatic.com/80613086b2449013946bd8608bc8e3a377b996f8_full.jpg",
-#             "profile_url" => "https://steamcommunity.com/profiles/76561198874730061/",
-#             "timecreated" => 1544198469,
-#             "steam_level" => 14
-#           },
-#           "auction_ends_at" => 1700496647,
-#           "auction_number_of_bids" => 0
-#         },
-#         "created_at" => "2023-11-20 16:07:47",
-#         "suggested_price" => 64
-#       },
-#       {
-#         "id" => 206900868,
-#         "total_value" => 60,
-#         "item_id" => 4121724675,
-#         "item" => {
-#           "app_id" => 730,
-#           "context_id" => 2,
-#           "type" => "users",
-#           "asset_id" => 34262627883,
-#           "created_at" => "2021-08-31 11:28:23",
-#           "full_position" => 2,
-#           "icon_url" => "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgposbaqKAxfwPz3YzhG09C_k4if2aajMeqJlzgF6ZF10r2RrNyg3Qzjrkptazj7IYaVdwE4NFHRqFHtk-fxxcjr1j3fJ1k",
-#           "id" => 4121724675,
-#           "is_commodity" => false,
-#           "market_name" => "Glock-18 | Candy Banana (Minimal Wear)",
-#           "market_value" => 0.60,
-#           "name_color" => "D2D2D2",
-#           "position" => nil,
-#           "preview_id" => "3c8f2fe3c8f6",
-#           "price_is_unreliable" => false,
-#           "stickers" => [],
-#           "suggested_price" => 0.60,
-#           "tradable" => true,
-#           "tradelock" => false,
-#           "updated_at" => "2023-11-20 15:43:53",
-#           "wear" => 0.104
-#         },
-#         "status" => 3,
-#         "status_message" => "Sending",
-#         "tradeoffer_id" => 21865198,
-#         "metadata" => {
-#           "item_validation" => {
-#             "numWrongItemDetections" => 0,
-#             "validItemDetected" => false
-#           },
-#           "expires_at" => 1700540888,
-#           "trade_url" => "https://steamcommunity.com/tradeoffer/new/?partner=914464333&token=yVAbpbd1",
-#           "item_inspected" => true,
-#           "partner" => {
-#             "id" => 7812864,
-#             "steam_id" => "76561198874730061",
-#             "steam_name" => "",
-#             "avatar" => "https://avatars.steamstatic.com/80613086b2449013946bd8608bc8e3a377b996f8.jpg",
-#             "avatar_full" => "https://avatars.steamstatic.com/80613086b2449013946bd8608bc8e3a377b996f8_full.jpg",
-#             "profile_url" => "https://steamcommunity.com/profiles/76561198874730061/",
-#             "timecreated" => 1544198469,
-#             "steam_level" => 14
-#           },
-#           "auction_ends_at" => 1700496647,
-#           "auction_number_of_bids" => 0
-#         },
-#         "created_at" => "2023-11-20 16:07:47",
-#         "suggested_price" => 60
-#       }
-#     ],
-#     "withdrawals" => []
-#   }
-# }
