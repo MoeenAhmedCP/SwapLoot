@@ -4,7 +4,7 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_active_trade, :fetch_waxpeer_item_listed_for_sale, :fetch_sold_items, only: [:index]
+    before_action :fetch_active_trade, :fetch_item_listed_for_sale, :fetch_sold_items, only: [:index]
     before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, only: [:refresh_balance]
   end
 
@@ -34,6 +34,10 @@ module HomeControllerConcern
     @items_sold = waxpeer_service.fetch_sold_items
   end
 
+  def fetch_item_listed_for_sale
+    @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
+  end
+
   def fetch_waxpeer_item_listed_for_sale
     waxpeer_service = WaxpeerService.new(current_user)
     item_listed_for_sale = waxpeer_service.fetch_item_listed_for_sale
@@ -41,4 +45,19 @@ module HomeControllerConcern
       item.merge('site' => 'Waxpeer')
     end
   end
+
+  def fetch_csgoempire_item_listed_for_sale
+    csgoempire_service = CsgoempireService.new(current_user)
+    item_listed_for_sale = csgoempire_service.fetch_item_listed_for_sale
+    item_listed_for_sale_hash = item_listed_for_sale.map do |deposit|
+      {
+        'item_id' => deposit['item_id'],
+        'market_name' => deposit['item']['market_name'],
+        'price' => deposit['item']['market_value']* 0.614 * 1000,
+        'site' => 'CsgoEmpire',
+        'date' => Time.parse(deposit['item']['updated_at']).strftime('%d/%B/%Y')
+      }
+    end
+  end
+
 end

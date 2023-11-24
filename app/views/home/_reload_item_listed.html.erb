@@ -13,7 +13,7 @@
                 <tr>
                     <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['item_id'] %></td>
                     <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['market_name'] %></td>
-                    <td class="border text-center px-4 py-2"><%= "$#{item_listed_for_sale_hash['price'].to_f / 1000}" %></td>
+                    <td class="border text-center px-4 py-2"><%= "$#{(item_listed_for_sale_hash['price'].to_f / 1000).round(4)}" %></td>
                     <td class="border text-center px-4 py-2"><%= item_listed_for_sale_hash['site'] %></td>
                     <td class="border text-center px-4 py-2"><%= Time.parse(item_listed_for_sale_hash['date']).strftime("%d/%B/%Y") %></td>
                 </tr>
