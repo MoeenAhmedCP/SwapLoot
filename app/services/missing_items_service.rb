@@ -4,7 +4,7 @@ class MissingItemsService
 
   def initialize(user)
     @user = user
-    @active_steam_account = SteamAccount.active_steam_account(user)
+    @active_steam_account = User.active_steam_account(user)
   end
 
   def missing_items
