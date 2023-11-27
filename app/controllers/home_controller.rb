@@ -7,7 +7,7 @@ class HomeController < ApplicationController
   end
 
   def fetch_user_data
-    steam_account = SteamAccount.active_accounts.find_by(id: params[:id].to_i)
+    steam_account = SteamAccount.active_steam_account(current_user)
     
     if steam_account
       csgo_service_response = CsgoempireService.new(current_user).fetch_user_data(steam_account)
