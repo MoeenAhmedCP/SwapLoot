@@ -1,5 +1,8 @@
 class SteamAccountsController < ApplicationController
   before_action :set_steam_account, only: %i[edit update destroy]
+  before_action :set_steam_account, only: %i[edit update destroy]
+  after_action :set_steam_account_filters, only: %i[create]
+  
   def index
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
@@ -41,5 +44,12 @@ class SteamAccountsController < ApplicationController
 
   def steam_account_params
     params.require(:steam_account).permit(:steam_id, :unique_name,:steam_web_api_key, :waxpeer_api_key, :csgoempire_api_key, :market_csgo_api_key)
+  end
+
+  def set_steam_account_filters
+    @steam_account = SteamAccount.find_by(steam_id: params["steam_account"]["steam_id"])
+    TradeService.create(steam_account_id: @steam_account.id)
+    SellingFilter.create(steam_account_id: @steam_account.id)
+    BuyingFilter.create(steam_account_id: @steam_account.id)
   end
 end

@@ -2,12 +2,12 @@ class CsgoempireSellingService
   include HTTParty
   require 'json'
 
-  # def initialize(steam_account)
-  #   @steam_account = steam_account
-  # end
+  def initialize(steam_account)
+    @steam_account = steam_account
+  end
   
   def fetch_inventory
-    headers = { 'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}" }
+    headers = { 'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}" }
     response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers)
     response = response["data"].select { |item| item["market_value"] != -1 }
     online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
@@ -34,12 +34,12 @@ class CsgoempireSellingService
         next
       end
     end
-    deposit_items_for_sale(items_to_deposit.last)
+    deposit_items_for_sale(items_to_deposit)
   end
 
   def price_cutting_down_for_listed_items
     headers = {
-      'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}",
+      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
     }
     response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
     api_response = JSON.parse(response.read_body)
@@ -68,7 +68,7 @@ class CsgoempireSellingService
 
   def cancel_item_deposit(item)
     headers = {
-      'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}",
+      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
     }
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
     puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
@@ -104,7 +104,7 @@ class CsgoempireSellingService
   end
 
   def search_items_by_names(item)
-    url = "https://api.waxpeer.com/v1/search-items-by-name?api=#{SteamAccount.last.waxpeer_api_key}&game=csgo&names=#{item[:market_name]}&minified=0"
+    url = "https://api.waxpeer.com/v1/search-items-by-name?api=#{@steam_account.waxpeer_api_key}&game=csgo&names=#{item[:market_name]}&minified=0"
     response = HTTParty.get(url)
   end
 
@@ -121,7 +121,7 @@ class CsgoempireSellingService
   def deposit_items_for_sale(items)
     headers = {
       'Content-Type' => 'application/json',
-      'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}",
+      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
     }
     array = []
     array << items
