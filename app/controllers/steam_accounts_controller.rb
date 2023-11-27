@@ -30,7 +30,7 @@ class SteamAccountsController < ApplicationController
   end
 
   def destroy
-    redirect_to steam_accounts_path, notice: 'Steam account was successfully deleted.' if @steam_account.delete
+    redirect_to steam_accounts_path, notice: 'Steam account was successfully deleted.' if @steam_account.destroy
   end
 
   private

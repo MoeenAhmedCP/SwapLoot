@@ -54,6 +54,6 @@ class CsgoempireService
   end
 
   def csgoempire_key_not_found?
-    @active_steam_account.csgoempire_api_key.blank?
+    @active_steam_account&.csgoempire_api_key.blank?
   end
 end
