@@ -1,8 +1,22 @@
 <div class="p-6">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div style= "display: flex;">
-      <h2 class="text-2xl font-bold mb-4">Inventory</h2>
-      <i id="refreshTable" class="fa fa-refresh" aria-hidden="true"></i>
+    <div class="flex item-center">
+      <div class= "flex item-center">
+        <div class="flex items-center justify-center ">
+          <h2 class="text-2xl font-bold">Inventory</h2>
+          <i id="refreshTable" class="fa fa-refresh" aria-hidden="true"></i>
+        </div>
+        <h3 class="mt-[8px] ml-[92px]">Total Worth: <%= "$#{@total_market_price}" %></h3>
+      </div>
+      <div class="p-2 flex item-center justify-between ml-[500px]">
+      <%= form_tag(inventories_path, method: :get) do %>
+        <label>
+          Tradable:
+          <%= select_tag 'tradable', options_for_select([['All', nil], ['Tradable', true], ['Non-Tradable', false]], params[:tradable]), class: 'form-control' %>
+        </label>
+        <%= submit_tag 'Save', class: 'p-1 rounded bg-blue-600 text-white ml-2' %>
+      <% end %>
+      </div>
     </div>
          <%= render partial: 'inventory' , locals:{ inventories: @inventories }%>
   </div>
