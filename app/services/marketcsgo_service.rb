@@ -2,7 +2,7 @@ class MarketcsgoService
   include HTTParty  
 
   def initialize(current_user)
-    @active_steam_account = User.active_steam_account(current_user)
+    @active_steam_account = current_user.active_steam_account
     @params = {
       key: "#{@active_steam_account&.market_csgo_api_key}"
     }

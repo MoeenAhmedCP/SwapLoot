@@ -2,7 +2,7 @@ class WaxpeerService
   include HTTParty
 
   def initialize(current_user)
-    @active_steam_account = User.active_steam_account(current_user)
+    @active_steam_account = current_user.active_steam_account
     @params = {
       api: @active_steam_account&.waxpeer_api_key
     }

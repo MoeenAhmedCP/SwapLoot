@@ -1,5 +1,5 @@
 class SteamAccount < ApplicationRecord
-  scope :active_account, -> { where(active: true) }
+  scope :active_accounts, -> { where(active: true) }
   
   belongs_to :user
   has_one :trade_service, dependent: :destroy

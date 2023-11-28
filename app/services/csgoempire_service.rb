@@ -5,7 +5,7 @@ class CsgoempireService
 
   def initialize(current_user)
     @current_user = current_user
-    @active_steam_account = User.active_steam_account(current_user)
+    @active_steam_account = current_user.active_steam_account
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
   end
 

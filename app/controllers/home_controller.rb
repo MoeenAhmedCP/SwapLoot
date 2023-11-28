@@ -2,12 +2,12 @@ class HomeController < ApplicationController
   include HomeControllerConcern
 
   def index
-    @active_steam_account = User.active_steam_account(current_user)
+    @active_steam_account = current_user.active_steam_account
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
   def fetch_user_data
-    steam_account = User.active_steam_account(current_user)
+    steam_account = current_user.active_steam_account
     
     if steam_account
       csgo_service_response = CsgoempireService.new(current_user).fetch_user_data(steam_account)

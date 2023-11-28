@@ -5,7 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
   has_many :steam_accounts
 
-  def self.active_steam_account(current_user)
-    current_user.steam_accounts.active_account.first
+  def active_steam_account
+    steam_accounts.active_accounts.first
   end
 end
