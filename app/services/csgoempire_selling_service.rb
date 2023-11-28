@@ -59,11 +59,11 @@ class CsgoempireSellingService
     end
     items_for_resale = []
     items_listed_for_sale.each do |item|
-        if !item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0 # variable
+        if !item_ready_to_price_cutting?(item[:updated_at], @steam_account.selling_filter.undercutting_interval) && item[:auction_number_of_bids] == 0 # variable
         items_for_resale << item
       end
     end
-    cutting_price_and_list_again(items_for_resale, 10) #variable
+    cutting_price_and_list_again(items_for_resale, @steam_account.selling_filter.undercutting_price_percentage) #variable
   end
 
   def cancel_item_deposit(item)
@@ -83,7 +83,7 @@ class CsgoempireSellingService
       suggested_prices["items"].each do |suggested_item|
         cheapest_price << suggested_item["lowest_price"] if suggested_item["name"] ==  item[:market_name]
       end
-      if deposit_value >= ((cheapest_price.first.to_f / 1000) * 0.614 * 100).round && deposit_value >= (item[:market_value] + (item[:market_value]/100) * 2) #variable
+      if deposit_value >= ((cheapest_price.first.to_f / 1000) * 0.614 * 100).round && deposit_value >= (item[:market_value] + (item[:market_value]/100) * @steam_account.selling_filter.min_profit_percentage) #variable
         cheapest_owned = false
         items_by_names_search = search_items_by_names(item)
         items_by_names_search["items"].each do |search_item|
