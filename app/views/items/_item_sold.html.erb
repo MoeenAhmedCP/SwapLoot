@@ -1,0 +1,28 @@
+<div class="flex">
+    <h2 class="text-2xl font-bold mb-4">Items Sold</h2>
+    <i class="fa fa-refresh" aria-hidden="true"></i>
+</div>
+
+<table id="dataTableItemsSold" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th class="px-4 py-2">Item ID</th>
+            <th class="px-4 py-2">Item Name</th>
+            <th class="px-4 py-2">Price</th>
+            <th class="px-4 py-2">Date</th>
+            <th class="px-4 py-2">Bought Price</th>
+            <th class="px-4 py-2">Sold Price</th>
+            <th class="px-4 py-2">Profit</th>
+        </tr>
+    </thead>
+    <tbody>
+    <% sold_items.each do |sold_item| %>
+        <tr>
+        <td class="border text-center px-4 py-2"><%= sold_item.item_id %></td>
+         <td class="border text-center px-4 py-2"><%= sold_item.name %></td>
+         <td class="border text-center px-4 py-2"><%= get_bought_price(sold_item.item_id) %></td>
+         <td class="border text-center px-4 py-2"><%= sold_item.sold_price %></td>
+        </tr>
+        <% end %>
+    </tbody>
+</table>
