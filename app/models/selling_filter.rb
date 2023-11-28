@@ -18,8 +18,8 @@ class SellingFilter < ApplicationRecord
     if job_id
       job = Sidekiq::Queue.new('default').find_job(job_id)
       job&.delete
-      trade_service.update(selling_job_id: nil)
+      trade_service&.update(selling_job_id: nil)
     end
-    trade_service.update(selling_status: false)
+    trade_service&.update(selling_status: false)
   end
 end
