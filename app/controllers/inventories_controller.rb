@@ -2,7 +2,7 @@ class InventoriesController < ApplicationController
   before_action :fetch_inventory, only: %i[index]
 
   def index
-    @active_steam_account = SteamAccount.active_steam_account(current_user)
+    @active_steam_account = current_user.active_steam_account
     @inventories = Inventory.steam_inventories(@active_steam_account)
     begin
       @missing_items = MissingItemsService.new(current_user).missing_items
