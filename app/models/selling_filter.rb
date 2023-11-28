@@ -3,8 +3,8 @@
 # This class represents a Selling filter and is associated with a Steam account.
 class SellingFilter < ApplicationRecord
   belongs_to :steam_account
-  after_update :set_service_status
   after_update :stop_selling_job
+  after_update :set_service_status
 
   def set_service_status
     service_type = self.class.name.gsub(/Filter$/, '').downcase
@@ -13,13 +13,10 @@ class SellingFilter < ApplicationRecord
   end
 
   def stop_selling_job
-    trade_service = steam_account&.trade_service
-    job_id = trade_service&.selling_job_id
-    if job_id
-      job = Sidekiq::Queue.new('default').find_job(job_id)
-      job&.delete
-      trade_service&.update(selling_job_id: nil)
-    end
-    trade_service&.update(selling_status: false)
+    job_id = steam_account&.trade_service&.selling_job_id
+    return if job_id.blank?
+
+    job = Sidekiq::Queue.new('default').find_job(job_id)
+    job&.delete
   end
 end
