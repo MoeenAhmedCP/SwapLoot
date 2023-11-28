@@ -1,7 +1,7 @@
 class Inventory < ApplicationRecord
   scope :soft_deleted_sold, -> { where.not(sold_at: nil) }
   scope :steam_inventories, ->(active_steam_account) {
-    where(steam_id: active_steam_account.steam_id)
+    where(steam_id: active_steam_account&.steam_id)
   }
 
   def soft_delete_and_set_sold_at

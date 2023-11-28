@@ -5,11 +5,13 @@ class CsgoempireService
 
   def initialize(current_user)
     @current_user = current_user
-    @active_steam_account = SteamAccount.active_steam_account(current_user)
+    @active_steam_account = current_user.active_steam_account
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
   end
 
   def fetch_balance
+    return if csgoempire_key_not_found?
+
     response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
     response['user']['balance'].to_f / 100 if response['user']
   end
@@ -22,6 +24,8 @@ class CsgoempireService
   end
   
   def fetch_item_listed_for_sale
+    return [] if csgoempire_key_not_found?
+
     res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
     if res["success"] == true
       res["data"]["deposits"]
@@ -36,10 +40,18 @@ class CsgoempireService
   end
 
   def fetch_active_trade
+    return if csgoempire_key_not_found?
+
     self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
   end
 
   def remove_item(deposit_id)
+    return if csgoempire_key_not_found?
+
     self.class.get("#{BASE_URL}/trading/deposit/#{deposit_id}/cancel", headers: @headers)
+  end
+
+  def csgoempire_key_not_found?
+    @active_steam_account&.csgoempire_api_key.blank?
   end
 end

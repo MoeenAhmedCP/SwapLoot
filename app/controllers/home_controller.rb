@@ -2,7 +2,7 @@ class HomeController < ApplicationController
   include HomeControllerConcern
 
   def index
-    @active_steam_account = SteamAccount.active_steam_account(current_user)
+    @active_steam_account = current_user.active_steam_account
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
@@ -38,7 +38,7 @@ class HomeController < ApplicationController
     selected_steam_id = params[:steam_id]
     SteamAccount.transaction do
       SteamAccount.update_all(active: false)
-      account = SteamAccount.find_by(steam_id: selected_steam_id)
+      account = current_user.steam_accounts.find_by(steam_id: selected_steam_id)
       account.update(active: true) if account.present?
     end
     redirect_to root_path
