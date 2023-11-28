@@ -43,8 +43,8 @@
     else{
       $('#toast-danger').removeClass('hidden').find('.error_message').text(message);
     }
-  }).on('ajax:success', function(event){
-    $('#toast-danger').removeClass('hidden');
+  }).on('ajax:error', function(event){
+    $('#toast-danger').removeClass('hidden').find('.error_message').text('Something Went Wrong!');
   })
 
 </script>
