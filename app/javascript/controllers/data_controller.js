@@ -4,7 +4,7 @@ import consumer from "../channels/consumer";
 
 // Connects to data-controller="csgo"
 export default class extends Controller {
-  async connect() {
+  connect() {
     this.startAllChannelsSubscriptions();
   }
 
