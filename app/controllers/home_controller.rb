@@ -6,15 +6,17 @@ class HomeController < ApplicationController
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
   end
 
-  def fetch_user_data
-    steam_account = current_user.active_steam_account
+  def fetch_all_steam_accounts
+    accounts_data = []
+    steam_accounts = current_user.steam_accounts
     
-    if steam_account
-      csgo_service_response = CsgoempireService.new(current_user).fetch_user_data(steam_account)
+    steam_accounts.each do |account|
+      csgo_service_response = CsgoempireService.fetch_user_data(account)
+      accounts_data << { 'user_data' => csgo_service_response, 'account_id' => account.id }
+    end
 
-      respond_to do |format|
-        format.js { render json: csgo_service_response }
-      end
+    respond_to do |format|
+      format.js { render json: accounts_data }
     end
   end
 

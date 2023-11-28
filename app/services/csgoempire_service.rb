@@ -34,11 +34,9 @@ class CsgoempireService
     end
   end
 
-  def fetch_user_data(steam_account)
-    return if steam_account&.csgoempire_api_key.nil?
-
+  def self.fetch_user_data(steam_account)
     headers = { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" }
-    self.class.get(BASE_URL + '/metadata/socket', headers: headers)
+    HTTParty.get(BASE_URL + '/metadata/socket', headers: headers)
   end
 
   def fetch_active_trade
