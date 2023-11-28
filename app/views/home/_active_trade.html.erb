@@ -7,21 +7,19 @@
         <tr>
             <th class="px-4 py-2">Item ID</th>
             <th class="px-4 py-2">Item Name</th>
-            <th class="px-4 py-2">Type</th>
             <th class="px-4 py-2">Current Price</th>
-            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Type</th>
             <th class="px-4 py-2">Date</th>
         </tr>
     </thead>
     <tbody>
-    <% active_trades.each do |active_trade| %>
+    <% active_trades&.each do |active_trade| %>
     <tr>
         <td class="border text-center px-4 py-2"><%= active_trade["item_id"] %></td>
-        <td class="border text-center px-4 py-2"><%= active_trade["name"] %></td>
-        <td class="border text-center px-4 py-2"><%= active_trade["game"] %></td>
-        <td class="border text-center px-4 py-2"><%= "$#{active_trade["price"]}" %></td>
-        <td class="border text-center px-4 py-2"><%= active_trade["action"] %></td>
-        <td class="border text-center px-4 py-2"><%= Time.parse(active_trade["date"]).strftime("%d/%B/%Y") %></td>
+        <td class="border text-center px-4 py-2"><%= active_trade["item"]["market_name"] %></td>
+        <td class="border text-center px-4 py-2"><%= "$#{active_trade["item"]["market_value"]}" %></td>
+        <td class="border text-center px-4 py-2"><%= active_trade["sellarbuy"] %></td>
+        <td class="border text-center px-4 py-2"><%= Time.parse(active_trade["item"]["updated_at"]).strftime("%d/%B/%Y") %></td>
     </tr>
     <% end %>
     </tbody>

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include ItemSoldHelper
   before_action :authenticate_user!
 
   rescue_from StandardError, with: :handle_error
