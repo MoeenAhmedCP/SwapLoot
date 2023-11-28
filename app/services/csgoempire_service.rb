@@ -79,7 +79,7 @@ class CsgoempireService < ApplicationService
 
   def set_remove_item_hash(data)
     service_hash = { 'CsgoempireService': '', 'WaxpeerService': '' }
-    trade_service_info = data['item_data'].second
+    trade_service_info = data['item_data'].first
     if trade_service_info['type'] == 'deposit' && trade_service_info.dig('data', 'status_message') == 'Completed'
       service_hash['WaxpeerService'] = trade_service_info.dig('data', 'item_id')
     end
