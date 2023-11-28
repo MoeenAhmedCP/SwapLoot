@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :steam_accounts
   resources :inventories, only: [:index]
   resources :selling_filters, only: %i[edit update]
+  resources :buying_filters, only: %i[edit update]
   resources :trade_services, only: %i[update]
   get '/services', to: "services#index"
   post '/trigger_service', to: "services#trigger_service"

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# app/controllers/concerns/selling_filter_concern.rb
 module SellingFilterConcern
   extend ActiveSupport::Concern
 
