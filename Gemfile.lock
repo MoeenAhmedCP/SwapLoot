@@ -218,10 +218,12 @@ GEM
     zeitwerk (2.6.12)
 
 PLATFORMS
+  x86_64-darwin-21
   x86_64-darwin-22
 
 DEPENDENCIES
   bootsnap
+  concurrent-ruby (~> 1.1)
   debug
   devise
   dotenv-rails

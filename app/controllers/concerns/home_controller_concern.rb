@@ -1,14 +1,46 @@
 # frozen_string_literal: true
-
+require 'benchmark'
+require 'concurrent'
 # app/controllers/concerns/home_controller_concern.rb
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
     before_action :fetch_active_trade, :fetch_item_listed_for_sale, :fetch_sold_items, only: [:index]
     before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, only: [:refresh_balance]
+    # before_action :fetch_data_concurrently, only: [:index]
+    # before_action :fetch_data_concurrently_refresh, only: [:refresh_balance]
+    around_action :benchmark_fetch_data, only: [:index, :refresh_balance]
   end
 
   private
+
+  def benchmark_fetch_data
+    time = Benchmark.measure do
+      yield 
+    end
+
+    puts "Time taken for #{action_name}: #{time.real} seconds"
+  end
+
+  def fetch_data_concurrently
+    promises = [
+      Concurrent::Promise.execute { fetch_active_trade },
+      Concurrent::Promise.execute { fetch_sold_items },
+      Concurrent::Promise.execute { fetch_item_listed_for_sale }
+    ]
+
+    Concurrent::Promise.zip(*promises).wait
+  end
+
+  def fetch_data_concurrently_refresh
+    promises = [
+      Concurrent::Promise.execute { fetch_csgo_empire_balance },
+      Concurrent::Promise.execute { fetch_csgo_market_balance },
+      Concurrent::Promise.execute { fetch_waxpeer_balance },
+    ]
+
+    Concurrent::Promise.zip(*promises).wait
+  end
 
   def fetch_csgo_empire_balance
     csgo_service = CsgoempireService.new(current_user)
