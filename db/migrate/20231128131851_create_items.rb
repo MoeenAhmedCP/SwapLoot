@@ -6,6 +6,7 @@ class CreateItems < ActiveRecord::Migration[7.0]
       t.date :date
       t.decimal :bought_price
       t.decimal :sold_price
+      t.references :steam_account, foreign_key: true
 
       t.timestamps
     end

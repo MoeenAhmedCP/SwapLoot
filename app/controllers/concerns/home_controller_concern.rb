@@ -38,7 +38,10 @@ module HomeControllerConcern
 
   def fetch_sold_items
     waxpeer_service = WaxpeerService.new(current_user)
-    @items_sold = waxpeer_service.fetch_sold_items
+    waxpeer_service.fetch_sold_items
+
+    csgo_service = CsgoempireService.new(current_user)
+    csgo_service.fetch_deposit_transactions
   end
 
   def fetch_item_listed_for_sale

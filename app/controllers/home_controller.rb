@@ -4,12 +4,13 @@ class HomeController < ApplicationController
   def index
     @active_steam_account = current_user.active_steam_account
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
+    @items_sold = Item.where(steam_account: current_user.active_steam_account)
   end
 
   def fetch_all_steam_accounts
     accounts_data = []
     steam_accounts = current_user.steam_accounts
-    
+
     steam_accounts.each do |account|
       csgo_service_response = CsgoempireService.fetch_user_data(account)
       accounts_data << { 'user_data' => csgo_service_response, 'account_id' => account.id }
