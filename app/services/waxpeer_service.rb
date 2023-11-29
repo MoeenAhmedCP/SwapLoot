@@ -19,11 +19,17 @@ class WaxpeerService < ApplicationService
     else
       if res['data'].present?
         res['data']['trades'].each do |trade|
-          item_sold << trade if trade['action'] == 'sell'
+          if trade['action'] == 'sell'
+            create_item(trade['item_id'], trade['name'], trade['give_amount'], trade['price'], trade['date'])
+          end
         end
       end
     end
-    item_sold
+  end
+
+  def create_item(id, market_name, b_price, s_price, date)
+    item = Item.find_by(item_id: id)
+    Item.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: @current_user.active_steam_account) unless item.present?
   end
 
   def fetch_item_listed_for_sale
