@@ -4,8 +4,5 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   has_many :steam_accounts
-
-  def active_steam_account
-    steam_accounts.active_accounts.first
-  end
+  has_one :active_steam_account, -> { joins(:user).merge(SteamAccount.active_accounts).limit(1) }, class_name: 'SteamAccount'
 end

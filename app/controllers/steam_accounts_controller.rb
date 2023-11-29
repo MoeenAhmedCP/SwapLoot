@@ -1,7 +1,7 @@
 class SteamAccountsController < ApplicationController
   before_action :set_steam_account, only: %i[edit update destroy]
   def index
-    @steam_accounts = SteamAccount.where(user_id: current_user.id)
+    @steam_accounts = current_user.steam_accounts
   end
 
   def new

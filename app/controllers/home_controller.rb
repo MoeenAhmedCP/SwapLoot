@@ -3,7 +3,7 @@ class HomeController < ApplicationController
 
   def index
     @active_steam_account = current_user.active_steam_account
-    @steam_accounts = SteamAccount.where(user_id: current_user.id)
+    @steam_accounts = current_user.steam_accounts
   end
 
   def fetch_all_steam_accounts
@@ -37,7 +37,7 @@ class HomeController < ApplicationController
   def update_active_account
     selected_steam_id = params[:steam_id]
     SteamAccount.transaction do
-      SteamAccount.update_all(active: false)
+      SteamAccount.active_accounts.update_all(active: false) #i think only the steam accounts of the current user should be updated
       account = current_user.steam_accounts.find_by(steam_id: selected_steam_id)
       account.update(active: true) if account.present?
     end
