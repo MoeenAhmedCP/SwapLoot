@@ -1,8 +1,6 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!
 
-  include ErrorHandler
-
   rescue_from StandardError, with: :handle_error
 
   private
