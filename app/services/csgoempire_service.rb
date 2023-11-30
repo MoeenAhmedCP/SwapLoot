@@ -281,6 +281,7 @@ class CsgoempireService < ApplicationService
   end
 
   def csgoempire_key_not_found?
+    rotate_proxy
     @active_steam_account&.csgoempire_api_key.blank?
   end
 

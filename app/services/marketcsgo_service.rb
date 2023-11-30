@@ -40,6 +40,12 @@ class MarketcsgoService < ApplicationService
   end
 
   def market_csgo_api_key_not_found?
+    rotate_proxy
     @active_steam_account&.market_csgo_api_key.blank?
+  end
+
+  def rotate_proxy
+    proxy = RotateIp.rotate_proxy
+    self.class.http_proxy proxy[:address], proxy[:port], proxy[:username], proxy[:password]
   end
 end
