@@ -1,4 +1,4 @@
-class CsgoempireBuyingService
+class CsgoempireBuyingService < ApplicationService
   WAXPEER_API_BASE_URL = WAXPEER_BASE_URL
   CSGO_EMPIRE_API_BASE_URL = CSGO_EMPIRE_BASE_URL
   CSGO_EMPIRE_BID_FACTOR = 0.1
@@ -26,6 +26,7 @@ class CsgoempireBuyingService
       if response.code == 200
         return { status: 'success', message: 'Item purchased successfully', purchase_details: JSON.parse(response.body) }
       else
+        report_api_error("HTTP Error: #{response.code} - #{response.message}", [self&.class&.name, __method__.to_s])
         return { status: 'error', message: "HTTP Error: #{response.code} - #{response.message}" }
       end
     else
