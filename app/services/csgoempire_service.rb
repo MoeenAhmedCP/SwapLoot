@@ -1,4 +1,4 @@
-class CsgoempireService
+class CsgoempireService < ApplicationService
   include HTTParty
   
   BASE_URL = CSGO_EMPIRE_BASE_URL 
@@ -13,7 +13,11 @@ class CsgoempireService
     return if csgoempire_key_not_found?
 
     response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
-    response['user']['balance'].to_f / 100 if response['user']
+    if response['success'] == false
+      report_api_error(response)
+    else
+      response['user']['balance'].to_f / 100 if response['user']
+    end
   end
 
   def socket_data(data)
