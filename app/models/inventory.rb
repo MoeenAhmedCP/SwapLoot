@@ -4,10 +4,18 @@ class Inventory < ApplicationRecord
     where(steam_id: active_steam_account&.steam_id)
   }
   scope :tradable_steam_inventories, ->(active_steam_account) {
-    where(steam_id: active_steam_account.steam_id, tradable: true)
+    if active_steam_account.respond_to?(:each)
+      where(steam_id: active_steam_account.map(&:steam_id), tradable: true)
+    else
+      where(steam_id: active_steam_account&.steam_id, tradable: true)
+    end
   }
   scope :non_tradable_steam_inventories, ->(active_steam_account) {
-    where(steam_id: active_steam_account.steam_id, tradable: false)
+    if active_steam_account.respond_to?(:each)
+      where(steam_id: active_steam_account.map(&:steam_id), tradable: false)
+    else
+      where(steam_id: active_steam_account&.steam_id, tradable: false)
+    end
   }
 
   def soft_delete_and_set_sold_at

@@ -9,15 +9,34 @@ class CsgoempireService < ApplicationService
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
   end
 
-  def fetch_balance
-    return if csgoempire_key_not_found?
+  def headers(api_key)
+    @headers = { 'Authorization' => "Bearer #{api_key}" }
+  end
 
-    response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
-    if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+  def fetch_balance
+    if @active_steam_account.present?
+      return if csgoempire_key_not_found?
+
+      response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
+      if response['success'] == false
+        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      else
+        response_data = response['user'] ? response['user']['balance'].to_f / 100 : 0
+      end
     else
-      response['user']['balance'].to_f / 100 if response['user']
+      response_data = []
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.csgoempire_api_key.blank?
+
+        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: headers(steam_account&.csgoempire_api_key))
+        response = {
+          account_id: steam_account.id,
+          balance: response['user']['balance'].to_f / 100
+        }
+        response_data << response
+      end
     end
+    response_data
   end
 
   def socket_data(data)
@@ -28,15 +47,25 @@ class CsgoempireService < ApplicationService
   end
   
   def fetch_item_listed_for_sale
-    return [] if csgoempire_key_not_found?
-
-    res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
-    if res["success"] == true
-      res["data"]["deposits"]
+    response = []
+    if @active_steam_account.present?
+      return [] if csgoempire_key_not_found?
+      res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
+      if res['success'] == true
+        response = res['data']['deposits']
+      else
+        report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        []
+      end
     else
-      report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
-      []
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.csgoempire_api_key.blank?
+
+        res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+        response += res['data']['deposits'] if res['success'] == true
+      end
     end
+    response
   end
 
   def self.fetch_user_data(steam_account)
@@ -51,13 +80,36 @@ class CsgoempireService < ApplicationService
   end
 
   def fetch_active_trade
-    response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
+    if @active_steam_account.present?
+      return if csgoempire_key_not_found?
 
-    if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
+
+      if response['success'] == false
+        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      else
+        response
+      end
     else
-      response
+      response = []
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.csgoempire_api_key.blank?
+
+        res = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+        response << res
+      end
+      if response.present?
+        merged_response = {
+          'success' => response.all? { |resp| resp['success'] },
+          'data' => {
+            'deposits' => response.map { |resp| resp['data']['deposits'] }.flatten,
+            'withdrawals' => response.map { |resp| resp['data']['withdrawals'] }.flatten
+          }
+        }
+        response = merged_response
+      end
     end
+    response
   end
 
   def remove_item(deposit_id)

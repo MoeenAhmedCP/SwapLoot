@@ -4,7 +4,7 @@ class HomeController < ApplicationController
   def index
     @active_steam_account = current_user.active_steam_account
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
-    @items_sold = Item.where(steam_account: current_user.active_steam_account)
+    @items_sold = @active_steam_account ? Item.where(steam_account: current_user.active_steam_account) : Item.where(steam_account: current_user.steam_accounts)
   end
 
   def fetch_all_steam_accounts
