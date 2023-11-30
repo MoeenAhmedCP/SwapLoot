@@ -9,7 +9,7 @@ class Inventory < ApplicationRecord
   end
 
   def self.fetch_inventory_for_user(user)
-    marketcsgo_service = MarketcsgoService.new(user)
-    marketcsgo_service.fetch_my_inventory
+    csgo_service = CsgoempireService.new(user)
+    csgo_service.fetch_my_inventory
   end
 end
