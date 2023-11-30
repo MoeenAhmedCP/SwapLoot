@@ -3,6 +3,7 @@ class MarketcsgoService
 
   def initialize(current_user)
     @active_steam_account = current_user.active_steam_account
+    @current_user = current_user
     @params = {
       key: "#{@active_steam_account&.market_csgo_api_key}"
     }
@@ -15,11 +16,30 @@ class MarketcsgoService
     save_inventory(response)
   end
 
-  def fetch_balance
-    return if market_csgo_api_key_not_found?
+  def site_params(steam_account)
+    { key: "#{steam_account&.market_csgo_api_key}" }
+  end
 
-    res = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: @params)
-    res['money'] if res
+  def fetch_balance
+    if @active_steam_account.present?
+      return if market_csgo_api_key_not_found?
+
+      res = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: @params)
+      res['money'] if res
+    else
+      response_data = []
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.market_csgo_api_key.blank?
+
+        response = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: site_params(steam_account))
+        response_hash = {
+          account_id: steam_account.id,
+          balance: response['money']
+        }
+        response_data << response_hash
+      end
+      response_data
+    end
   end
 
   def save_inventory(res)
