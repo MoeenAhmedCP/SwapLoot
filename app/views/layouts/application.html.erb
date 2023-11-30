@@ -25,7 +25,14 @@
     </script>
   </head>
 
-  <body data-controller="data">
+  <body data-controller="data" >
+
+  <div style="display:flex; flex-direction:row">
+  <div style="width:250px;">
+  <%= render 'shared/sidebar' %>
+</div>
+  <div style="display:flex; flex-direction:column; width:100%; ">
+
       <%= render 'shared/alert' %>
       <% if current_user %>
         <%= render 'shared/navbar' %>
@@ -34,8 +41,13 @@
       <div id= 'searchingModal'></div>
       <%= render partial: '/layouts/failure_toast'%>
       <%= render partial: '/layouts/success_toast'%>
+      <div class="ml-[5%]">
+        <%= yield %>       
+      </div>  
+      </div>
+      </div>
 
-    <%= yield %>
+      </div>
   </body>
 </html>
 
