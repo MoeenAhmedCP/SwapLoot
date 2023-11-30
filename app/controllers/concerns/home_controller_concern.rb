@@ -48,7 +48,7 @@ module HomeControllerConcern
   def fetch_active_trade
     get_active_trade = CsgoempireService.new(current_user)
     @active_trades = get_active_trade.fetch_active_trade
-    if @active_trades
+    if @active_trades.present?
       @deposits = @active_trades["data"]["deposits"]
       @deposits.map! { |item| item.merge("sellarbuy" => "deposit") }
       @withdrawls = @active_trades["data"]["withdrawals"]
