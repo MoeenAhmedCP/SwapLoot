@@ -18,4 +18,5 @@ Rails.application.routes.draw do
   get '/home/reload_item_listed_for_sale', to: 'home#reload_item_listed_for_sale'
   get '/home/fetch_all_steam_accounts', to: 'home#fetch_all_steam_accounts'
   resources :users, only: [:show]
+  resources :errors, only: %i[index show]
 end

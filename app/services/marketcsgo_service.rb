@@ -1,4 +1,4 @@
-class MarketcsgoService
+class MarketcsgoService < ApplicationService
   include HTTParty  
 
   def initialize(current_user)
@@ -12,7 +12,12 @@ class MarketcsgoService
     return if market_csgo_api_key_not_found?
 
     res = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: @params)
-    res['money'] if res
+
+    if res['success'] == false
+      report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+    else
+      res['money']
+    end
   end
 
   def market_csgo_api_key_not_found?

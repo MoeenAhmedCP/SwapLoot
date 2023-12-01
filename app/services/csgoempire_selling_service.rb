@@ -1,4 +1,4 @@
-class CsgoempireSellingService 
+class CsgoempireSellingService < ApplicationService
   include HTTParty
   require 'json'
 
@@ -9,11 +9,21 @@ class CsgoempireSellingService
   def fetch_inventory
     headers = { 'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}" }
     response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers)
-    response = response["data"].select { |item| item["market_value"] != -1 }
-    online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
-    online_trades = JSON.parse(online_trades_response.read_body)
-    api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
-    filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
+
+    if response['success'] == false
+      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s]) 
+    else
+      response = response["data"].select { |item| item["market_value"] != -1 }
+      online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
+
+      if online_trades_response['success'] == false
+        report_api_error(online_trades_response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      else
+        online_trades = JSON.parse(online_trades_response.read_body)
+        api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
+        filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
+      end
+    end
   end
 
   def find_matching_data
@@ -42,28 +52,33 @@ class CsgoempireSellingService
       'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}",
     }
     response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
-    api_response = JSON.parse(response.read_body)
-    # Sample API response is at the end of the file, You can use it for testing (here).
-    items_listed_for_sale = []
-    items_listed_for_sale = api_response["data"]["deposits"].map do |deposit|
-      {
-        deposit_id: deposit["id"],
-        item_id: deposit["item_id"],
-        market_name: deposit["item"]["market_name"],
-        total_value: deposit["total_value"],
-        market_value: deposit["item"]["market_value"],
-        updated_at: deposit["item"]["updated_at"],
-        auction_number_of_bids: deposit["metadata"]["auction_number_of_bids"],
-        suggested_price: deposit["suggested_price"]
-      }
-    end
-    items_for_resale = []
-    items_listed_for_sale.each do |item|
-        if !item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0 # variable
-        items_for_resale << item
+
+    if response['success'] == false
+      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+    else
+      api_response = JSON.parse(response.read_body)
+      # Sample API response is at the end of the file, You can use it for testing (here).
+      items_listed_for_sale = []
+      items_listed_for_sale = api_response["data"]["deposits"].map do |deposit|
+        {
+          deposit_id: deposit["id"],
+          item_id: deposit["item_id"],
+          market_name: deposit["item"]["market_name"],
+          total_value: deposit["total_value"],
+          market_value: deposit["item"]["market_value"],
+          updated_at: deposit["item"]["updated_at"],
+          auction_number_of_bids: deposit["metadata"]["auction_number_of_bids"],
+          suggested_price: deposit["suggested_price"]
+        }
       end
+      items_for_resale = []
+      items_listed_for_sale.each do |item|
+          if !item_ready_to_price_cutting?(item[:updated_at], 12) && item[:auction_number_of_bids] == 0 # variable
+          items_for_resale << item
+        end
+      end
+      cutting_price_and_list_again(items_for_resale, 10) #variable
     end
-    cutting_price_and_list_again(items_for_resale, 10) #variable
   end
 
   def cancel_item_deposit(item)
@@ -71,6 +86,11 @@ class CsgoempireSellingService
       'Authorization' => "Bearer #{SteamAccount.first.csgoempire_api_key}",
     }
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
+
+    if response['success'] == false
+      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+    end
+
     puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
   end
   
@@ -106,6 +126,12 @@ class CsgoempireSellingService
   def search_items_by_names(item)
     url = "https://api.waxpeer.com/v1/search-items-by-name?api=#{SteamAccount.last.waxpeer_api_key}&game=csgo&names=#{item[:market_name]}&minified=0"
     response = HTTParty.get(url)
+
+    if response['success'] == false
+      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+    else
+      response
+    end
   end
 
   def calculate_pricing(item, percentage)
@@ -130,6 +156,7 @@ class CsgoempireSellingService
     if response.code == SUCCESS_CODE
       result = JSON.parse(response.body)
     else
+      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
       result = API_FAILED
     end
     result
@@ -162,7 +189,8 @@ class CsgoempireSellingService
      if response.code == SUCCESS_CODE
        result = JSON.parse(response.body)
      else
-       result = API_FAILED
+        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        result = API_FAILED
      end
      result
   end
