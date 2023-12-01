@@ -24,6 +24,9 @@ class CsgoempireService < ApplicationService
     if data['event'] == 'new_item'
       # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
       CsgoEmpireBuyingInitiateJob.perform_later(@current_user, data['item_data'], 20, 100)
+    elsif data['event'] == 'trade_status'
+      service_hash = set_remove_item_hash data
+      RemoveItems.remove_item_from_all_services(@current_user, service_hash)
     end
     if data['event'] == 'trade_status'
       data['item_data'].each do |item|
