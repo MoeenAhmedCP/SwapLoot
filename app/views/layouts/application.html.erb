@@ -28,10 +28,14 @@
   <body data-controller="data" style="overflow-x:hidden">
 
   <div style="display:flex; flex-direction:row">
-  <div style="width:225px;">
-  <%= render 'shared/sidebar' %>
-</div>
-  <div style="display:flex; flex-direction:column; width: calc(100% - 225px); ">
+    <% if current_user %>
+      <div style="width:225px;">
+        <%= render 'shared/sidebar' %>
+      </div>
+      <div style="display:flex; flex-direction:column; width: calc(100% - 225px); ">
+    <% else %>
+      <div style="display:flex; flex-direction:column; width:100%; ">
+    <%end%>
 
       <%= render 'shared/alert' %>
       <% if current_user %>
