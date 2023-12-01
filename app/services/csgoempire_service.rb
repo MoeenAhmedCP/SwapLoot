@@ -28,8 +28,20 @@ class CsgoempireService < ApplicationService
       service_hash = set_remove_item_hash data
       RemoveItems.remove_item_from_all_services(@current_user, service_hash)
     end
+    if data['event'] == 'trade_status'
+      data['item_data'].each do |item|
+        if item['data']['status_message'] == 'Sent'
+          inventory = Inventory.find_by(item_id: item['data']['item_id'])
+          if inventory.present?
+            inventory.soft_delete_and_set_sold_at
+            # service_hash = set_remove_item_hash data
+            # RemoveItems.remove_item_from_all_services(@current_user, service_hash)
+          end
+        end
+      end
+    end
   end
-  
+
   def fetch_item_listed_for_sale
     return [] if csgoempire_key_not_found?
 
@@ -50,6 +62,24 @@ class CsgoempireService < ApplicationService
       report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
     else
       response
+    end
+  end
+
+  def fetch_my_inventory
+    return if csgoempire_key_not_found?
+
+    response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
+    save_inventory(response)
+  end
+
+  def save_inventory(res)
+    if @active_steam_account
+      res['data']&.each do |item|
+        inventory = Inventory.find_by(item_id: item['id'])
+        unless inventory.present?
+          Inventory.create(item_id: item['id'], steam_id: @active_steam_account&.steam_id, market_name: item['market_name'], market_price: ((item['market_value'] / 100) * 0.164), tradable: item['tradable'])
+        end
+      end
     end
   end
 
@@ -80,8 +110,8 @@ class CsgoempireService < ApplicationService
   def set_remove_item_hash(data)
     service_hash = { 'CsgoempireService': '', 'WaxpeerService': '' }
     trade_service_info = data['item_data'].first
-    if trade_service_info['type'] == 'deposit' && trade_service_info.dig('data', 'status_message') == 'Completed'
-      service_hash['WaxpeerService'] = trade_service_info.dig('data', 'item_id')
+    if trade_service_info['type'] == 'deposit' && trade_service_info.dig('data', 'status_message') == 'Sent'
+      service_hash['WaxpeerService'] = trade_service_info.dig('data', 'item', 'asset_id')
     end
 
     csgo_desposit_data = fetch_item_listed_for_sale
