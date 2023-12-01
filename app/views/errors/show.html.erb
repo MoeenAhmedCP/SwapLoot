@@ -1,0 +1,122 @@
+<div class="container mt-16 mx-auto bg-white shadow rounded-lg p-4">
+  <p class='text-blue-800 text-xl font-medium'><%= @error.error_type %> <span class='text-base text-gray-500'>
+    <%= error_controller_action(@error.context) %></span>
+  </p>
+
+  <% error_messages = @error.message.split("\n") %>
+
+  <p class='text-xs error-msg'><%= error_messages[0] %></p>
+
+  <% if error_messages.count > 1 %>
+    <div class='max-h-40 overflow-scroll my-8 source info data'>
+      <% error_messages.drop(1).each do |msg| %>
+        <div>
+          <p class='text-xs error-msg'><%= msg %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class='flex gap-x-4 gap-y-2 my-4 flex-wrap w-6/12'>
+    <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+      <div class='flex'>
+        <div class='text-gray-600'>backendType</div>
+        <div class='bg-gray-300 w-px mx-2'></div>
+        <div class='text-blue-500'>rails</div>
+      </div>
+    </div>
+
+    <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+      <div class='flex'>
+        <div class='text-gray-600'>handled</div>
+        <div class='bg-gray-300 w-px mx-2'></div>
+        <div class='text-blue-500'><%= @error.handled %></div>
+      </div>
+    </div>
+
+    <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+      <div class='flex'>
+        <div class='text-gray-600'>level</div>
+        <div class='bg-gray-300 w-px mx-2'></div>
+        <div class='text-blue-500'><%= @error.severity %></div>
+      </div>
+    </div>
+
+    <% if @error.context.fetch("controller", nil).present? %>
+      <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+        <div class='flex'>
+          <div class='text-gray-600'>controller</div>
+          <div class='bg-gray-300 w-px mx-2'></div>
+          <div class='text-blue-500'><%= @error.context['controller'] %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @error.context.fetch("action", nil).present? %>
+      <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+        <div class='flex'>
+          <div class='text-gray-600'>action</div>
+          <div class='bg-gray-300 w-px mx-2'></div>
+          <div class='text-blue-500'><%= @error.context['action'] %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @error.context.fetch("url", nil).present? %>
+      <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+        <div class='flex'>
+          <div class='text-gray-600'>url</div>
+          <div class='bg-gray-300 w-px mx-2'></div>
+          <div class='text-blue-500'><%= @error.context['url'] %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @error.context.fetch("user_id", nil).present? %>
+      <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+        <div class='flex'>
+          <div class='text-gray-600'>user id</div>
+          <div class='bg-gray-300 w-px mx-2'></div>
+          <div class='text-blue-500'><%= @error.context['user_id'] %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @error.context.fetch("user_email", nil).present? %>
+      <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+        <div class='flex'>
+          <div class='text-gray-600'>user email</div>
+          <div class='bg-gray-300 w-px mx-2'></div>
+          <div class='text-blue-500'><%= @error.context['user_email'] %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+      <div class='flex'>
+        <div class='text-gray-600'>reported at</div>
+        <div class='bg-gray-300 w-px mx-2'></div>
+        <div class='text-blue-500'><%= error_reported_at(@error.created_at) %></div>
+      </div>
+    </div>
+
+    <div class='text-sm border border-gray-300 px-2 rounded-md w-fit'>
+      <div class='flex'>
+        <div class='text-gray-600'>source</div>
+        <div class='bg-gray-300 w-px mx-2'></div>
+        <div class='text-blue-500'><%= @error.context['source'] %></div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="source" id="frame-source-0-0">
+    <div class="info">
+      Stack Trace
+    </div>
+    <div class="data">
+      <% @error&.backtrace&.each do |trace| %>
+        <div class="text-xs text-red-600"><%= trace %></div>
+      <% end %>
+    </div>
+  </div>
+</div>
