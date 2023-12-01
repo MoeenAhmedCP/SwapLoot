@@ -1,6 +1,6 @@
-<div class="flex">
-    <h2 class="text-2xl font-bold mb-4">Items Sold</h2>
-    <i class="fa fa-refresh" aria-hidden="true"></i>
+<div class="flex absolute">
+    <h2 class="text-2xl mb-4 text-blue-600 font-[500]">Items Sold</h2>
+    <i class="fa fa-refresh text-blue-600" aria-hidden="true"></i>
 </div>
 
 <table id="dataTableItemsSold" class="display" style="width:100%">
@@ -14,11 +14,11 @@
     </thead>
     <tbody>
     <% sold_items.each do |sold_item| %>
-        <tr>
-            <td class="border text-center px-4 py-2"><%= sold_item['item_id'] %></td>
+        <tr class="bg-red-600">
+            <td class="border text-center px-4 py-2 bg-red-600"><%= sold_item['item_id'] %></td>
             <td class="border text-center px-4 py-2"><%= sold_item['name'] %></td>
             <td class="border text-center px-4 py-2"><%= "$#{sold_item['price'].to_f / 1000}" %></td>
-            <td class="border text-center px-4 py-2"><%= Time.parse(sold_item['date']).strftime("%d/%B/%Y") %></td>
+            <td class="border text-center px-4 py-2"><%= sold_item['date'] %></td>
         </tr>
         <% end %>
     </tbody>

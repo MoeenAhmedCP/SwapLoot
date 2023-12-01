@@ -1,19 +1,44 @@
-<div id="balance-container">
-  <div class="my-4">
-    <% if current_user.active_steam_account %>
-      <h2 class="font-bold"> CSGO Empire Balance: <%= @csgo_empire_balance.nil? ? "$0" : "#{@csgo_empire_balance} coins" %></h2>
-      <h2 class="font-bold"> CSGO Market Balance: <%= @csgo_market_balance.nil? ? "$0" : "$#{@csgo_market_balance}" %></h2>
-      <h2 class="font-bold"> Waxpeer Balance: <%= @waxpeer_balance.nil? ? "$0" : "$#{@waxpeer_balance}" %></h2>
-    <% else %>
-      <% @balance_data.each do |account| %>
-        <h1 class="text-3xl font-bold text-grey"><%= account[:account_name] %></h1>
-        <h2 class="font-bold"> CSGO Empire Balance: <%= account[:csgo_empire_balance] %></h2>
-        
-        <h2 class="font-bold"> CSGO Market Balance: <%= account[:csgo_market_balance] %></h2>
-        
-        <h2 class="font-bold"> Waxpeer Balance: <%= account[:waxpeer_balance] %></h2>
-        <br/>
-      <% end %>
-    <% end %>
-  </div>
+<div class="flex items-center justify-center gap-5" id="balance-container">
+   <div class="relative flex flex-col mt-6 text-gray-700 bg-green-50 shadow-md bg-clip-border rounded-xl w-96">
+      <div class="p-6">
+         <div class="flex item-center gap-3">
+            <i class="mt-3 fa fa-lg fa-wallet text-green-500"></i>  
+            <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-green-500">
+               CSGO Empire Balance
+            </h5>
+         </div>
+         <hr class="bg-gray-400 h-px w-full">
+      </div>
+      <div class="p-6 pt-0 text-2xl font-bold text-center">
+         <%= @csgo_empire_balance.nil? ? "$0" : "#{@csgo_empire_balance} coins" %>
+      </div>
+   </div>
+   <div class="relative flex flex-col mt-6 text-gray-700 bg-blue-50 shadow-md bg-clip-border rounded-xl w-96">
+      <div class="p-6">
+         <div class="flex item-center gap-3">
+            <i class="mt-3 fa fa-lg fa-wallet text-blue-500"></i>  
+            <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-500">
+               CSGO Market Balance:
+            </h5>
+         </div>
+         <hr class="bg-gray-400 h-px w-full">
+      </div>
+      <div class="p-6 pt-0 text-2xl font-bold text-center">
+         <%= @csgo_market_balance.nil? ? "$0" : "$#{@csgo_market_balance} coins" %>
+      </div>
+   </div>
+   <div class="relative flex flex-col mt-6 text-gray-700 bg-yellow-50 shadow-md bg-clip-border rounded-xl w-96">
+      <div class="p-6">
+         <div class="flex item-center gap-3">
+            <i class="mt-3 fa fa-lg fa-wallet text-yellow-500"></i>  
+            <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-yellow-500">
+               Waxpeer Balance:
+            </h5>
+         </div>
+         <hr class="bg-gray-400 h-px w-full">
+      </div>
+      <div class="p-6 pt-0 text-2xl font-bold text-center">
+         <%= @waxpeer_balance.nil? ? "$0" : "$#{@waxpeer_balance} coins" %>
+      </div>
+   </div>
 </div>

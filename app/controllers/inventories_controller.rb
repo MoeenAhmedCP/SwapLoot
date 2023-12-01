@@ -2,6 +2,7 @@ class InventoriesController < ApplicationController
   before_action :fetch_inventory, only: %i[index]
 
   def index
+    @steam_accounts = SteamAccount.where(user_id: current_user.id)
     @active_steam_account ||= current_user.active_steam_account.presence || current_user.steam_accounts
     if params["tradable"] == "true"
       @inventories = Inventory.tradable_steam_inventories(@active_steam_account)
@@ -15,7 +16,6 @@ class InventoriesController < ApplicationController
       end
     end
     @total_market_price = @inventories.sum(:market_price).round(3)
-
     begin
       @missing_items = MissingItemsService.new(current_user).missing_items
     rescue StandardError => e
