@@ -1,20 +1,22 @@
-<div class="pr-10 pt-10">
-    <div class="flex items-center justify-between bg-blue-600 text-white p-5 rounded-t-lg">
-        <div class="font-bold text-xl">Stream Accounts</div>
-        <div class="font-bold text-xl me-40">Services</div>
+ <div class="m-10">   <h2 class="text-lg mb-2 text-blue-600 font-[500]">Services</h2>
+
+<div class="shadow-md rounded-b-lg">
+    <div class="flex items-center justify-between bg-blue-600 text-white p-3 rounded-t-lg">
+        <div class="font-[300] text-md px-2">Steam Accounts</div>
+        <div class="font-[300] text-md me-40 ">Services</div>
     </div>
-    <div class="border-solid border border-gray-500 rounded-b-lg">
-    <% @steam_accounts.each do |steam_account| %>
+    <div class="">
+    <% @steam_accounts.each_with_index do |steam_account, index| %>
         <% trade_service = steam_account&.trade_service %>
         <% selling_status = trade_service&.selling_status %>
         <% buying_status = trade_service&.buying_status %>
         <%= form_tag(trigger_service_path(steam_id: steam_account.steam_id), method: :get, class: 'steam-form') do %>
         <div>
-            <div class="px-10 flex items-center justify-between">
+            <div class="px-5 flex items-center justify-between">
             <div>
-                <h2 class="text-lg"><%= steam_account.unique_name %></h2>
+                <h2 class="text-md"><%= steam_account.unique_name %></h2>
             </div>
-            <div class="p-5">
+            <div class="p-3">
                 <label class="relative inline-flex items-center me-5 cursor-pointer">
                 <%= check_box_tag 'selling', selling_status ? 'on' : 'off', selling_status, class: "steam-checkbox sr-only peer toggle-#{steam_account&.selling_filter&.id}", onchange: "changeSellingStatus('#{steam_account&.selling_filter&.id}', '#{ trade_service&.id }')" %>
                 <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
@@ -37,11 +39,14 @@
 
             </div>
             </div>
-            <hr class="bg-gray-400 h-px w-full">
+            <% unless index == @steam_accounts.size - 1 %>
+              <hr class="bg-gray-400 h-px w-full">
+            <% end %>
         </div>
         <% end %>
     <% end %>
     </div>
+</div>
 </div>
 
 <script>
