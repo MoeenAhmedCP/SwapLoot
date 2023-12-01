@@ -7,21 +7,21 @@
 </div>
 
 <table id="dataTableSteamAccount" class="display shadow-md rounded-lg" style="width:100%; border: none;">
-    <thead class="bg-blue-600 text-white font-[300]">
+    <thead class="bg-blue-600 text-white" style="font-size:14px; font-wieght:300">
         <tr>
-            <th class="px-4  py-2 border border-r-gray-200 rounded-tl-lg">Steam ID</th>
-            <th class="px-4  py-2 border border-r-gray-200">Name</th>
-            <th class="px-4  py-2 border border-r-gray-200">Steam Web API Key</th>
-            <th class="px-4  py-2 border border-r-gray-200">Waxpeer API Key</th>
-            <th class="px-4  py-2 border border-r-gray-200">CSGOEmpire API Key</th>
-            <th class="px-4  py-2 border border-r-gray-200">Market.CSGO API Key</th>
-            <th class="px-4  py-2 rounded-tr-lg">Action</th>
+            <th class="border border-r-gray-200 rounded-tl-lg">Steam ID</th>
+            <th class="border border-r-gray-200">Name</th>
+            <th class="border border-r-gray-200">Steam Web API Key</th>
+            <th class="border border-r-gray-200">Waxpeer API Key</th>
+            <th class="border border-r-gray-200">CSGOEmpire API Key</th>
+            <th class="border border-r-gray-200">Market.CSGO API Key</th>
+            <th class="rounded-tr-lg">Action</th>
         </tr>
     </thead>
     <tbody>
      <% @steam_accounts.each do |steam_account| %>
         <tr class="hover:bg-gray-100">
-          <td class="text-center px-4 py-2 min-w-10 break-all border border-r-gray-200 rounded-bl-lg"><%= steam_account.steam_id %></td>
+          <td class="text-center px-4  min-w-10 break-all border border-r-gray-200 rounded-bl-lg"><%= steam_account.steam_id %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border border-r-gray-200"><%= steam_account.unique_name %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border border-r-gray-200"><%= steam_account.steam_web_api_key %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border border-r-gray-200"><%= steam_account.waxpeer_api_key %></td>
