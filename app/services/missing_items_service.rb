@@ -50,4 +50,9 @@ class MissingItemsService < ApplicationService
     proxy = steam_account&.proxy
     self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password if proxy.present?
   end
+
+  def set_proxy
+    proxy = @active_steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+  end
 end
