@@ -1,25 +1,25 @@
 <div class="p-6">    
     <div class="flex">
-        <h1 class="text-2xl font-bold">Balance</h1>
-        <i class="fa fa-refresh cursor-pointer" aria-hidden="true" id="refresh-balance"></i>
+        <h1 class="text-2xl text-blue-600 font-[500]">Balance</h1>
+        <i class="fa fa-refresh cursor-pointer text-blue-600" aria-hidden="true" id="refresh-balance"></i>
     </div>
 
     <div class="balance-container" id="balance-container">
             <i class="fa fa-spinner fa-spin text-gray-400 text-3xl p-10"></i>
     </div>
 
-    <hr class="bg-gray-400 h-px w-full mb-3">
-     <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Active Trades</h2>
-        <i id="refreshactiveTrade" class="fa fa-refresh" aria-hidden="true"></i>
+    <hr class=" h-px w-0 mb-3">
+     <div style= "display: flex; ">
+    <h2 class="text-2xl mb-4 text-blue-600 font-[500]">Active Trades</h2>
+        <i id="refreshactiveTrade" class="fa fa-refresh text-blue-600" aria-hidden="true"></i>
     </div>
  
     <%= render partial: 'active_trade' ,locals: { active_trades: @active_trades } %>
 
 
     <div style= "display: flex;">
-        <h2 class="text-2xl font-bold mb-4">Item listed for sale</h2>
-        <i id = "refreshitemListed"class="fa fa-refresh" aria-hidden="true"></i>
+        <h2 class="text-2xl mb-4 text-blue-600 font-[500]">Item listed for sale</h2>
+        <i id = "refreshitemListed"class="fa fa-refresh text-blue-600" aria-hidden="true"></i>
     </div>
 
     <%= render partial: 'reload_item_listed' , locals:{ item_listed_for_sale_hash: @item_listed_for_sale_hash }%> 

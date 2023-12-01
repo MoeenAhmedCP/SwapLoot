@@ -2,6 +2,7 @@ class InventoriesController < ApplicationController
   before_action :fetch_inventory, only: %i[index]
 
   def index
+    @steam_accounts = SteamAccount.where(user_id: current_user.id)
     @active_steam_account = current_user.active_steam_account
     @inventories = Inventory.steam_inventories(@active_steam_account)
     begin

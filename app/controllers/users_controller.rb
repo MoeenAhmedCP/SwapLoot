@@ -6,6 +6,7 @@ class UsersController < ApplicationController
   BASE_URL_MARKETCSGO = 'https://market.csgo.com/api/v2'
 
   def show
+    @steam_accounts = SteamAccount.where(user_id: current_user.id)
     @user_accounts_data = fetch_user_accounts_data
   end
 

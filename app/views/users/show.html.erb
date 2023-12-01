@@ -1,23 +1,34 @@
-<h1 class="text-3xl font-semibold flex item-center justify-center mt-5">Associated Steam Accounts</h1>
-<div class="grid-cols-1 sm:grid md:grid-cols-3 px-10">
-  <% @user_accounts_data.each do |user_account_data| %>
-  <div class="mx-3 mt-6 flex flex-col rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] bg-gray-200 sm:shrink-0 sm:grow sm:basis-0">
-    <div class="p-6">
-      <h5
-        class="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50">
-        <h2 class="text-2xl font-semibold mb-2">Steam Account: <%= user_account_data[:steam_account].unique_name %></h2>
-      </h5>
-      <p class="mb-4 text-base text-neutral-600 dark:text-neutral-200">
-      <p><strong>Steam ID:</strong> <%= user_account_data[:data]['steam_id'] %></p>
-      <p><strong>Steam Name:</strong> <%= user_account_data[:data]['steam_name'] %></p>
-      <p><strong>Last Login:</strong> <%= user_account_data[:data]['last_login'] %></p>
-      <p><strong>Steam Level:</strong> <%= user_account_data[:data]['steam_level'] %></p>
-      <p><strong>Trade URL:</strong> <%= link_to user_account_data[:data]['trade_url'], target: '_blank', rel: 'noopener noreferrer', class: 'text-blue-500 hover:underline' %> </p>
-      <p><strong>CsgoEmpire Balance:</strong> <%= number_with_precision(user_account_data[:data]['balance'].to_f / 100, precision: 2) %> Coins</p>
-      <p><strong>Waxpeer Balance:</strong> $<%= user_account_data[:waxpeer_balance] %></p>
-      <p><strong>Market.Csgo Balance:</strong> $<%= user_account_data[:market_csgo_balance] %></p>
-      </p>
-    </div>
-  </div>
+<div class="text-gray-600 font-bold text-center py-5 text-3xl">Associated Steam Accounts</div>
+<hr class="bg-gray-400 h-px w-full mb-3">
+
+<div class="px-[15%] py-[2%]">
+    <% @user_accounts_data.each do |user_account_data| %>
+    <% @steam_account = SteamAccount.find_by(steam_id: user_account_data[:data]['steam_id']) %>
+    <div class="text-blue-600 font-semibold mb-2 text-2xl">Steam Account: <%= @steam_account.unique_name %></div>
+      <div class="flex  md:flex-row flex-wrap mb-10 shadow-md rounded-lg">
+        <div class="w-full border-b rounded-t-lg md:w-1/4 bg-blue-600 p-4 text-center text-white">Steam ID</div>
+        <div class="w-full border-b rounded-tr-lg md:w-3/4 bg-white p-4 text-center text-gray-500"><%= user_account_data[:data]['steam_id'] %></div>
+
+        <div class="w-full border-b md:w-1/4 bg-blue-600 p-4 text-center text-white">Steam Name</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray-500"><%= user_account_data[:data]['steam_name'] %></div>
+
+        <div class="w-full border-b md:w-1/4 bg-blue-600 p-4 text-center text-white">Last Login</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray-500"><%= user_account_data[:data]['last_login'].to_datetime.strftime("%B-%d-%Y | %R") %></div>
+
+        <div class="w-full border-b md:w-1/4 bg-blue-600 p-4 text-center text-white">Steam Level</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray-500"><%= user_account_data[:data]['steam_level'] %></div>
+
+        <div class="w-full border-b md:w-1/4 bg-blue-600 p-4 text-center text-white">Trade URL</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray-500"><%= user_account_data[:data]['trade_url'] %></div>
+
+        <div class="w-full border-b md:w-1/4 bg-blue-600 p-4 text-center text-white">CsgoEmpire Balance</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray-500"><%= user_account_data[:data]['balance'] ? "#{number_with_precision(user_account_data[:data]['balance'].to_f / 100, precision: 2)} Coins" : "--" %></div>
+
+        <div class="w-full border-b md:w-1/4 bg-blue-600 p-4 text-center text-white">Waxpeer Balance</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray-500"><%= user_account_data[:waxpeer_balance] ? "$ #{user_account_data[:waxpeer_balance]}" : "--" %></div>
+
+        <div class="w-full border-b rounded-b-lg md:w-1/4 bg-blue-600 p-4 text-center text-white">Market.Csgo Balance</div>
+        <div class="w-full border-b rounded-br-lg md:w-3/4 bg-white p-4 text-center text-gray-500"><%= user_account_data[:market_csgo_balance] ? "$ #{user_account_data[:market_csgo_balance]}" : "--" %></div>
+      </div>
   <% end %>
 </div>

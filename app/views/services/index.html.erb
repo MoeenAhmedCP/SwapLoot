@@ -1,7 +1,7 @@
-<div class="px-40 py-10">
-    <div class="flex items-center justify-between bg-gray-800 text-white p-5 rounded-t-lg">
-        <div>Stream Accounts</div>
-        <div class="me-40">Services</div>
+<div class="pr-10 pt-10">
+    <div class="flex items-center justify-between bg-blue-600 text-white p-5 rounded-t-lg">
+        <div class="font-bold text-xl">Stream Accounts</div>
+        <div class="font-bold text-xl me-40">Services</div>
     </div>
     <div class="border-solid border border-gray-500 rounded-b-lg">
     <% @steam_accounts.each do |steam_account| %>
@@ -12,7 +12,7 @@
         <div>
             <div class="px-10 flex items-center justify-between">
             <div>
-                <h2 class="text-lg font-semibold"><%= steam_account.unique_name %></h2>
+                <h2 class="text-lg"><%= steam_account.unique_name %></h2>
             </div>
             <div class="p-5">
                 <label class="relative inline-flex items-center me-5 cursor-pointer">
