@@ -1,20 +1,21 @@
 <div class="p-6">
- <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <a href="<%= new_steam_account_path %>" class="mt-6  mb-3 inline-block bg-blue-600 text-gray-100 font-[300] px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">Add New Steam Account</a>
+
+ <div class="container mx-auto py-4 ">
  <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Connected Steam Accounts</h2>
+    <h2 class="text-lg text-blue-600 font-[600] absolute">Connected Steam Accounts</h2>
 </div>
-  <a href="<%= new_steam_account_path %>" class="mt-6 float-right mb-3 inline-block bg-blue-500 text-gray-100 font-bold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">Add New Steam Account</a>
 
 <table id="dataTableSteamAccount" class="display shadow-md rounded-lg" style="width:100%; border: none;">
-    <thead class="bg-blue-600 text-white">
+    <thead class="bg-blue-600 text-white font-[300]">
         <tr>
-            <th class="px-4 py-2 border border-r-gray-200 rounded-tl-lg">Steam ID</th>
-            <th class="px-4 py-2 border border-r-gray-200">Name</th>
-            <th class="px-4 py-2 border border-r-gray-200">Steam Web API Key</th>
-            <th class="px-4 py-2 border border-r-gray-200">Waxpeer API Key</th>
-            <th class="px-4 py-2 border border-r-gray-200">CSGOEmpire API Key</th>
-            <th class="px-4 py-2 border border-r-gray-200">Market.CSGO API Key</th>
-            <th class="px-4 py-2 rounded-tr-lg">Action</th>
+            <th class="px-4  py-2 border border-r-gray-200 rounded-tl-lg">Steam ID</th>
+            <th class="px-4  py-2 border border-r-gray-200">Name</th>
+            <th class="px-4  py-2 border border-r-gray-200">Steam Web API Key</th>
+            <th class="px-4  py-2 border border-r-gray-200">Waxpeer API Key</th>
+            <th class="px-4  py-2 border border-r-gray-200">CSGOEmpire API Key</th>
+            <th class="px-4  py-2 border border-r-gray-200">Market.CSGO API Key</th>
+            <th class="px-4  py-2 rounded-tr-lg">Action</th>
         </tr>
     </thead>
     <tbody>
