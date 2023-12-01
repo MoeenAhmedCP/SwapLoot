@@ -25,25 +25,23 @@
     </script>
   </head>
 
-  <body data-controller="data" >
+  <body data-controller="data" style="overflow-x:hidden">
 
   <div style="display:flex; flex-direction:row">
-  <div style="width:250px;">
+  <div style="width:225px;">
   <%= render 'shared/sidebar' %>
 </div>
-  <div style="display:flex; flex-direction:column; width:100%; ">
+  <div style="display:flex; flex-direction:column; width: calc(100% - 225px); ">
 
       <%= render 'shared/alert' %>
       <% if current_user %>
-        <%= render 'shared/navbar' %>
+      <div class="h-20">  <%= render 'shared/navbar' %></div>
       <% end %>
 
       <div id= 'searchingModal'></div>
       <%= render partial: '/layouts/failure_toast'%>
       <%= render partial: '/layouts/success_toast'%>
-      <div class="ml-[5%]">
         <%= yield %>       
-      </div>  
       </div>
       </div>
 

@@ -14,8 +14,8 @@
     </thead>
     <tbody>
     <% sold_items.each do |sold_item| %>
-        <tr>
-            <td class="border text-center px-4 py-2"><%= sold_item['item_id'] %></td>
+        <tr class="bg-red-600">
+            <td class="border text-center px-4 py-2 bg-red-600"><%= sold_item['item_id'] %></td>
             <td class="border text-center px-4 py-2"><%= sold_item['name'] %></td>
             <td class="border text-center px-4 py-2"><%= "$#{sold_item['price'].to_f / 1000}" %></td>
             <td class="border text-center px-4 py-2"><%= Time.parse(sold_item['date']).strftime("%d/%B/%Y") %></td>

@@ -5,6 +5,7 @@
     </div>
 
     <div class="balance-container" id="balance-container">
+            <i class="fa fa-spinner fa-spin text-gray-400 text-3xl p-10"></i>
     </div>
 
     <hr class="bg-gray-400 h-px w-full mb-3">
@@ -14,30 +15,19 @@
     </div>
  
     <%= render partial: 'active_trade' ,locals: { active_trades: @active_trades } %>
-       
-</div>
 
 
-
-<div class="flex">
-<div class="table-1">
- <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Item listed for sale</h2>
+        <h2 class="text-2xl font-bold mb-4">Item listed for sale</h2>
         <i id = "refreshitemListed"class="fa fa-refresh" aria-hidden="true"></i>
     </div>
 
     <%= render partial: 'reload_item_listed' , locals:{ item_listed_for_sale_hash: @item_listed_for_sale_hash }%> 
-</div>
+
+    <%= render partial: 'item_sold', locals: { sold_items: @items_sold }%>
 </div>
 
-<div class="table-2">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <%= render partial: 'item_sold', locals: { sold_items: @items_sold }%>
-    </div>
-</div>
 
-</div>
 </div>
 
 <script>

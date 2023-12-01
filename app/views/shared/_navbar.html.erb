@@ -1,4 +1,4 @@
-<nav class="bg-white shadow-md h-20 border-b border-solid border-blue-500">
+<nav class="bg-white shadow-md h-20 border-b border-solid border-blue-500 fixed w-[calc(100%_-_225px)] z-[999]">
   <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
     <div class="relative flex h-16 items-center justify-between">
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -15,7 +15,7 @@
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
         <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
-          <%= select_tag('steam_id', options_for_select([['Select an account', nil]] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: @active_steam_account ? @active_steam_account.steam_id : "Select an account" ), id: 'steamAccountSelect', class: "w-300 ml-10 rounded-lg p-2", onchange: 'submitForm()') %>
+          <%= select_tag('steam_id', options_for_select([['Select an account', nil]] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: @active_steam_account ? @active_steam_account.steam_id : "Select an account" ), id: 'steamAccountSelect', class: "w-[100%] ml-10 rounded-lg p-2", onchange: 'submitForm()') %>
         <% end %>
       </div>
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
