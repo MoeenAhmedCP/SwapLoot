@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   get '/fetch_sold_items', to: "sold_items#fetch_sold_items", as: 'fetch-sold-items'
   get '/show_api_keys/:id', to: "steam_accounts#show_api_keys", as: "show_api_key"
   get '/edit_api_keys/:id', to: "steam_accounts#edit_api_keys", as: "edit_api_key"
+  resources :proxies, only: %i[new create edit update destroy]
   get '/services', to: "services#index"
   post '/trigger_service', to: "services#trigger_service"
   post '/selling_service', to: "services#selling_service"

@@ -7,6 +7,7 @@ class CsgoempireService < ApplicationService
     @current_user = current_user
     @active_steam_account = current_user.active_steam_account
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
+    set_proxy if @active_steam_account.proxy.present?
   end
 
   def headers(api_key)
@@ -281,7 +282,6 @@ class CsgoempireService < ApplicationService
   end
 
   def csgoempire_key_not_found?
-    rotate_proxy
     @active_steam_account&.csgoempire_api_key.blank?
   end
 

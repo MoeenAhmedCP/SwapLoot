@@ -7,6 +7,7 @@ class MarketcsgoService < ApplicationService
     @params = {
       key: "#{@active_steam_account&.market_csgo_api_key}"
     }
+    set_proxy if @active_steam_account.proxy.present?
   end
 
   def site_params(steam_account)
@@ -44,8 +45,8 @@ class MarketcsgoService < ApplicationService
     @active_steam_account&.market_csgo_api_key.blank?
   end
 
-  def rotate_proxy
-    proxy = RotateIp.rotate_proxy
-    self.class.http_proxy proxy[:address], proxy[:port], proxy[:username], proxy[:password]
+  def set_proxy
+    proxy = @active_steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
 end

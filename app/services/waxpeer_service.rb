@@ -7,6 +7,7 @@ class WaxpeerService < ApplicationService
     @params = {
       api: @active_steam_account&.waxpeer_api_key
     }
+    set_proxy if @active_steam_account.proxy.present?
   end
 
   def save_sold_item(res)
@@ -116,8 +117,8 @@ class WaxpeerService < ApplicationService
     @active_steam_account&.waxpeer_api_key.blank?
   end
 
-  def rotate_proxy
-    proxy = RotateIp.rotate_proxy
-    self.class.http_proxy proxy[:address], proxy[:port], proxy[:username], proxy[:password]
+  def set_proxy
+    proxy = @active_steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
 end

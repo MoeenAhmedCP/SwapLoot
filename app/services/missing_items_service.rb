@@ -6,6 +6,8 @@ class MissingItemsService < ApplicationService
     @user = user
     @active_steam_account = @user.active_steam_account
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
+    @active_steam_account = current_user.active_steam_account
+    set_proxy if @active_steam_account.proxy.present?
   end
 
   def missing_items
@@ -21,5 +23,10 @@ class MissingItemsService < ApplicationService
         Inventory.where.not(item_id: api_inventory_item).where(steam_id: @active_steam_account.steam_id, sold_at: nil)
       end
     end
+  end
+
+  def set_proxy
+    proxy = @active_steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
 end
