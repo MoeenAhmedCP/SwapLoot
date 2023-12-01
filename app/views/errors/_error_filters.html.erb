@@ -1,0 +1,13 @@
+<div class='text-sm border border-gray-300 px-4 py-2 rounded-md w-fit mt-4'>
+  <%= form_tag(errors_path, method: :get) do %>
+    <div class='flex'>
+      <div class='text-blue-500'>
+        Time: <%= select_tag :time_range, options_for_select(filters_by_time, params[:time_range] || 'All'), class: 'border rounded px-2 py-1 w-28', onchange: 'this.form.submit();' %>
+      </div>
+      <div class='bg-gray-300 w-px mx-4'></div>
+      <div class='text-blue-500'>
+        Source: <%= select_tag :error_source, options_for_select(filters_by_error_source, params[:error_source] || 'All'), class: 'border rounded px-2 py-1 w-28', onchange: 'this.form.submit();' %>
+      </div>
+    </div>
+  <% end %>
+</div>

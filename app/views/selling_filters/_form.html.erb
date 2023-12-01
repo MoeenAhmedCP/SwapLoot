@@ -1,5 +1,5 @@
-<!-- app/views/selling_filters/_form.html.erb -->
 <%= form_for @selling_filter, remote: true, html: { class: 'grid grid-cols-1 gap-6 selling_filter_form' } do |f| %>
+  <h1 class="text-center text-2xl font-bold"><%= @selling_filter.steam_account.unique_name %></h1 class="text-center text-2xl font-bold">
   <div>
     <%= f.label :min_profit_percentage, class: 'block text-sm font-medium text-gray-700' %>
     <%= f.number_field :min_profit_percentage, class: 'mt-1 p-2 border rounded-md w-full' %>
@@ -19,6 +19,7 @@
     <%= f.submit 'Update Selling Filter', id: 'updateSellingFilterButton', class: 'bg-blue-500 text-white px-4 py-2 rounded-md', onclick: 'hide_modal(event)' %>
   </div>
 <% end %>
+
 <script>
   function hide_modal(event){
     if (confirm("Are you sure, you want to change these parameters? The current process will be terminated, and the new process will start with these filters.")){

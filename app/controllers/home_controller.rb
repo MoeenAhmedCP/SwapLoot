@@ -4,12 +4,13 @@ class HomeController < ApplicationController
   def index
     @active_steam_account = current_user.active_steam_account
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
+    @items_sold = @active_steam_account ? SoldItem.where(steam_account: current_user.active_steam_account) : SoldItem.where(steam_account: current_user.steam_accounts)
   end
 
   def fetch_all_steam_accounts
     accounts_data = []
     steam_accounts = current_user.steam_accounts
-    
+
     steam_accounts.each do |account|
       csgo_service_response = CsgoempireService.fetch_user_data(account)
       accounts_data << { 'user_data' => csgo_service_response, 'account_id' => account.id }
@@ -37,7 +38,7 @@ class HomeController < ApplicationController
   def update_active_account
     selected_steam_id = params[:steam_id]
     SteamAccount.transaction do
-      SteamAccount.update_all(active: false)
+      current_user.active_steam_account.update(active: false)
       account = current_user.steam_accounts.find_by(steam_id: selected_steam_id)
       account.update(active: true) if account.present?
     end

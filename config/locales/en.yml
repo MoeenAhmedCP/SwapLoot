@@ -35,3 +35,7 @@ en:
     update:
       success: 'Selling filter updated successfully.'
       failure: 'Failed to update selling filter.'
+  buying_filters:
+    update:
+      success: 'Buying filter updated successfully.'
+      failure: 'Failed to update buying filter.'

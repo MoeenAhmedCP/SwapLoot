@@ -27,8 +27,9 @@ module SwapLoot
     config.autoload_paths += %W(#{config.root}/lib)
 
     config.after_initialize do
-      if Rails.env.production? || Rails.env.development?
+      if Rails.env.development?
         PermanentDeleteJob.set(wait_until: Date.tomorrow.to_time).perform_later
+        PriceEmpireSuggestedPriceJob.set(wait_until: Date.tomorrow.to_time).perform_later
       end
     end
 

@@ -6,10 +6,6 @@ class ServicesController < ApplicationController
   end
 
   def trigger_service; end
-  
-  def selling_service
-    job_reponse = CsgoSellingJob.new.perform_async(@steam_account)
-  end
 
   private
 

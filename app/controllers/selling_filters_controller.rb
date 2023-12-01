@@ -1,6 +1,3 @@
-# frozen_string_literal: true
-
-# Controller responsible for managing selling filters.
 class SellingFiltersController < ApplicationController
   include SellingFilterConcern
 

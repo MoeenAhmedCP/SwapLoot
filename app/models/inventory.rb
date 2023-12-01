@@ -3,13 +3,27 @@ class Inventory < ApplicationRecord
   scope :steam_inventories, ->(active_steam_account) {
     where(steam_id: active_steam_account&.steam_id)
   }
+  scope :tradable_steam_inventories, ->(active_steam_account) {
+    if active_steam_account.respond_to?(:each)
+      where(steam_id: active_steam_account.map(&:steam_id), tradable: true)
+    else
+      where(steam_id: active_steam_account&.steam_id, tradable: true)
+    end
+  }
+  scope :non_tradable_steam_inventories, ->(active_steam_account) {
+    if active_steam_account.respond_to?(:each)
+      where(steam_id: active_steam_account.map(&:steam_id), tradable: false)
+    else
+      where(steam_id: active_steam_account&.steam_id, tradable: false)
+    end
+  }
 
   def soft_delete_and_set_sold_at
     update(sold_at: Time.current)
   end
 
   def self.fetch_inventory_for_user(user)
-    marketcsgo_service = MarketcsgoService.new(user)
-    marketcsgo_service.fetch_my_inventory
+    csgo_service = CsgoempireService.new(user)
+    csgo_service.fetch_my_inventory
   end
 end
