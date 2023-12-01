@@ -102,12 +102,10 @@ export default class extends Controller {
                 });
 
                 socket.on("trade_status", (data) => {
-                  if (this.checkServiceRunning()) {
-                    this.perform("send_csgo_empire_event", {
-                      item_data: data,
-                      event: "trade_status",
-                    });
-                  }
+                  this.perform("send_csgo_empire_event", {
+                    item_data: data,
+                    event: "trade_status",
+                  });
                 });
 
                 socket.on("disconnect", (reason) =>
