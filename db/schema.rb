@@ -14,6 +14,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_28_085106) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "bid_items", force: :cascade do |t|
+    t.integer "deposit_id"
+    t.string "item_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "buying_filters", force: :cascade do |t|
     t.bigint "steam_account_id", null: false
     t.datetime "created_at", null: false

@@ -21,9 +21,9 @@ class CsgoempireService < ApplicationService
   end
 
   def socket_data(data)
-    if data['event'] == 'new_item'
+    if %w[auction_update new_item].include?(data['event'])
       # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
-      CsgoEmpireBuyingInitiateJob.perform_later(@current_user, data['item_data'], 20, 100)
+      CsgoEmpireBuyingInitiateJob.perform_later(@current_user, data['item_data'], 20, 100, data['event'])
     end
   end
   

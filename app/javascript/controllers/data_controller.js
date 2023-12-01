@@ -94,7 +94,7 @@ export default class extends Controller {
                 });
 
                 socket.on("auction_update", (data) => {
-                  // this.perform("send_csgo_empire_event", { item_data: data, event:"auction_update" });
+                  this.perform("send_csgo_empire_event", { item_data: data, event:"auction_update" });
                 });
 
                 socket.on("deleted_item", (data) => {
