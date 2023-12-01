@@ -34,7 +34,7 @@
         </a>
       </li>
       <li class="rounded-l-lg <%= request.url.include?('/error_logs') ? 'bg-blue-600' : nil %>">
-        <a href="#" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+        <a href="/errors" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
           <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/error_logs') ? 'text-white' : 'text-gray-400' %>"><i class="fa-solid fa-triangle-exclamation"></i></span>
           <span class="text-sm font-medium <%= request.url.include?('/error_logs') ? 'text-white' : nil %>">Error Logs</span>
         </a>

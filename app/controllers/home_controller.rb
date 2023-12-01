@@ -38,7 +38,7 @@ class HomeController < ApplicationController
   def update_active_account
     selected_steam_id = params[:steam_id]
     SteamAccount.transaction do
-      current_user.active_steam_account.update(active: false)
+      current_user.active_steam_account&.update(active: false)
       account = current_user.steam_accounts.find_by(steam_id: selected_steam_id)
       account.update(active: true) if account.present?
     end
