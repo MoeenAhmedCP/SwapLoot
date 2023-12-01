@@ -34,11 +34,7 @@
 
   <body data-controller="data">
       <%= render 'shared/alert' %>
-
-      <% if current_user && !request.path.include?("/errors") %>
-        <%= render 'shared/navbar' %>
-      <% end %>
-
+      <%= render 'shared/navbar' %>
       <div id= 'searchingModal'></div>
       <%= render partial: '/layouts/failure_toast'%>
       <%= render partial: '/layouts/success_toast'%>

@@ -3,6 +3,7 @@ class WaxpeerService < ApplicationService
 
   def initialize(current_user)
     @active_steam_account = current_user.active_steam_account
+    @current_user = current_user
     @params = {
       api: @active_steam_account&.waxpeer_api_key
     }
@@ -19,36 +20,73 @@ class WaxpeerService < ApplicationService
     else
       if res['data'].present?
         res['data']['trades'].each do |trade|
-          item_sold << trade if trade['action'] == 'sell'
+          if trade['action'] == 'sell'
+            create_item(trade['item_id'], trade['name'], trade['give_amount'], trade['price'], trade['date'])
+          end
         end
       end
     end
-    item_sold
+  end
+
+  def create_item(id, market_name, b_price, s_price, date)
+    item = SoldItem.find_by(item_id: id)
+    SoldItem.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: @active_steam_account) unless item.present?
+  end
+
+  def site_params(steam_account)
+    { api: steam_account&.waxpeer_api_key }
   end
 
   def fetch_item_listed_for_sale
-    return [] if waxpeer_api_key_not_found?
+    if @active_steam_account.present?
+      return [] if waxpeer_api_key_not_found?
 
-    res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: @params)
+      res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: @params)
 
-    if res['success'] == false
-      report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
-      []
+      if res['success'] == false
+        report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        []
+      else
+        response = res['items'].present? ? res['items'] : []
+      end
     else
-      res['items']
+      response = []
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.waxpeer_api_key.blank?
+
+        res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: site_params(steam_account))
+        response += res['items'].present? ? res['items'] : []
+      end
     end
+    response
   end
 
   def fetch_balance
-    return [] if waxpeer_api_key_not_found?
+    if @active_steam_account.present?
+      return [] if waxpeer_api_key_not_found?
 
-    res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
+      res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
 
-    if res['success'] == false
-      report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
-      return 0
+      if res['success'] == false
+        report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        return 0
+      else
+        res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
+        res['user'].present? ? res['user']['wallet'].to_f / 1000 : 0
+      end
     else
-      res['user']['wallet'].to_f / 1000
+      response_data = []
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.waxpeer_api_key.blank?
+
+        response = self.class.get(WAXPEER_BASE_URL + '/user', query: site_params(steam_account))
+        response_hash = {
+          account_id: steam_account.id,
+          balance: response['user'].present? ? response['user']['wallet'].to_f / 1000 : 0
+        }
+        response_data << response_hash
+      end
+      response_data
     end
   end
 

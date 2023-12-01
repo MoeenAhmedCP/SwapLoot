@@ -4,7 +4,7 @@ class MissingItemsService < ApplicationService
 
   def initialize(user)
     @user = user
-    @active_steam_account = user.active_steam_account
+    @active_steam_account = @user.active_steam_account
   end
 
   def missing_items
@@ -16,8 +16,10 @@ class MissingItemsService < ApplicationService
     if response['success'] == false
       report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
     else
-      api_inventory_item = response['items'].pluck('id')
-      Inventory.where.not(item_id: api_inventory_item).where(steam_id: @active_steam_account.steam_id, sold_at: nil)
+      if response['items']
+        api_inventory_item = response['items'].pluck('id')
+        Inventory.where.not(item_id: api_inventory_item).where(steam_id: @active_steam_account.steam_id, sold_at: nil)
+      end
     end
   end
 end

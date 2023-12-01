@@ -1,7 +1,7 @@
 <div class="p-6">
     <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
         <%= label_tag(:steamAccountSelect, @active_steam_account ? 'Steam Account:' : 'Choose Steam Account:', class: "text-2xl font-bold") %>
-        <%= select_tag('steam_id', options_for_select([['Select an account', nil]] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: @active_steam_account ? @active_steam_account.steam_id : "Select an account" ), id: 'steamAccountSelect', class: "w-[25%] rounded-lg p-2", onchange: 'submitForm()') %>
+        <%= select_tag('steam_id', options_for_select([['All', 'all']] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: @active_steam_account ? @active_steam_account.steam_id : 'all' ), id: 'steamAccountSelect', class: "w-[25%] rounded-lg p-2", onchange: 'submitForm()') %>
     <% end %>
     <hr class="bg-gray-400 h-px w-full my-3">
     <div class="flex">
@@ -38,7 +38,7 @@
 
 <div class="table-2">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <%= render partial: 'item_sold', locals: { sold_items: @items_sold }%>
+        <%= render partial: '/sold_items/item_sold', locals: { sold_items: @items_sold }%>
     </div>
 </div>
 

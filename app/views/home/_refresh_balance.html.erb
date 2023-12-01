@@ -1,7 +1,19 @@
 <div id="balance-container">
-    <div class="my-4">
-        <h2 class="font-bold"> CSGO Empire Balance: <%= @csgo_empire_balance.nil? ? "$0" : "#{@csgo_empire_balance} coins" %></h2>
-        <h2 class="font-bold"> CSGO Market Balance: <%= @csgo_market_balance.nil? ? "$0" : "$#{@csgo_market_balance}" %></h2>
-        <h2 class="font-bold"> Waxpeer Balance: <%= @waxpeer_balance.nil? ? "$0" : "$#{@waxpeer_balance}" %></h2>
-    </div>
+  <div class="my-4">
+    <% if current_user.active_steam_account %>
+      <h2 class="font-bold"> CSGO Empire Balance: <%= @csgo_empire_balance.nil? ? "$0" : "#{@csgo_empire_balance} coins" %></h2>
+      <h2 class="font-bold"> CSGO Market Balance: <%= @csgo_market_balance.nil? ? "$0" : "$#{@csgo_market_balance}" %></h2>
+      <h2 class="font-bold"> Waxpeer Balance: <%= @waxpeer_balance.nil? ? "$0" : "$#{@waxpeer_balance}" %></h2>
+    <% else %>
+      <% @balance_data.each do |account| %>
+        <h1 class="text-3xl font-bold text-grey"><%= account[:account_name] %></h1>
+        <h2 class="font-bold"> CSGO Empire Balance: <%= account[:csgo_empire_balance] %></h2>
+        
+        <h2 class="font-bold"> CSGO Market Balance: <%= account[:csgo_market_balance] %></h2>
+        
+        <h2 class="font-bold"> Waxpeer Balance: <%= account[:waxpeer_balance] %></h2>
+        <br/>
+      <% end %>
+    <% end %>
+  </div>
 </div>
