@@ -5,6 +5,5 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :steam_accounts
-
-  scope :active_steam_accounts, -> { joins(:steam_accounts).where(steam_accounts: { active: true }) }
+  has_one :active_steam_account, -> { joins(:user).merge(SteamAccount.active_accounts).limit(1) }, class_name: 'SteamAccount'
 end

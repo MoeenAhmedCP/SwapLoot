@@ -11,6 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +23,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
     t.integer "max_price", default: 100
     t.integer "min_price", default: 50
     t.index ["steam_account_id"], name: "index_buying_filters_on_steam_account_id"
+  end
+
+  create_table "errors", force: :cascade do |t|
+    t.string "message", default: ""
+    t.string "backtrace", default: [], array: true
+    t.string "error_type", default: "StandardError"
+    t.boolean "handled", default: false
+    t.string "severity", default: "error"
+    t.json "context", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "inventories", force: :cascade do |t|
@@ -40,6 +52,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
     t.float "liquidity"
     t.json "buff"
     t.json "waxpeer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.string "item_id"
+    t.string "item_name"
+    t.date "date"
+    t.decimal "bought_price"
+    t.decimal "sold_price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

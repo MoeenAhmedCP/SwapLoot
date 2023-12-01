@@ -8,32 +8,24 @@ export default class extends Controller {
     this.startAllChannelsSubscriptions();
   }
 
-  startAllChannelsSubscriptions() {
-    const steamBuyingServices = document.querySelectorAll('.steam-buying-services')
-    if (steamBuyingServices.length > 0) {
-      steamBuyingServices.forEach((checkbox) => {
-        if (checkbox.checked) {
-          this.subscribeEventsChannel(checkbox.id);
-        }
-      })
-    }
+  async startAllChannelsSubscriptions() {
+    const steamAccounts = await this.fetchAllSteamAccounts();
+
+    steamAccounts.forEach((account) => {
+      this.subscribeEventsChannel(account);
+    });
   }
 
-  triggerBuying = (event) => {
-    if (event.target.checked) {
-      this.subscribeEventsChannel(event.target.id);
-    } else {
-      this.unsubscribeEventsChannel(event.target.id);
-    }
-  };
+  subscribeEventsChannel(accountData) {
+    const accountId = accountData.account_id;
+    const userData = accountData.user_data;
 
-  subscribeEventsChannel = async (accountId) => {
     consumer.subscriptions.create(
       { channel: "CsgosocketChannel", channel_id: accountId },
       {
         connected() {
           // Called when the subscription is ready for use on the server
-          this.fetchCsGoEmpireData(accountId);
+          this.fetchCsGoEmpireData();
         },
 
         disconnected() {
@@ -45,9 +37,8 @@ export default class extends Controller {
           // Called when there's incoming data on the websocket for this channel
         },
 
-        async fetchCsGoEmpireData(accountId) {
+        async fetchCsGoEmpireData() {
           const socketEndpoint = "wss://trade.csgoempire.com/trade";
-          const userData = await this.fetch_user_data(accountId);
 
           if (userData) {
             try {
@@ -90,9 +81,7 @@ export default class extends Controller {
                 );
 
                 socket.on("new_item", (data) => {
-                  const subscription = this.findSubscribedChannel(accountId);
-
-                  if (subscription) {
+                  if (this.checkServiceRunning()) {
                     this.perform("send_csgo_empire_event", {
                       item_data: data,
                       event: "new_item",
@@ -113,14 +102,10 @@ export default class extends Controller {
                 });
 
                 socket.on("trade_status", (data) => {
-                  const subscription = this.findSubscribedChannel(accountId);
-
-                  if (subscription) {
-                    this.perform("send_csgo_empire_event", {
-                      item_data: data,
-                      event: "trade_status",
-                    });
-                  }
+                  this.perform("send_csgo_empire_event", {
+                    item_data: data,
+                    event: "trade_status",
+                  });
                 });
 
                 socket.on("disconnect", (reason) =>
@@ -147,45 +132,40 @@ export default class extends Controller {
           }
         },
 
-        async fetch_user_data(accountId) {
-          try {
-            return await $.ajax({
-              url: `/home/fetch_user_data/${accountId}`,
-              method: "GET",
-              dataType: "json",
-              success: (response) => {
-                return response;
-              },
-              error: (xhr, status, error) => {
-                return error;
-              },
-            });
-          } catch (error) {
-            console.error("Error while fetching user data:", error);
-            return error;
+        checkServiceRunning() {
+          const steamBuyingServices = document.querySelectorAll(
+            ".steam-buying-services"
+          );
+
+          if (steamBuyingServices.length > 0) {
+            for (const checkbox of steamBuyingServices) {
+              if (checkbox.checked && checkbox.id == accountId) {
+                return true;
+              }
+            }
           }
-        },
-
-        findSubscribedChannel(accountId) {
-          return consumer.subscriptions.subscriptions.find((subscription) => {
-            const identifier = JSON.parse(subscription.identifier || "{}");
-            return identifier.channel_id === accountId.toString();
-          });
+          return false;
         },
       }
     );
-  };
+  }
 
-  unsubscribeEventsChannel(accountId) {
-    const subscription = consumer.subscriptions.subscriptions.find(
-      (subscription) => {
-        const identifier = JSON.parse(subscription.identifier || "{}");
-        return identifier.channel_id === accountId.toString();
-      }
-    );
-
-    if (subscription) {
-      subscription.unsubscribe();
+  async fetchAllSteamAccounts() {
+    try {
+      return await $.ajax({
+        url: "/home/fetch_all_steam_accounts",
+        method: "GET",
+        dataType: "json",
+        success: (response) => {
+          return response;
+        },
+        error: (xhr, status, error) => {
+          return error;
+        },
+      });
+    } catch (error) {
+      console.error("Error while fetching user data:", error);
+      return error;
     }
   }
 }
