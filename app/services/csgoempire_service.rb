@@ -85,7 +85,7 @@ class CsgoempireService < ApplicationService
 
   def self.fetch_user_data(steam_account)
     headers = { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" }
-    response self.class.get(BASE_URL + '/metadata/socket', headers: headers)
+    response = self.get(BASE_URL + '/metadata/socket', headers: headers)
 
     if response['success'] == false
       report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
