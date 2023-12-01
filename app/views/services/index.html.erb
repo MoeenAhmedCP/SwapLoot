@@ -8,6 +8,8 @@
         <% trade_service = steam_account&.trade_service %>
         <% selling_status = trade_service&.selling_status %>
         <% buying_status = trade_service&.buying_status %>
+        <% price_cutting_status = trade_service&.price_cutting_status %>
+        
         <%= form_tag(trigger_service_path(steam_id: steam_account.steam_id), method: :get, class: 'steam-form') do %>
         <div>
             <div class="px-10 flex items-center justify-between">
@@ -15,6 +17,12 @@
                 <h2 class="text-lg font-semibold"><%= steam_account.unique_name %></h2>
             </div>
             <div class="p-5">
+                <label class="relative inline-flex items-center me-5 cursor-pointer">
+                <%= check_box_tag 'price_cutting', price_cutting_status ? 'on' : 'off', price_cutting_status, class: "steam-checkbox sr-only peer toggle-price-cutting-#{steam_account&.selling_filter&.id}", onchange: "changePriceCuttingStatus('#{steam_account&.selling_filter&.id}', '#{ trade_service&.id }', '#{ steam_account&.id }')" %>
+                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-black">Price Under Cutting</span>
+                </label>
+
                 <label class="relative inline-flex items-center me-5 cursor-pointer">
                 <%= check_box_tag 'selling', selling_status ? 'on' : 'off', selling_status, class: "steam-checkbox sr-only peer toggle-#{steam_account&.selling_filter&.id}", onchange: "changeSellingStatus('#{steam_account&.selling_filter&.id}', '#{ trade_service&.id }', '#{ steam_account&.id }')" %>
                 <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
@@ -47,6 +55,7 @@
 <script>
 
   function changeSellingStatus(selling_filter_id, trade_service_id, steam_account_id){
+    $(`.toggle-price-cutting-${steam_account_id}`)[0].checked = true
     if(trade_service_id && selling_filter_id){
       $.ajax({
         url: `/trade_services/${trade_service_id}`,
@@ -54,6 +63,28 @@
         data: {
           trade_service: {
             selling_status: $(`.toggle-${selling_filter_id}`)[0].checked
+          },
+          steam_account_id: steam_account_id
+        },
+        success: function(){},
+        error: function(){}
+      });
+    }
+    else{
+      $(`.toggle-${selling_filter_id}`).prop('checked', false)
+      alert('Trade Service not Found.')
+    }
+
+  }
+
+    function changePriceCuttingStatus(selling_filter_id, trade_service_id, steam_account_id){
+    if(trade_service_id && selling_filter_id){
+      $.ajax({
+        url: `/trade_services/${trade_service_id}`,
+        type: 'PATCH',
+        data: {
+          trade_service: {
+            price_cutting_status: $(`.toggle-price-cutting-${selling_filter_id}`)[0].checked
           },
           steam_account_id: steam_account_id
         },

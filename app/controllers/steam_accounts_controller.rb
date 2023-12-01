@@ -1,6 +1,5 @@
 class SteamAccountsController < ApplicationController
   before_action :set_steam_account, only: %i[edit update destroy]
-  before_action :set_steam_account, only: %i[edit update destroy]
   after_action :set_steam_account_filters, only: %i[create]
   
   def index
@@ -43,7 +42,7 @@ class SteamAccountsController < ApplicationController
   end
 
   def steam_account_params
-    params.require(:steam_account).permit(:steam_id, :unique_name,:steam_web_api_key, :waxpeer_api_key, :csgoempire_api_key, :market_csgo_api_key)
+    params.require(:steam_account).permit(:steam_id, :unique_name,:steam_web_api_key, :waxpeer_api_key, :csgoempire_api_key, :market_csgo_api_key, :price_empire_api_key)
   end
 
   def set_steam_account_filters

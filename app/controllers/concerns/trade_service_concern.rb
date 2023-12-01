@@ -17,6 +17,6 @@ module TradeServiceConcern
   end
 
   def trade_service_params
-    params.require(:trade_service).permit(:buying_status, :selling_status, :selling_job_id, :buying_job_id)
+    params.require(:trade_service).permit(:buying_status, :selling_status, :selling_job_id, :buying_job_id, :price_cutting_job_id, :price_cutting_status)
   end
 end
