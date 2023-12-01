@@ -22,7 +22,7 @@
     <tbody>
      <% @steam_accounts.each do |steam_account| %>
         <tr class="hover:bg-gray-100">
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm rounded-bl-lg"><%= steam_account.steam_id %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm "><%= steam_account.steam_id %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.unique_name %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.steam_web_api_key %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key %></td>
