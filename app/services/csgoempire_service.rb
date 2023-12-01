@@ -102,8 +102,14 @@ class CsgoempireService < ApplicationService
         merged_response = {
           'success' => response.all? { |resp| resp['success'] },
           'data' => {
-            'deposits' => response.map { |resp| resp['data']['deposits'] }.flatten,
-            'withdrawals' => response.map { |resp| resp['data']['withdrawals'] }.flatten
+            'deposits' => response.map do |resp|
+              data = resp['data']
+              deposits = data['deposits'] if data
+            end.flatten.compact,
+            'withdrawals' => response.map do |resp|
+              data = resp['data']
+              deposits = data['withdrawals'] if data
+            end.flatten.compact
           }
         }
         response = merged_response
@@ -136,7 +142,7 @@ class CsgoempireService < ApplicationService
               item_data = transaction_data['data']['metadata']['item']
               if item_data
                 inventory = Inventory.find_by(item_id: item_data['asset_id'])
-                create_item(item_data['asset_id'], item_data['market_name'], inventory.market_price, item_data['market_value'], item_data['updated_at'])
+                create_item(item_data['asset_id'], item_data['market_name'], inventory.market_price, item_data['market_value'], item_data['updated_at']) if inventory.present?
               end
             end
           end
@@ -184,8 +190,8 @@ class CsgoempireService < ApplicationService
   end
 
   def create_item(id, market_name, b_price, s_price, date)
-    item = Item.find_by(item_id: id)
-    Item.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: @current_user.active_steam_account) unless item.present?
+    item = SoldItem.find_by(item_id: id)
+    SoldItem.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: @current_user.active_steam_account) unless item.present?
   end
 
   def csgoempire_key_not_found?
