@@ -1,14 +1,17 @@
+require 'sidekiq/web'
 Rails.application.routes.draw do
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
   # root "articles#index"
+  mount Sidekiq::Web => '/sidekiq'
   root to: "home#index"
   resources :steam_accounts
   resources :inventories, only: [:index]
   resources :selling_filters, only: %i[edit update]
   resources :trade_services, only: %i[update]
+  resources :trigger_price_cutting, only: %i[update]
   get '/services', to: "services#index"
   post '/trigger_service', to: "services#trigger_service"
   post '/selling_service', to: "services#selling_service"

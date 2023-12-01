@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_28_131851) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,6 +19,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_28_131851) do
     t.bigint "steam_account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "min_percentage", default: 20
+    t.integer "max_price", default: 100
+    t.integer "min_price", default: 50
     t.index ["steam_account_id"], name: "index_buying_filters_on_steam_account_id"
   end
 
@@ -41,6 +45,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_28_131851) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "sold_at"
+  end
+
+  create_table "price_empires", force: :cascade do |t|
+    t.string "item_name"
+    t.float "liquidity"
+    t.json "buff"
+    t.json "waxpeer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "items", force: :cascade do |t|
@@ -74,6 +87,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_28_131851) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.string "price_empire_api_key"
     t.index ["user_id"], name: "index_steam_accounts_on_user_id"
   end
 
@@ -85,6 +99,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_28_131851) do
     t.bigint "steam_account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "price_cutting_job_id"
+    t.boolean "price_cutting_status", default: false
     t.index ["steam_account_id"], name: "index_trade_services_on_steam_account_id"
   end
 

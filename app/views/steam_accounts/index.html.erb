@@ -14,6 +14,7 @@
             <th class="px-4 py-2">Waxpeer API Key</th>
             <th class="px-4 py-2">CSGOEmpire API Key</th>
             <th class="px-4 py-2">Market.CSGO API Key</th>
+            <th class="px-4 py-2">Price Empire API Key</th>
             <th class="px-4 py-2">Action</th>
         </tr>
     </thead>
@@ -26,6 +27,7 @@
           <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.waxpeer_api_key %></td>
           <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.csgoempire_api_key %></td>
           <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.market_csgo_api_key %></td>
+          <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.price_empire_api_key %></td>
           <td class="border text-center px-4 py-2">
           <%= link_to "Edit", edit_steam_account_path(id: steam_account), class: "mr-3 text-blue-500 hover:text-blue-700" %>
           <%=form_tag(steam_account_path(id: steam_account), method: :delete, id: "delete-steam-account") do %>
