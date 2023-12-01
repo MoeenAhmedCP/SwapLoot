@@ -23,13 +23,6 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer">
     </script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-      integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
   </head>
 
   <body data-controller="data" style="overflow-x:hidden">
@@ -41,7 +34,10 @@
   <div style="display:flex; flex-direction:column; width: calc(100% - 225px); ">
 
       <%= render 'shared/alert' %>
-      <%= render 'shared/navbar' %>
+      <% if current_user %>
+      <div class="h-20">  <%= render 'shared/navbar' %></div>
+      <% end %>
+
       <div id= 'searchingModal'></div>
       <%= render partial: '/layouts/failure_toast'%>
       <%= render partial: '/layouts/success_toast'%>
@@ -52,5 +48,3 @@
       </div>
   </body>
 </html>
-
-
