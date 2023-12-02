@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   private
 
   def set_steam_accounts
-    @steam_accounts = current_user.steam_accounts
+    @steam_accounts = current_user&.steam_accounts
   end
 
   def handle_error(error)
