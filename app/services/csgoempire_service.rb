@@ -174,8 +174,9 @@ class CsgoempireService < ApplicationService
           response_data['data'].each do |transaction_data|
             if transaction_data['key'] == 'deposit_invoices' && transaction_data['data']['status_name'] == 'Complete'
               item_data = transaction_data['data']['metadata']['item']
+              item_id = transaction_data['data']['metadata']['item_id']
               if item_data
-                inventory = Inventory.find_by(item_id: item_data['asset_id'])
+                inventory = Inventory.find_by(item_id: item_id)
                 create_item(item_data['asset_id'], item_data['market_name'], inventory.market_price, item_data['market_value'], item_data['updated_at']) if inventory.present?
               end
             end

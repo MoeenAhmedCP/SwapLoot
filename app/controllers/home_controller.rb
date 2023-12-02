@@ -2,7 +2,7 @@ class HomeController < ApplicationController
   include HomeControllerConcern
 
   def index
-    @active_steam_account = current_user.active_steam_account
+    @active_steam_account ||= current_user.active_steam_account.presence || current_user.steam_accounts
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
     @items_sold = @active_steam_account ? SoldItem.where(steam_account: current_user.active_steam_account) : SoldItem.where(steam_account: current_user.steam_accounts)
   end
@@ -42,7 +42,7 @@ class HomeController < ApplicationController
       account = current_user.steam_accounts.find_by(steam_id: selected_steam_id)
       account.update(active: true) if account.present?
     end
-    redirect_to root_path
+    redirect_back(fallback_location: root_path)
   end
 
   def refresh_balance
