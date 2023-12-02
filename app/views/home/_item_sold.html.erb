@@ -3,22 +3,23 @@
     <i class="fa fa-refresh text-blue-600" aria-hidden="true"></i>
 </div>
 
-<table id="dataTableItemsSold" class="display" style="width:100%">
-    <thead>
+      <table id="dataTableItemsSold" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+
+    <thead class="bg-blue-600 text-white">
         <tr>
-            <th class="px-4 py-2">Item ID</th>
-            <th class="px-4 py-2">Item Name</th>
-            <th class="px-4 py-2">Price</th>
-            <th class="px-4 py-2">Date</th>
+            <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
+            <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Item Name</th>
+            <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Price</th>
+            <th class="text-sm px-4 py-2 rounded-tr-lg">Date</th>
         </tr>
     </thead>
     <tbody>
     <% sold_items.each do |sold_item| %>
-        <tr class="bg-red-600">
-            <td class="border text-center px-4 py-2 bg-red-600"><%= sold_item['item_id'] %></td>
-            <td class="border text-center px-4 py-2"><%= sold_item['name'] %></td>
-            <td class="border text-center px-4 py-2"><%= "$#{sold_item['price'].to_f / 1000}" %></td>
-            <td class="border text-center px-4 py-2"><%= sold_item['date'] %></td>
+        <tr>
+            <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item['item_id'] %></td>
+            <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item['name'] %></td>
+            <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= "$#{sold_item['price'].to_f / 1000}" %></td>
+            <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item['date'] %></td>
         </tr>
         <% end %>
     </tbody>
