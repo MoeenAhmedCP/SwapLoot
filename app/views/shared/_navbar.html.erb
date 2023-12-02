@@ -19,7 +19,7 @@
       <%else%>
         <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
           <% if @steam_accounts.present? %>
-            <%= select_tag('steam_id', options_for_select([['Select an account', nil]] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: @active_steam_account ? @active_steam_account.steam_id : "Select an account" ), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray-500 font-[300]", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', onchange: 'submitForm()') %>
+            <%= select_tag('steam_id', options_for_select([['All', 'all']] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: @active_steam_account ? @active_steam_account.steam_id : 'all' ), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray-500 font-[300]", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', onchange: 'submitForm()') %>
           <% else %>
             <%= select_tag('steam_id', options_for_select([['No accounts available', nil]]), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray-500 font-[300] disabled", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', disabled: true) %>
           <% end %>
