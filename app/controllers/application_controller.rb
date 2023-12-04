@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   end
 
   def active_steam_account
-    @active_steam_account ||= current_user.active_steam_account.presence || current_user.steam_accounts
+    @active_steam_account ||= current_user.active_steam_account.presence || current_user.steam_accounts if current_user.present?
   end
 
   def handle_error(error)

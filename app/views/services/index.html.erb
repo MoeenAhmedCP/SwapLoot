@@ -1,10 +1,14 @@
  <div class="m-10">   <h2 class="text-lg mb-2 text-blue-600 font-[500]">Services</h2>
 
 <div class="shadow-md rounded-b-lg">
+  <% if @steam_accounts.present? %>
     <div class="flex items-center justify-between bg-blue-600 text-white p-3 rounded-t-lg">
         <div class="font-[300] text-md px-2">Steam Accounts</div>
         <div class="font-[300] text-md me-40 ">Services</div>
     </div>
+  <% else %>
+    <h1 class="p-5 text-gray-400 text-lg">No services available</h1>
+  <% end %>
     <div class="">
     <% @steam_accounts.each_with_index do |steam_account, index| %>
         <% trade_service = steam_account&.trade_service %>
