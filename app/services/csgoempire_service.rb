@@ -172,9 +172,9 @@ class CsgoempireService < ApplicationService
             if transaction_data['key'] == 'deposit_invoices' && transaction_data['data']['status_name'] == 'Complete'
               item_data = transaction_data['data']['metadata']['item']
               item_id = transaction_data['data']['metadata']['item_id']
+              sold_price = (transaction_data['delta']).to_f / 100
               if item_data
-                inventory = Inventory.find_by(item_id: item_id)
-                create_item(item_data['asset_id'], item_data['market_name'], inventory.market_price, item_data['market_value'], item_data['updated_at']) if inventory.present?
+                create_item(item_data['asset_id'], item_data['market_name'], sold_price, item_data['market_value'], item_data['updated_at'])
               end
             end
           end
