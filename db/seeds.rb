@@ -10,7 +10,7 @@
 # Daud
 # Saad
 # Fahad
-# Muhammad Ahmed 
+# Muhammad Ahmed
 
 User.create(email: "muhammad.ahmed@cloudpacer.com", password: "swaploot123!")
 # User.create(email: "daud@swaploot.com", password: "swaploot123!")

@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
-
+ActiveRecord::Schema[7.0].define(version: 2023_12_04_122622) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -47,21 +46,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
     t.datetime "sold_at"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.string "title"
+    t.string "body"
+    t.string "notification_type"
+    t.boolean "is_read", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "price_empires", force: :cascade do |t|
     t.string "item_name"
     t.float "liquidity"
     t.json "buff"
     t.json "waxpeer"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "items", force: :cascade do |t|
-    t.string "item_id"
-    t.string "item_name"
-    t.date "date"
-    t.decimal "bought_price"
-    t.decimal "sold_price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -74,6 +72,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["steam_account_id"], name: "index_selling_filters_on_steam_account_id"
+  end
+
+  create_table "sold_items", force: :cascade do |t|
+    t.string "item_id"
+    t.string "item_name"
+    t.date "date"
+    t.decimal "bought_price"
+    t.decimal "sold_price"
+    t.bigint "steam_account_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["steam_account_id"], name: "index_sold_items_on_steam_account_id"
   end
 
   create_table "steam_accounts", force: :cascade do |t|
@@ -118,6 +128,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
 
   add_foreign_key "buying_filters", "steam_accounts"
   add_foreign_key "selling_filters", "steam_accounts"
+  add_foreign_key "sold_items", "steam_accounts"
   add_foreign_key "steam_accounts", "users"
   add_foreign_key "trade_services", "steam_accounts"
 end
