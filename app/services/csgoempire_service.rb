@@ -46,7 +46,6 @@ class CsgoempireService < ApplicationService
     elsif data['event'] == 'trade_status'
       data['item_data'].each do |item|
         if item['data']['status_message'] == 'Sent'
-          generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Sold")
           service_hash = set_remove_item_hash data
           RemoveItems.remove_item_from_all_services(@current_user, service_hash)
           inventory = Inventory.find_by(item_id: item['data']['item_id'])
@@ -54,7 +53,10 @@ class CsgoempireService < ApplicationService
             inventory.soft_delete_and_set_sold_at
           end
         end
-        if item['data']['status_message'] == 'Confirming'
+        if item['data']['status_message'] == 'Sent' && item["type"] == "deposit"
+          generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Sold")
+        end
+        if item['data']['status_message'] == 'Completed' && item["type"] == "withdrawal"
           generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Bought")
         end
       end
@@ -63,7 +65,7 @@ class CsgoempireService < ApplicationService
 
   def generate_notification(item_id, item_name, total_value, notification_type)
     Notification.create(
-      title: "Item #{notification_type}", body: "#{item_name} sold with ID: (#{item_id}) at price (#{(total_value.to_f)/100}) coins", 
+      title: "Item #{notification_type}", body: "#{item_name} #{notification_type} with ID: (#{item_id}) at price (#{(total_value.to_f)/100}) coins", 
       notification_type: notification_type
     )
   end
@@ -254,7 +256,6 @@ class CsgoempireService < ApplicationService
   end
 
   def set_remove_item_hash(data)
-    byebug
     service_hash = { 'CsgoempireService': '', 'WaxpeerService': '' }
     trade_service_info = data['item_data'].first
     if trade_service_info['type'] == 'deposit' && trade_service_info.dig('data', 'status_message') == 'Sent'
@@ -264,7 +265,6 @@ class CsgoempireService < ApplicationService
     csgo_desposit_data = fetch_item_listed_for_sale
     if fetch_item_listed_for_sale.present?
       csgo_desposit_data.each do |record|
-        byebug
         record['items'].each do |item_data|
           if item_data['id'] == trade_service_info.dig('data', 'item_id')
             service_hash['CsgoempireService'] = record['id']
