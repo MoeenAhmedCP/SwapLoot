@@ -2,7 +2,6 @@ class InventoriesController < ApplicationController
   before_action :fetch_inventory, only: %i[index]
 
   def index
-    @active_steam_account ||= current_user.active_steam_account.presence || current_user.steam_accounts
     if params["tradable"] == "true"
       @inventories = Inventory.tradable_steam_inventories(@active_steam_account)
     elsif params["tradable"] == "false"
