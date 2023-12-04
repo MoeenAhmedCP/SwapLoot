@@ -1,11 +1,17 @@
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!
+  before_action :authenticate_user!, unless: :admin_controller?
   before_action :set_steam_accounts
   before_action :active_steam_account
 
   rescue_from StandardError, with: :handle_error
 
   private
+
+  def admin_controller?
+    def is_admin?
+      request.url.include?("admin")
+    end
+  end
 
   def set_steam_accounts
     @steam_accounts = current_user&.steam_accounts
