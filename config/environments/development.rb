@@ -59,6 +59,26 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+  Rails.application.configure do
+  
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: 'info@swaploot.com',       # Replace with your SMTP server address
+      port: 587,                              # Replace with your SMTP server port
+      domain: 'swap-loot.com',              # Replace with your domain
+      user_name: 'swap-loot',             # Replace with your SMTP username
+      password: 'swapt-loot123',              # Replace with your SMTP password
+      authentication: 'plain',
+      enable_starttls_auto: true
+    }
+  
+    # Other configuration settings...
+  end
+
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
