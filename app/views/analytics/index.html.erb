@@ -10,11 +10,11 @@
     <%= column_chart(@profit_by_month, ytitle: "Dollars")%>
   </div>
 
-  <hr class="bg-gray-400  w-[1px] h-[225%]">
+  <hr class="bg-gray-400  w-[1px] h-[235%]">
 
   <div class="flex flex-col w-1/2 items-center">
     <h2 class='font-bold text-blue-600 '>Quantity Sold Graph</h2>
-    <%= column_chart(@quantity_sold_by_month, ytitle: "Quantity") %>
+    <%= bar_chart(@quantity_sold_by_month, ytitle: "Quantity") %>
   </div>
 
 </div>
@@ -22,12 +22,14 @@
 <br>
 <br>
 <br>
+  <hr class="bg-gray-600  w-[100%] h-[1px] mb-10">
+
 
 <div class="w-full flex flex-row">
 
   <div class="flex flex-col w-1/2 items-center">
   <h2 class='font-bold text-blue-600 '>Quantity Purchased Graph</h2>
-  <%= column_chart(@quantity_purchased_by_month, ytitle: "Quantity") %>
+  <%= pie_chart(@quantity_purchased_by_month, ytitle: "Quantity") %>
   </div>
 
 
