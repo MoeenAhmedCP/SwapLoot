@@ -53,8 +53,21 @@ class CsgoempireService < ApplicationService
             inventory.soft_delete_and_set_sold_at
           end
         end
+        if item['data']['status_message'] == 'Sent' && item["type"] == "deposit"
+          generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Sold")
+        end
+        if item['data']['status_message'] == 'Completed' && item["type"] == "withdrawal"
+          generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Bought")
+        end
       end
     end
+  end
+
+  def generate_notification(item_id, item_name, total_value, notification_type)
+    Notification.create(
+      title: "Item #{notification_type}", body: "#{item_name} #{notification_type} with ID: (#{item_id}) at price (#{(total_value.to_f)/100}) coins", 
+      notification_type: notification_type
+    )
   end
 
   def fetch_item_listed_for_sale
