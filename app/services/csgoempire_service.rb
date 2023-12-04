@@ -42,7 +42,7 @@ class CsgoempireService < ApplicationService
   def socket_data(data)
     if data['event'] == 'new_item'
       # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
-      CsgoEmpireBuyingInitiateJob.perform_later(@current_user, data['item_data'], 20, 100)
+      CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], 20, 100)
     elsif data['event'] == 'trade_status'
       service_hash = set_remove_item_hash data
       RemoveItems.remove_item_from_all_services(@current_user, service_hash)

@@ -5,7 +5,7 @@ class CsgoEmpireBuyingInitiateJob < ApplicationJob
   def perform(user, items, max_percentage, specific_price)
     items.each do |item|
       begin
-        CsgoEmpireBuyingJob.perform_later(user, item, max_percentage, specific_price)
+        CsgoEmpireBuyingJob.perform_async(user, item, max_percentage, specific_price)
       rescue StandardError => e
         logger.error "Error processing item #{item['market_name']}: #{e.message}"
         next
