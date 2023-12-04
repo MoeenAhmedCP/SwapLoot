@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_steam_accounts
+  before_action :active_steam_account
 
   rescue_from StandardError, with: :handle_error
 
@@ -8,6 +9,10 @@ class ApplicationController < ActionController::Base
 
   def set_steam_accounts
     @steam_accounts = current_user&.steam_accounts
+  end
+
+  def active_steam_account
+    @active_steam_account ||= current_user.active_steam_account.presence || current_user.steam_accounts
   end
 
   def handle_error(error)
