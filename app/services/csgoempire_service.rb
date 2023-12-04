@@ -42,7 +42,7 @@ class CsgoempireService < ApplicationService
   def socket_data(data)
     if data['event'] == 'new_item'
       # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
-      CsgoEmpireBuyingInitiateJob.perform_later(@current_user, data['item_data'], 20, 100)
+      CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], 20, 100)
     elsif data['event'] == 'trade_status'
       service_hash = set_remove_item_hash data
       RemoveItems.remove_item_from_all_services(@current_user, service_hash)
@@ -162,10 +162,7 @@ class CsgoempireService < ApplicationService
     end
   end
 
-  def fetch_deposit_transactions
-    return if csgoempire_key_not_found?
-
-    response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+  def save_transaction(response)
     if response['data']
       last_page = response['last_page'].to_i
       (1..last_page).each do |page_number|
@@ -175,13 +172,29 @@ class CsgoempireService < ApplicationService
             if transaction_data['key'] == 'deposit_invoices' && transaction_data['data']['status_name'] == 'Complete'
               item_data = transaction_data['data']['metadata']['item']
               item_id = transaction_data['data']['metadata']['item_id']
+              sold_price = (transaction_data['delta']).to_f / 100
               if item_data
-                inventory = Inventory.find_by(item_id: item_id)
-                create_item(item_data['asset_id'], item_data['market_name'], inventory.market_price, item_data['market_value'], item_data['updated_at']) if inventory.present?
+                create_item(item_data['asset_id'], item_data['market_name'], sold_price, item_data['market_value'], item_data['updated_at'])
               end
             end
           end
         end
+      end
+    end
+  end
+
+  def fetch_deposit_transactions
+    if @active_steam_account.present?
+      return if csgoempire_key_not_found?
+
+      response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+      save_transaction(response)
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.csgoempire_api_key.blank?
+
+        response = self.class.get("#{BASE_URL}/user/transactions", headers: headers(steam_account.csgoempire_api_key))
+        save_transaction(response)
       end
     end
   end
