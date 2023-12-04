@@ -243,7 +243,6 @@ class CsgoempireService < ApplicationService
   end
 
   def set_remove_item_hash(data)
-    byebug
     service_hash = { 'CsgoempireService': '', 'WaxpeerService': '' }
     trade_service_info = data['item_data'].first
     if trade_service_info['type'] == 'deposit' && trade_service_info.dig('data', 'status_message') == 'Sent'
@@ -253,7 +252,6 @@ class CsgoempireService < ApplicationService
     csgo_desposit_data = fetch_item_listed_for_sale
     if fetch_item_listed_for_sale.present?
       csgo_desposit_data.each do |record|
-        byebug
         record['items'].each do |item_data|
           if item_data['id'] == trade_service_info.dig('data', 'item_id')
             service_hash['CsgoempireService'] = record['id']
