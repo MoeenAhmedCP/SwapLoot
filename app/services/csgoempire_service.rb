@@ -44,17 +44,13 @@ class CsgoempireService < ApplicationService
       # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
       CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], 20, 100)
     elsif data['event'] == 'trade_status'
-      service_hash = set_remove_item_hash data
-      RemoveItems.remove_item_from_all_services(@current_user, service_hash)
-    end
-    if data['event'] == 'trade_status'
       data['item_data'].each do |item|
         if item['data']['status_message'] == 'Sent'
+          service_hash = set_remove_item_hash data
+          RemoveItems.remove_item_from_all_services(@current_user, service_hash)
           inventory = Inventory.find_by(item_id: item['data']['item_id'])
           if inventory.present?
             inventory.soft_delete_and_set_sold_at
-            # service_hash = set_remove_item_hash data
-            # RemoveItems.remove_item_from_all_services(@current_user, service_hash)
           end
         end
       end
@@ -247,6 +243,7 @@ class CsgoempireService < ApplicationService
   end
 
   def set_remove_item_hash(data)
+    byebug
     service_hash = { 'CsgoempireService': '', 'WaxpeerService': '' }
     trade_service_info = data['item_data'].first
     if trade_service_info['type'] == 'deposit' && trade_service_info.dig('data', 'status_message') == 'Sent'
@@ -254,11 +251,14 @@ class CsgoempireService < ApplicationService
     end
 
     csgo_desposit_data = fetch_item_listed_for_sale
-    csgo_desposit_data.each do |record|
-      record['items'].each do |item_data|
-        if item_data['id'] == trade_service_info.dig('data', 'item_id')
-          service_hash['CsgoempireService'] = record['id']
-          break
+    if fetch_item_listed_for_sale.present?
+      csgo_desposit_data.each do |record|
+        byebug
+        record['items'].each do |item_data|
+          if item_data['id'] == trade_service_info.dig('data', 'item_id')
+            service_hash['CsgoempireService'] = record['id']
+            break
+          end
         end
       end
     end
