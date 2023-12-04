@@ -1,12 +1,16 @@
 require 'sidekiq/web'
 Rails.application.routes.draw do
-  devise_for :users, skip: [:registrations]
   # Defines the root path route ("/")
   # root "articles#index"
   mount Sidekiq::Web => '/sidekiq'
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
   root to: "home#index"
   resources :steam_accounts
   resources :inventories, only: [:index]
+  resources :notifications, only: [:index, :update]
   resources :selling_filters, only: %i[edit update]
   resources :trade_services, only: %i[update]
   resources :trigger_price_cutting, only: %i[update]
@@ -18,6 +22,7 @@ Rails.application.routes.draw do
   get '/home/active_trades_reload', to: 'home#active_trades_reload'
   get '/home/reload_item_listed_for_sale', to: 'home#reload_item_listed_for_sale'
   get '/home/fetch_all_steam_accounts', to: 'home#fetch_all_steam_accounts'
+  put '/mark_all_as_read', to: 'notifications#mark_all_as_read'
   resources :users, only: [:show]
   resources :errors, only: %i[index show]
 end
