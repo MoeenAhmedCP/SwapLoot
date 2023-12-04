@@ -1,8 +1,7 @@
-<nav class="bg-gray-800">
-  <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+<nav class="flex items-center bg-white shadow-md h-20 border-b border-solid border-blue-500 fixed w-[calc(100%_-_225px)] z-[999]">
+  <div class="w-[100%] mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
     <div class="relative flex h-16 items-center justify-between">
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-        <!-- Mobile menu button-->
         <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-200 hover:text-black focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-700" aria-controls="mobile-menu" aria-expanded="false">
           <span class="absolute -inset-0.5"></span>
           <span class="sr-only">Open main menu</span>
@@ -15,23 +14,20 @@
         </button>
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-        <div class="flex flex-shrink-0 items-center">
-          <h1 class="text-blue-700 font-bold">Swap</h1>
-          <h1 class="text-white font-bold">Loot</h1>
-        </div>
-        <div class="hidden sm:ml-6 sm:block">
-          <div class="flex space-x-4">
-            <a href="/" class="<%= request.fullpath == "/" ? "active_tab" : "" %> text-white hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Dashboard</a>
-            <a href="/inventories" class="<%= request.fullpath.include?("/inventories") ? "active_tab" : "" %> text-white hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Inventory</a>
-            <a href="/services" class="<%= request.fullpath.include?("/services") ? "active_tab" : "" %> text-white hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Services</a>
-            <a href="/steam_accounts" class="<%= request.fullpath.include?("/steam_accounts") ? "active_tab" : "" %> text-white hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Steam Accounts</a>
-            <a href="#" class="<%= request.fullpath.include?("/contact") ? "active_tab" : "" %> text-white hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Contact</a>
-          </div>
-        </div>
+      <% if request.url.include?("/users/") %>
+      <div class="text-gray-500 font-semibold text-center py-5 text-md">Associated Steam Accounts</div>
+      <%else%>
+        <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
+          <% if @steam_accounts.present? %>
+            <%= select_tag('steam_id', options_for_select([['All', 'all']] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: !@active_steam_account.respond_to?(:each) ? @active_steam_account.steam_id : 'all' ), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray-500 font-[300]", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', onchange: 'submitForm()') %>
+          <% else %>
+            <%= select_tag('steam_id', options_for_select([['No accounts available', nil]]), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray-500 font-[300] disabled", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', disabled: true) %>
+          <% end %>
+        <% end %>
+      <%end%>
       </div>
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-        <!-- Profile dropdown -->
-        <div class="relative ml-3">
+        <div class="relative ml-12">
           <div>
             <button type="button" class="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
               <span class="absolute -inset-1.5"></span>
@@ -43,23 +39,10 @@
           <div class="absolute hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" id="user-dropdown" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
             <!-- Active: "bg-gray-100", Not Active: "" -->
             <a href="<%= user_path(current_user.id) %>" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
-            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>
             <%= button_to "Sign out", destroy_user_session_path, class: "block px-4 py-2 text-sm text-gray-700", id: "user-menu-item-2", method: :delete %>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Mobile menu, show/hide based on menu state. -->
-  <div class="sm:hidden" id="mobile-menu">
-    <div class="space-y-1 px-2 pb-3 pt-2">
-      <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-            <a href="/" class="<%= request.fullpath == "/" ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Dashboard</a>
-            <a href="/inventories" class="<%= request.fullpath.include?("/inventories") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Inventory</a>
-            <a href="#" class="<%= request.fullpath.include?("/services") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Services</a>
-            <a href="#" class="<%= request.fullpath.include?("/setting") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Settings</a>
-            <a href="#" class="<%= request.fullpath.include?("/contact") ? "active_tab" : "" %> text-black-300 hover:bg-gray-200 hover:text-black rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Contact</a>
     </div>
   </div>
 </nav>

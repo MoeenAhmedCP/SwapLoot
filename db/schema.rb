@@ -10,9 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_20_215124) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_30_160726) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "buying_filters", force: :cascade do |t|
+    t.bigint "steam_account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "min_percentage", default: 20
+    t.integer "max_price", default: 100
+    t.integer "min_price", default: 50
+    t.index ["steam_account_id"], name: "index_buying_filters_on_steam_account_id"
+  end
+
+  create_table "errors", force: :cascade do |t|
+    t.string "message", default: ""
+    t.string "backtrace", default: [], array: true
+    t.string "error_type", default: "StandardError"
+    t.boolean "handled", default: false
+    t.string "severity", default: "error"
+    t.json "context", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "inventories", force: :cascade do |t|
     t.string "item_id"
@@ -23,6 +45,35 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_20_215124) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "sold_at"
+  end
+
+  create_table "price_empires", force: :cascade do |t|
+    t.string "item_name"
+    t.float "liquidity"
+    t.json "buff"
+    t.json "waxpeer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.string "item_id"
+    t.string "item_name"
+    t.date "date"
+    t.decimal "bought_price"
+    t.decimal "sold_price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "selling_filters", force: :cascade do |t|
+    t.integer "min_profit_percentage", default: 2
+    t.integer "undercutting_price_percentage", default: 10
+    t.integer "undercutting_interval", default: 12
+    t.bigint "steam_account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["steam_account_id"], name: "index_selling_filters_on_steam_account_id"
   end
 
   create_table "steam_accounts", force: :cascade do |t|
@@ -36,7 +87,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_20_215124) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.string "price_empire_api_key"
     t.index ["user_id"], name: "index_steam_accounts_on_user_id"
+  end
+
+  create_table "trade_services", force: :cascade do |t|
+    t.boolean "buying_status", default: false
+    t.boolean "selling_status", default: false
+    t.string "selling_job_id"
+    t.string "buying_job_id"
+    t.bigint "steam_account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "price_cutting_job_id"
+    t.boolean "price_cutting_status", default: false
+    t.index ["steam_account_id"], name: "index_trade_services_on_steam_account_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -51,5 +116,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_20_215124) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "buying_filters", "steam_accounts"
+  add_foreign_key "selling_filters", "steam_accounts"
   add_foreign_key "steam_accounts", "users"
+  add_foreign_key "trade_services", "steam_accounts"
 end

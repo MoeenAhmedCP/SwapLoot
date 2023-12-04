@@ -1,35 +1,37 @@
 <div class="p-6">
- <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
- <div style= "display: flex;">
-    <h2 class="text-2xl font-bold mb-4">Connected Steam Accounts</h2>
-</div>
-  <a href="<%= new_steam_account_path %>" class="mt-6 float-right mb-3 inline-block bg-blue-500 text-gray-100 font-bold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">Add New Steam Account</a>
+  <a href="<%= new_steam_account_path %>" class="mt-6  mb-3 inline-block bg-blue-600 text-gray-100 font-[300] px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">Add New Steam Account</a>
 
-<table id="dataTableSteamAccount" class="display" style="width:100%">
-    <thead>
+ <div class="container mx-auto py-4 ">
+ <div style= "display: flex;">
+    <h2 class="text-lg text-blue-600 font-[600] absolute">Connected Steam Accounts</h2>
+</div>
+
+<table id="dataTableSteamAccount" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+    <thead class="bg-blue-600 text-white">
         <tr>
-            <th class="px-4 py-2">Steam ID</th>
-            <th class="px-4 py-2">Name</th>
-            <th class="px-4 py-2">Steam Web API Key</th>
-            <th class="px-4 py-2">Waxpeer API Key</th>
-            <th class="px-4 py-2">CSGOEmpire API Key</th>
-            <th class="px-4 py-2">Market.CSGO API Key</th>
-            <th class="px-4 py-2">Action</th>
-        </tr>
+    <th class="px-4 py-2 border-[#acadaf9c] rounded-tl-lg border-r text-sm">Steam ID</th>
+    <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">Name</th>
+    <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">Steam Web API Key</th>
+    <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">Waxpeer API Key</th>
+    <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">CSGOEmpire API Key</th>
+    <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">Market.CSGO API Key</th>
+    <th class="px-4 py-2 rounded-tr-lg border-r text-sm">Action</th>
+</tr>
+
     </thead>
     <tbody>
      <% @steam_accounts.each do |steam_account| %>
         <tr class="hover:bg-gray-100">
-          <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.steam_id %></td>
-          <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.unique_name %></td>
-          <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.steam_web_api_key %></td>
-          <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.waxpeer_api_key %></td>
-          <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.csgoempire_api_key %></td>
-          <td class="border text-center px-4 py-2 min-w-10 break-all"><%= steam_account.market_csgo_api_key %></td>
-          <td class="border text-center px-4 py-2">
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm "><%= steam_account.steam_id %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.unique_name %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.steam_web_api_key %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.csgoempire_api_key %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.market_csgo_api_key %></td>
+          <td class="text-center px-4 py-2 rounded-br-lg">
           <%= link_to "Edit", edit_steam_account_path(id: steam_account), class: "mr-3 text-blue-500 hover:text-blue-700" %>
-          <%=form_tag(steam_account_path(id: steam_account), method: :delete, id: "delete-steam-account") do %>
-            <button class='ml-3 text-red-500 hover:text-red-700' type="button" onclick="openModal()">Delete</button>
+          <%= form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
+            <button id="delete-steam-account-button-<%= steam_account.id %>" class='ml-3 text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)">Delete</button>
           <% end %>
          </td>
         </tr>
@@ -65,15 +67,26 @@
 </div>
 
 <script>
- 
-  function openModal() {
+
+  function openModal(steamAccountId) {
     var modal = document.getElementById("small-modal");
+
+    document.getElementById("delete").onclick = function() {
+      submitForm(steamAccountId);
+    };
+
     modal.style.display = "flex";
   }
 
-  function submitForm() {
-    var formm = document.getElementById("delete-steam-account")
-    formm.submit()
+  function submitForm(steamAccountId) {
+    var formId = "delete-steam-account-form-" + steamAccountId;
+    var form = document.getElementById(formId);
+
+    if (form) {
+      form.submit();
+    } else {
+      console.error("Form not found");
+    }
   }
 
   function closeModal() {
@@ -88,10 +101,11 @@
                 input.style.marginBottom = '10px'
             });
     
-            const dataTables = document.querySelectorAll('.dataTable');
-            dataTables.forEach((el)=>{
-                el.style.border = '1px solid black';
-            })
+            // const dataTables = document.querySelectorAll('.dataTable');
+            // dataTables.forEach((el)=>{
+            //   debugger
+            //     el.style.borderRadius = '10px';
+            // })
     
             var elements = document.querySelectorAll('.dataTables_length');
             for (var i = 0; i < elements.length; i++) {
