@@ -46,6 +46,7 @@ class CsgoempireService < ApplicationService
     elsif data['event'] == 'trade_status'
       data['item_data'].each do |item|
         if item['data']['status_message'] == 'Sent'
+          generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Sold")
           service_hash = set_remove_item_hash data
           RemoveItems.remove_item_from_all_services(@current_user, service_hash)
           inventory = Inventory.find_by(item_id: item['data']['item_id'])
@@ -53,8 +54,18 @@ class CsgoempireService < ApplicationService
             inventory.soft_delete_and_set_sold_at
           end
         end
+        if item['data']['status_message'] == 'Confirming'
+          generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Bought")
+        end
       end
     end
+  end
+
+  def generate_notification(item_id, item_name, total_value, notification_type)
+    Notification.create(
+      title: "Item #{notification_type}", body: "#{item_name} sold with ID: (#{item_id}) at price (#{(total_value.to_f)/100}) coins", 
+      notification_type: notification_type
+    )
   end
 
   def fetch_item_listed_for_sale
