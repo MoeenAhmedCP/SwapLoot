@@ -162,10 +162,7 @@ class CsgoempireService < ApplicationService
     end
   end
 
-  def fetch_deposit_transactions
-    return if csgoempire_key_not_found?
-
-    response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+  def save_transaction(response)
     if response['data']
       last_page = response['last_page'].to_i
       (1..last_page).each do |page_number|
@@ -182,6 +179,22 @@ class CsgoempireService < ApplicationService
             end
           end
         end
+      end
+    end
+  end
+
+  def fetch_deposit_transactions
+    if @active_steam_account.present?
+      return if csgoempire_key_not_found?
+
+      response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+      save_transaction(response)
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.csgoempire_api_key.blank?
+
+        response = self.class.get("#{BASE_URL}/user/transactions", headers: headers(steam_account.csgoempire_api_key))
+        save_transaction(response)
       end
     end
   end
