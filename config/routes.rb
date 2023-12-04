@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :selling_filters, only: %i[edit update]
   resources :trade_services, only: %i[update]
   resources :trigger_price_cutting, only: %i[update]
+  resources :analytics, only: %i[index]
   get '/services', to: "services#index"
   post '/trigger_service', to: "services#trigger_service"
   post '/selling_service', to: "services#selling_service"

@@ -1,0 +1,31 @@
+<div class="ml-5 flex items-center space-x-2">
+  Select Year: 
+  <%= select_tag 'year', options_for_select((2023..2050).map { |year| [year, year] }, params[:year]), class: 'border p-2 rounded', onchange: "selectYear(this)" %>
+</div>
+
+
+
+<div class="flex justify-center">
+  <h2 class='font-bold'>Profit Graph</h2>
+</div>
+<%= column_chart(@profit_by_month, ytitle: "Dollars")%>
+<br>
+<br>
+<br>
+<div class="flex justify-center">
+  <h2 class='font-bold'>Quantity Sold Graph</h2>
+</div>
+<%= column_chart(@quantity_sold_by_month, ytitle: "Quantity") %>
+<br>
+<br>
+<br>
+<div class="flex justify-center">
+  <h2 class='font-bold'>Quantity Purchased Graph</h2>
+</div>
+<%= column_chart(@quantity_purchased_by_month, ytitle: "Quantity") %>
+
+<script>
+  function selectYear(element){
+    window.location.href = `/analytics?year=${element.value}`
+  }
+</script>
