@@ -22,17 +22,24 @@
     <tbody>
      <% @steam_accounts.each do |steam_account| %>
         <tr class="hover:bg-grayLight">
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm "><%= steam_account.steam_id %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm "><%= steam_account.steam_id.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.unique_name %></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.steam_web_api_key %></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key %></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.csgoempire_api_key %></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.market_csgo_api_key %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.steam_web_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.csgoempire_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.market_csgo_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
           <td class="text-center px-4 py-2 ">
-          <%= link_to "Edit", edit_steam_account_path(id: steam_account), class: "mr-3 text-blue hover:text-blue" %>
-          <%= form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
-            <button id="delete-steam-account-button-<%= steam_account.id %>" class='ml-3 text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)">Delete</button>
-          <% end %>
+          <div class="flex item-center justify-center">
+            <%= link_to edit_steam_account_path(id: steam_account), class: "mr-3 text-blue hover:text-blue", data: { toggle: "tooltip", placement: "top" }, title: "Edit Steam Account" do %>
+              <i class="fa fa-pen"></i>
+            <% end %>
+
+            <%= form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
+              <button id="delete-steam-account-button-<%= steam_account.id %>" class='ml-3 text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
+                <i class="fa fa-trash"></i>
+              </button>
+            <% end %>
+          </div>
          </td>
         </tr>
         <% end %>
@@ -111,5 +118,3 @@
             }
     });
 </script>
-
-
