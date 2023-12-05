@@ -64,10 +64,11 @@ class CsgoempireService < ApplicationService
   end
 
   def generate_notification(item_id, item_name, total_value, notification_type)
-    Notification.create(
+    @notification = Notification.create(
       title: "Item #{notification_type}", body: "#{item_name} #{notification_type} with ID: (#{item_id}) at price (#{(total_value.to_f)/100}) coins", 
       notification_type: notification_type
     )
+    notify_discord(@notification.body)
   end
 
   def fetch_item_listed_for_sale

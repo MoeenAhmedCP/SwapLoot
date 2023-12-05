@@ -29,4 +29,14 @@ class ApplicationController < ActionController::Base
     
     raise error
   end
+
+  def notify_discord(message)
+    bot = Discordrb::Bot.new(token: DISCORD_TOKEN)
+
+    # Replace 'CHANNEL_ID' with the actual Discord channel ID
+    channel = bot.channel(DISCORD_CHANNEL_ID)
+
+    # Send the message to the Discord channel
+    channel.send_message(message)
+  end
 end
