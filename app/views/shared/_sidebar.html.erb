@@ -1,36 +1,37 @@
 <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" />
 
-<div class="min-h-screen flex flex-row bg-grayLight fixed border-r border-solid border-blue" >
-  <div class="flex flex-col w-56 bg-white  overflow-hidden">
-    <div class="flex items-center justify-center h-20 shadow-md border-b border-solid border-blue">
+<div class="min-h-screen flex flex-row bg-grayLight fixed border-r border-solid border-blue dark:border-grayDark dark:bg-black dark:text-white">
+  <div class="flex flex-col w-56 bg-white dark:bg-slateDark overflow-hidden">
+    <div class="flex items-center justify-center h-20 shadow-md border-b border-solid border-blue dark:border-grayDark dark:bg-grayExtraDark">
       <div class="flex flex-shrink-0 items-center">
-        <h1 class="text-white text-xl bg-blue rounded px-1 font-bold">Swap</h1>
-        <h1 class="text-blue text-xl font-bold">Loot</h1>
+        <h1 class="text-white text-xl bg-blue rounded px-1 font-bold dark:text-gray">Swap</h1>
+        <h1 class="text-blue text-xl font-bold dark:text-gray">Loot</h1>
       </div>
     </div>
-    <ul class="flex flex-col py-4 pl-5">
-      <li class="rounded-l-lg <%= request.fullpath == "/" ? 'bg-blue' : nil %>">
-        <a href="/" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark">
-          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.fullpath == "/" ? 'text-white' : 'text-gray' %>"><i class="fa-solid fa-chart-simple"></i></span>
-          <span class="text-sm font-medium <%= request.fullpath == "/" ? 'text-white' : nil %>">Dashboard</span>
+    <ul class="flex flex-col py-4 pl-5 dark:bg-grayExtraDark h-full">
+      <li class="rounded-l-lg <%= request.fullpath=="/" ? 'bg-blue' : nil %>">
+        <a href="/" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
+          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.fullpath == "/" ? 'text-white' : 'text-gray' %> dark:text-gray"><i class="fa-solid fa-chart-simple"></i></span>
+          <span class="text-sm font-medium <%= request.fullpath == "/" ? 'text-white' : nil %> dark:text-gray">Dashboard</span>
         </a>
       </li>
+
       <li class="rounded-l-lg <%= request.url.include?('/inventories') ? 'bg-blue' : nil %>">
-        <a href="/inventories" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark">
-          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/inventories') ? 'text-white' : 'text-gray' %>"><i class="fa-solid fa-shop-lock"></i></span>
-          <span class="text-sm font-medium <%= request.url.include?('/inventories') ? 'text-white' : nil %>">Inventory</span>
+        <a href="/inventories" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
+          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/inventories') ? 'text-white' : 'text-gray' %> dark:text-gray"><i class="fa-solid fa-shop-lock"></i></span>
+          <span class="text-sm font-medium <%= request.url.include?('/inventories') ? 'text-white' : nil %> dark:text-gray">Inventory</span>
         </a>
       </li>
       <li class="rounded-l-lg <%= request.url.include?('/services') ? 'bg-blue' : nil %>">
-        <a href="/services" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark">
-          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/services') ? 'text-white' : 'text-gray' %>"><i class="fa-solid fa-money-bill-1-wave"></i></span>
-          <span class="text-sm font-medium <%= request.url.include?('/services') ? 'text-white' : nil %>">Services</span>
+        <a href="/services" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
+          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/services') ? 'text-white' : 'text-gray' %> dark:text-gray"><i class="fa-solid fa-money-bill-1-wave"></i></span>
+          <span class="text-sm font-medium <%= request.url.include?('/services') ? 'text-white' : nil %> dark:text-gray">Services</span>
         </a>
       </li>
       <li class="rounded-l-lg <%= request.url.include?('/steam_accounts') ? 'bg-blue' : nil %>">
-        <a href="/steam_accounts" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark">
-          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/steam_accounts') ? 'text-white' : 'text-gray' %>"><i class="fa-solid fa-users"></i></span>
-          <span class="text-sm font-medium <%= request.url.include?('/steam_accounts') ? 'text-white' : nil %>">Steam Accounts</span>
+        <a href="/steam_accounts" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
+          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/steam_accounts') ? 'text-white' : 'text-gray' %> dark:text-gray"><i class="fa-solid fa-users"></i></span>
+          <span class="text-sm font-medium <%= request.url.include?('/steam_accounts') ? 'text-white' : nil %> dark:text-gray">Steam Accounts</span>
         </a>
       </li>
       <li class="rounded-l-lg <%= request.url.include?('/analytics') ? 'bg-blue-600' : nil %>">
@@ -40,15 +41,15 @@
         </a>
       </li>
       <li class="rounded-l-lg <%= request.url.include?('/error_logs') ? 'bg-blue-600' : nil %>">
-        <a href="/errors" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark">
-          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/error_logs') ? 'text-white' : 'text-gray' %>"><i class="fa-solid fa-triangle-exclamation"></i></span>
-          <span class="text-sm font-medium <%= request.url.include?('/error_logs') ? 'text-white' : nil %>">Error Logs</span>
+        <a href="/errors" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
+          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/error_logs') ? 'text-white' : 'text-gray' %> dark:text-gray"><i class="fa-solid fa-triangle-exclamation"></i></span>
+          <span class="text-sm font-medium <%= request.url.include?('/error_logs') ? 'text-white' : nil %> dark:text-gray">Error Logs</span>
         </a>
       </li>
-      <li class="rounded-l-lg <%= request.url.include?('/notifications') ? 'bg-blue' : nil %>">
-        <a href="/notifications" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark">
-          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/notifications') ? 'text-white' : 'text-gray' %>"><i class="fa-solid fa-bell"></i></span>
-          <span class="text-sm font-medium <%= request.url.include?('/notifications') ? 'text-white' : nil %>">Notifications</span>
+      <li class="rounded-l-lg <%= request.url.include?('/analytics') ? 'bg-blue' : nil %>">
+        <a href="/analytics" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
+          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/analytics') ? 'text-white' : 'text-gray' %> dark:text-gray"><i class="fas-solid fas-analytics"></i></span>
+          <span class="text-sm font-medium <%= request.url.include?('/analytics') ? 'text-white' : nil %> dark:text-gray">Analytics</span>
         </a>
       </li>
     </ul>

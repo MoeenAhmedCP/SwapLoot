@@ -15,7 +15,10 @@ content: [
         grayLight:"rgb(229 231 235)",
         gray:"rgb(156 163 175)",
         grayDark:"rgb(75 85 99)",
-        grayExtraDark:"rgb(31 41 55)" 
+        grayExtraDark:"rgb(31 41 55)" ,
+        slateDark:"rgb(15 23 42)",
+        white:"#ffff"
+        
 
   }
     },

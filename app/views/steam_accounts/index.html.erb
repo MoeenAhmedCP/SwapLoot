@@ -3,7 +3,7 @@
 
  <div class="container mx-auto py-4 ">
  <div style= "display: flex;">
-    <h2 class="text-lg text-blue font-[600] absolute">Connected Steam Accounts</h2>
+    <h2 class="text-lg text-blue dark:text-white font-[600] absolute">Connected Steam Accounts</h2>
 </div>
 
 <table id="dataTableSteamAccount" class="display shadow-md rounded-lg" style="width:100%; border: none;">
@@ -28,7 +28,7 @@
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.csgoempire_api_key %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.market_csgo_api_key %></td>
-          <td class="text-center px-4 py-2 rounded-br-lg">
+          <td class="text-center px-4 py-2 ">
           <%= link_to "Edit", edit_steam_account_path(id: steam_account), class: "mr-3 text-blue hover:text-blue" %>
           <%= form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
             <button id="delete-steam-account-button-<%= steam_account.id %>" class='ml-3 text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)">Delete</button>
@@ -66,6 +66,7 @@
   </div>
 </div>
 
+
 <script>
 
   function openModal(steamAccountId) {
@@ -95,21 +96,20 @@
   }
 
     $(document).ready(function() {
-        $('#dataTableSteamAccount').DataTable();
+        $('#dataTableSteamAccount').DataTable({ language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search...",
+      },});
             const searchInputs = document.querySelectorAll('input[type="search"]');
             searchInputs.forEach(function(input) {
                 input.style.marginBottom = '10px'
             });
-    
-            // const dataTables = document.querySelectorAll('.dataTable');
-            // dataTables.forEach((el)=>{
-            //   debugger
-            //     el.style.borderRadius = '10px';
-            // })
-    
+
             var elements = document.querySelectorAll('.dataTables_length');
             for (var i = 0; i < elements.length; i++) {
             elements[i].parentNode.removeChild(elements[i]);
             }
     });
 </script>
+
+
