@@ -16,6 +16,20 @@ export default class extends Controller {
     });
   }
 
+  async triggerBuying(event) {
+    const steamAccount = await this.fetchUserDate(event);
+    if (steamAccount) {
+      this.subscribeEventsChannel(steamAccount);
+    } else {
+      this.unsubscribeEventsChannel(steamAccount);
+    }
+  };
+
+  async fetchUserDate(event) {
+    const steamAccounts = await this.fetchAllSteamAccounts();
+    return steamAccounts.find(hash => hash.account_id === parseInt(event.target.id));
+  }
+
   subscribeEventsChannel(accountData) {
     const accountId = accountData.account_id;
     const userData = accountData.user_data;
