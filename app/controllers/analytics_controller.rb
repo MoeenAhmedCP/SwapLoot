@@ -3,6 +3,7 @@ class AnalyticsController < ApplicationController
     @profit_by_month = {}
     @quantity_sold_by_month = {}
     @quantity_purchased_by_month = {}
+    params[:year] ||= Date.current.year
     profit = SoldItem.profits_by_year(params[:year])
     Date::MONTHNAMES.compact.each.with_index do |month, index|
       @profit_by_month[month] = profit[(index + 1).to_f].to_i
