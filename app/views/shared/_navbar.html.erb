@@ -1,10 +1,10 @@
-<nav class="flex items-center bg-white dark:bg-grayExtraDark shadow-md h-20 border-b border-solid border-blue dark:border-grayDark fixed w-[calc(100%_-_225px)] z-[999]">
+<nav class="flex items-center bg-white dark:bg-grayExtraDark h-20  fixed w-[calc(100%_-_225px)] z-[999]">
   <div class="w-[100%] mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-    <button onclick="toggleDarkMode()" class="dark:text-white">Toggle Dark Mode</button>
-
+<%# <button onclick="toggleDarkMode()">Toggle Dark Mode</button> %>
+ 
     <div class="relative flex h-16 items-center justify-between">
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-        <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-grayDark dark:text-white hover:bg-grayLight dark:hover:bg-grayDark hover:text-black dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-grayDark" aria-controls="mobile-menu" aria-expanded="false">
+        <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-grayDark dark:text-white hover:bg-gray-200 dark:hover:bg-grayDark hover:text-black dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-grayDark" aria-controls="mobile-menu" aria-expanded="false">
           <span class="absolute -inset-0.5"></span>
           <span class="sr-only">Open main menu</span>
           <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
@@ -17,7 +17,7 @@
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
         <% if request.url.include?("/users/") %>
-        <div class="text-gray dark:text-white font-semibold text-center py-5 text-md">Associated Steam Accounts</div>
+        <div class="text-gray-500 dark:text-white font-semibold text-center py-5 text-md">Associated Steam Accounts</div>
         <% else %>
         <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
           <% if @steam_accounts.present? %>
@@ -29,6 +29,10 @@
         <% end %>
       </div>
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+      <div class="dark-mode">
+        <i class="fas fa-sun text-2xl" onclick="toggleDarkMode()"></i> <!-- Sun icon -->
+        <i class="fas fa-moon text-2xl" onclick="toggleDarkMode()"></i> <!-- Moon icon -->
+    </div>
         <div class="relative ml-12">
           <div>
             <button type="button" class="relative flex rounded-full bg-white dark:bg-grayDark text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">

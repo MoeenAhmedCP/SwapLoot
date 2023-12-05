@@ -738,3 +738,19 @@
 
 
 
+.dark .fa-sun {
+  display: block;
+  color:#FFF
+}
+
+.fa-moon {
+  display: block;
+}
+
+ .fa-sun {
+  display: none;
+}
+
+.dark .fa-moon {
+  display: none;
+}
