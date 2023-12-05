@@ -42,7 +42,8 @@ class CsgoempireService < ApplicationService
   def socket_data(data)
     if data['event'] == 'new_item'
       # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
-      CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], 20, 100)
+      buying_filter = @active_steam_account.buying_filter
+      CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], buying_filter.min_percentage, buying_filter.max_price)
     elsif data['event'] == 'trade_status'
       data['item_data'].each do |item|
         if item['data']['status_message'] == 'Sent'
