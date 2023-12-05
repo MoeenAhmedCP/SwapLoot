@@ -46,7 +46,7 @@ class CsgoempireBuyingService < ApplicationService
       if item
         suggested_price = item['average'] * (100 - max_percentage) / 100.0
 
-        if price <= suggested_price && price <= specific_price
+        if price <= suggested_price && price <= specific_price && price >= @active_steam_account.buying_filter.min_price
           return { status: 'success', message: 'Price within acceptable range', item: item }
         else
           return { status: 'error', message: 'Price is too high', suggested_price: suggested_price }
