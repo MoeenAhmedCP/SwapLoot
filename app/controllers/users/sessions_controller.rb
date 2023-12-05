@@ -6,7 +6,7 @@ class Users::SessionsController < Devise::SessionsController
       if resource.persisted?
         location = get_user_location(request.remote_ip)
         flash[:notice] = "User logged in with #{resource.email} from #{location}, (IP Address: #{request.remote_ip})"
-        @notification = Notification.create(title: "User Logged In", body: "User logged in with #{resource.email} from #{location}, (IP Address: #{request.remote_ip})", notification_type: "Login" )
+        @notification = Notification.create(title: "User Logged In", body: "User logged in with email: #{resource.email}, from #{location}, (IP Address: #{request.remote_ip})", notification_type: "Login" )
         notify_discord(@notification.body)
       end
     end

@@ -277,4 +277,10 @@ class CsgoempireService < ApplicationService
 
     service_hash
   end
+
+  def notify_discord(message)
+    bot = Discordrb::Bot.new(token: DISCORD_TOKEN)
+    channel = bot.channel(DISCORD_CHANNEL_ID)
+    channel.send_message(message)
+  end
 end
