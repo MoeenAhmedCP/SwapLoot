@@ -104,20 +104,27 @@ class CsgoempireService < ApplicationService
   end
 
   def fetch_my_inventory
-    return if csgoempire_key_not_found?
+    if @active_steam_account.present?
+      return if csgoempire_key_not_found?
 
-    response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
-    save_inventory(response)
+      response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
+      save_inventory(response, @active_steam_account)
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.csgoempire_api_key.blank?
+
+        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account.csgoempire_api_key))
+        save_inventory(response, steam_account)
+      end
+    end
   end
 
-  def save_inventory(res)
-    if @active_steam_account
-      res['data']&.each do |item|
-        inventory = Inventory.find_by(item_id: item['id'])
-        unless inventory.present?
-          item_price = item['market_value'] < 0 ? 0 : ((item['market_value'] / 100) * 0.164)
-          Inventory.create(item_id: item['id'], steam_id: @active_steam_account&.steam_id, market_name: item['market_name'], market_price: item_price, tradable: item['tradable'])
-        end
+  def save_inventory(res, steam_account)
+    res['data']&.each do |item|
+      inventory = Inventory.find_by(item_id: item['id'])
+      unless inventory.present?
+        item_price = item['market_value'] < 0 ? 0 : ((item['market_value'] / 100) * 0.164)
+        Inventory.create(item_id: item['id'], steam_id: steam_account&.steam_id, market_name: item['market_name'], market_price: item_price, tradable: item['tradable'])
       end
     end
   end
@@ -171,7 +178,7 @@ class CsgoempireService < ApplicationService
     end
   end
 
-  def save_transaction(response)
+  def save_transaction(response, steam_account)
     if response['data']
       last_page = response['last_page'].to_i
       (1..last_page).each do |page_number|
@@ -183,7 +190,7 @@ class CsgoempireService < ApplicationService
               item_id = transaction_data['data']['metadata']['item_id']
               sold_price = (transaction_data['delta']).to_f / 100
               if item_data
-                create_item(item_data['asset_id'], item_data['market_name'], sold_price, item_data['market_value'], item_data['updated_at'])
+                create_item(item_data['asset_id'], item_data['market_name'], sold_price, item_data['market_value'], item_data['updated_at'], steam_account)
               end
             end
           end
@@ -192,18 +199,23 @@ class CsgoempireService < ApplicationService
     end
   end
 
+  def create_item(id, market_name, b_price, s_price, date, steam_account)
+    item = SoldItem.find_by(item_id: id)
+    SoldItem.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: steam_account) unless item.present?
+  end
+
   def fetch_deposit_transactions
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
 
       response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
-      save_transaction(response)
+      save_transaction(response, @active_steam_account)
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
 
         response = self.class.get("#{BASE_URL}/user/transactions", headers: headers(steam_account.csgoempire_api_key))
-        save_transaction(response)
+        save_transaction(response, steam_account)
       end
     end
   end
@@ -244,11 +256,6 @@ class CsgoempireService < ApplicationService
     item_data = transaction_data['data']['metadata']['item']
     inventory = Inventory.find_by(item_id: item_data['asset_id'])
     create_item(item_data['asset_id'], item_data['market_name'], inventory.market_price, item_data['market_value'], item_data['updated_at'])
-  end
-
-  def create_item(id, market_name, b_price, s_price, date)
-    item = SoldItem.find_by(item_id: id)
-    SoldItem.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: @current_user.active_steam_account) unless item.present?
   end
 
   def csgoempire_key_not_found?
