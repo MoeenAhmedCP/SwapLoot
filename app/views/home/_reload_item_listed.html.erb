@@ -25,7 +25,11 @@
     <script>
     $('#dataItemListed').DataTable({
         paging: true,
-        pageLength: 10, // Number of records per page
+        pageLength: 10,
+         language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search...",
+      } // Number of records per page
         // Other DataTables options...
     });
 </script>
