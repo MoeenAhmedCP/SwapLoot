@@ -11,10 +11,10 @@
     <table class="table w-full">
       <tbody>
         <% @errors.each do |error| %>
-          <tr class='border border-gray-300 rounded-md'>
+          <tr class='border border-gray rounded-md'>
             <td class="px-4 py-2">
               <%= link_to error_path(error) do %>
-                <p class='text-blue-600 font-medium'><%= error.error_type %></p>
+                <p class='text-blue font-medium'><%= error.error_type %></p>
                 <p class='text-sm'><%= error_message(error.message) %></p>
                 <div class='flex items-center gap-x-6 ml-2 mt-1'>
                   <div class="<%= error_severity_class(error.severity) %> text-white rounded-full w-fit text-xs px-1"><%= error.severity %></div>

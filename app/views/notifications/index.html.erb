@@ -1,17 +1,17 @@
 <div class="flex item-center justify-between">
-  <h1 class="text-blue-600 py-3 px-5 text-left font-semibold text-3xl">Notifications</h1>
+  <h1 class="text-blue py-3 px-5 text-left font-semibold text-3xl">Notifications</h1>
   <div class="p-3 m-5">
-    <%= link_to "Mark all as read", mark_all_as_read_path, method: :put, class: "text-white bg-blue-600 p-2 rounded" %>
+    <%= link_to "Mark all as read", mark_all_as_read_path, method: :put, class: "text-white bg-blue p-2 rounded" %>
   </div>
 </div>
-<div role="navigation" aria-label="Pagination" class="px-3 py-2 mx-2 text-gray-700 no-underline bg-white rounded-lg">
+<div role="navigation" aria-label="Pagination" class="px-3 py-2 mx-2 text-grayDark no-underline bg-white rounded-lg">
 <div class="text-center my-4">
   <div class="sm:px-8">
   <div class="overflow-y-hidden rounded-lg border">
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead>
-          <tr class="bg-blue-600 text-xs font-semibold uppercase tracking-widest text-white">
+          <tr class="bg-blue text-xs font-semibold uppercase tracking-widest text-white">
             <th class="px-5 py-3">ID</th>
             <th class="px-5 py-3">Title</th>
             <th class="px-5 py-3">Description</th>
@@ -20,41 +20,41 @@
             <th class="px-5 py-3"></th>
           </tr>
         </thead>
-        <tbody class="text-gray-500">
+        <tbody class="text-gray">
         <% @notifications.each do |notification| %>
           <tr>
-            <td class="border-b border-gray-200 bg-white px-5 py-3 text-sm">
+            <td class="border-b border-grayLight bg-white px-5 py-3 text-sm">
               <p class="whitespace-no-wrap"><%= notification.id %></p>
             </td>
-            <td class="border-b border-gray-200 bg-white px-5 py-3 text-sm">
+            <td class="border-b border-grayLight bg-white px-5 py-3 text-sm">
               <div class="flex items-center">
                 <div class="ml-3">
                   <p class="whitespace-no-wrap"><%= notification.title %></p>
                 </div>
               </div>
             </td>
-            <td class="border-b border-gray-200 bg-white px-5 py-3 text-sm">
+            <td class="border-b border-grayLight bg-white px-5 py-3 text-sm">
               <p class="whitespace-no-wrap"><%= notification.body %></p>
             </td>
 
-            <td class="border-b border-gray-200 bg-white px-5 py-3 text-sm">
+            <td class="border-b border-grayLight bg-white px-5 py-3 text-sm">
               <% notification_type_styles = {
                   "Login" => "bg-yellow-300 text-yellow-600",
                   "Sold" => "bg-red-300 text-red-600",
                   "Bought" => "bg-green-300 text-green-600"
                 }
               %>
-              <span class="rounded-full <%= notification_type_styles[notification.notification_type] || 'bg-gray-300 text-gray-600' %> px-3 py-1 text-xs font-semibold">
+              <span class="rounded-full <%= notification_type_styles[notification.notification_type] || 'bg-gray text-grayDark' %> px-3 py-1 text-xs font-semibold">
                 <%= notification.notification_type %>
               </span>
             </td>
             
-            <td class="border-b border-gray-200 bg-white px-5 py-3 text-sm">
+            <td class="border-b border-grayLight bg-white px-5 py-3 text-sm">
               <span class="whitespace-no-wrap"><%= "#{time_ago_in_words(notification.created_at)} ago" %></span>
             </td>
 
-            <td class="border-b border-gray-200 bg-white px-5 py-3 text-sm">
-              <span class="mx-auto mt-1 block h-2 w-2 rounded-full content-[''] <%= notification.is_read? ? "bg-gray-300" : "bg-green-500" %>"></span>
+            <td class="border-b border-grayLight bg-white px-5 py-3 text-sm">
+              <span class="mx-auto mt-1 block h-2 w-2 rounded-full content-[''] <%= notification.is_read? ? "bg-gray" : "bg-green-500" %>"></span>
             </td>
           </tr>
           <% end %>
@@ -64,8 +64,8 @@
   </div>
 </div>
 
-  <div class="flickr_pagination flex justify-between items-center px-4 py-3 bg-white border-gray-200 sm:px-6">
-  <div class="text-sm text-gray-700">
+  <div class="flickr_pagination flex justify-between items-center px-4 py-3 bg-white border-grayLight sm:px-6">
+  <div class="text-sm text-grayDark">
     <%= page_entries_info @notifications %>
   </div>
   <div class="flex items-center space-x-4">

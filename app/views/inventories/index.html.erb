@@ -3,8 +3,8 @@
     <div class="flex item-center">
       <div class= "flex items-center min-w-[450px]">
         <div class="flex items-center justify-center">
-                <h2 class="text-2xl text-blue-600 font-[500]">Inventory</h2>
-          <i id="refreshTable" class="fa fa-refresh text-blue-600 " aria-hidden="true"></i>
+                <h2 class="text-2xl text-blue font-[500]">Inventory</h2>
+          <i id="refreshTable" class="fa fa-refresh text-blue " aria-hidden="true"></i>
         </div>
         <h3 class="mt-[8px] ml-[75px]">Total Worth: <%= "$#{@total_market_price}" %></h3>
       </div>
@@ -20,7 +20,7 @@
   </div>
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div style= "display: flex; ">
-      <h2 class="text-2xl text-blue-600 font-[500] absolute">Missing Items</h2>
+      <h2 class="text-2xl text-blue font-[500] absolute">Missing Items</h2>
 
     </div>
       <%= render partial: 'missing_items' , locals:{ missing_items: @missing_items }%>
