@@ -20,10 +20,6 @@
   </div>
 <% end %>
 
-
-
-
-
 <div class="m-10">
     <% @user_accounts_data.each do |user_account_data| %>
     <% @steam_account = SteamAccount.find_by(steam_id: user_account_data[:data]['steam_id']) %>
