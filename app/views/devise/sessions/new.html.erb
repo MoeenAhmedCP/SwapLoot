@@ -27,8 +27,36 @@
             <%= f.submit "Sign in", class: "w-full text-white bg-blue-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover-bg-primary-700 dark:focus-ring-primary-800" %>
           </div>
         <% end %>
+        <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+          Don't have an account yet? <a href="/users/sign_up" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+        </p>
+
+         <%= link_to "Forgot Password", "#", class: "text-blue-500 underline", id: "forgot-password-link" %>
+          <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-4 md:space-y-6", id: "password-reset-form" }) do |f| %>
+            <%= render "devise/shared/error_messages", resource: resource %>
+            <div class="field hidden" id="email-field">
+              <%= f.label :email %><br />
+              <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+            </div>
+            <div class="actions hidden" id="submit-button">
+              <%= f.submit "Send me reset password instructions" %>
+            </div>
+          <% end %>
       </div>
     </div>
   </div>
 </section>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const forgotPasswordLink = document.getElementById("forgot-password-link");
+    const emailField = document.getElementById("email-field");
+    const submitButton = document.getElementById("submit-button");
+
+    forgotPasswordLink.addEventListener("click", function() {
+      emailField.classList.toggle("hidden");
+      submitButton.classList.toggle("hidden");
+    });
+  });
+</script>
