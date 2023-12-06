@@ -1,13 +1,13 @@
 <div class="p-6">
-  <a href="<%= new_steam_account_path %>" class="mt-6  mb-3 inline-block bg-blue text-grayLight font-[300] px-4 py-2 rounded-lg shadow-md hover:bg-blue">Add New Steam Account</a>
+  <a href="<%= new_steam_account_path %>" class="mt-6  mb-3 inline-block bg-blue-600 text-gray-100 font-[300] px-4 py-2 rounded-lg shadow-md hover:bg-blue-600">Add New Steam Account</a>
 
  <div class="container mx-auto py-4 ">
  <div style= "display: flex;">
-    <h2 class="text-lg text-blue dark:text-white font-[600] absolute">Connected Steam Accounts</h2>
+    <h2 class="text-lg text-blue-600 font-[600] absolute">Connected Steam Accounts</h2>
 </div>
 
 <table id="dataTableSteamAccount" class="display shadow-md rounded-lg" style="width:100%; border: none;">
-    <thead class="bg-blue text-white">
+    <thead class="bg-blue-600 text-white">
         <tr>
     <th class="px-4 py-2 border-[#acadaf9c] rounded-tl-lg border-r text-sm">Steam ID</th>
     <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">Name</th>
@@ -21,25 +21,18 @@
     </thead>
     <tbody>
      <% @steam_accounts.each do |steam_account| %>
-        <tr class="hover:bg-grayLight">
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm "><%= steam_account.steam_id.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %></td>
+        <tr class="hover:bg-gray-100">
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm "><%= steam_account.steam_id %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.unique_name %></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.steam_web_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.csgoempire_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.market_csgo_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
-          <td class="text-center px-4 py-2 ">
-          <div class="flex item-center justify-center">
-            <%= link_to edit_steam_account_path(id: steam_account), class: "mr-3 text-blue hover:text-blue", data: { toggle: "tooltip", placement: "top" }, title: "Edit Steam Account" do %>
-              <i class="fa fa-pen"></i>
-            <% end %>
-
-            <%= form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
-              <button id="delete-steam-account-button-<%= steam_account.id %>" class='ml-3 text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
-                <i class="fa fa-trash"></i>
-              </button>
-            <% end %>
-          </div>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.steam_web_api_key %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.csgoempire_api_key %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.market_csgo_api_key %></td>
+          <td class="text-center px-4 py-2 rounded-br-lg">
+          <%= link_to "Edit", edit_steam_account_path(id: steam_account), class: "mr-3 text-blue-500 hover:text-blue-700" %>
+          <%= form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
+            <button id="delete-steam-account-button-<%= steam_account.id %>" class='ml-3 text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)">Delete</button>
+          <% end %>
          </td>
         </tr>
         <% end %>
@@ -52,27 +45,26 @@
 
 <div id="small-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
   <div class="relative p-4 w-full max-w-md max-h-full">
-    <div class="relative bg-white rounded-lg shadow dark:bg-grayDark">
-      <button type="button" onclick="closeModal()" class="absolute top-3 end-2.5 text-gray bg-transparent hover:bg-grayLight hover:text-grayExtraDark rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-grayDark dark:hover:text-white" data-modal-hide="small-modal">
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <button type="button" onclick="closeModal()" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="small-modal">
         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
         </svg>
         <span class="sr-only">Close modal</span>
       </button>
         <div class="p-4 md:p-5 text-center">
-          <svg class="mx-auto mb-4 text-gray w-12 h-12 dark:text-grayLight" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
           </svg>
-          <h3 class="mb-5 text-lg font-normal text-gray dark:text-gray">Are you sure you want to delete this account?</h3>
+          <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this account?</h3>
           <button data-modal-hide="small-modal" onclick="submitForm()" id="delete" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">
             Yes, I'm sure
           </button>
-          <button data-modal-hide="small-modal" onclick="closeModal()" type="button" class="text-gray bg-white hover:bg-grayLight focus:ring-4 focus:outline-none focus:ring-grayLight rounded-lg border border-grayLight text-sm font-medium px-5 py-2.5 hover:text-grayExtraDark focus:z-10 dark:bg-grayDark dark:text-gray dark:border-gray dark:hover:text-white dark:hover:bg-grayDark dark:focus:ring-grayDark">No, cancel</button>
+          <button data-modal-hide="small-modal" onclick="closeModal()" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>
         </div>
     </div>
   </div>
 </div>
-
 
 <script>
 
@@ -103,15 +95,18 @@
   }
 
     $(document).ready(function() {
-        $('#dataTableSteamAccount').DataTable({ language: {
-        search: "_INPUT_",
-        searchPlaceholder: "Search...",
-      },});
+        $('#dataTableSteamAccount').DataTable();
             const searchInputs = document.querySelectorAll('input[type="search"]');
             searchInputs.forEach(function(input) {
                 input.style.marginBottom = '10px'
             });
-
+    
+            // const dataTables = document.querySelectorAll('.dataTable');
+            // dataTables.forEach((el)=>{
+            //   debugger
+            //     el.style.borderRadius = '10px';
+            // })
+    
             var elements = document.querySelectorAll('.dataTables_length');
             for (var i = 0; i < elements.length; i++) {
             elements[i].parentNode.removeChild(elements[i]);
