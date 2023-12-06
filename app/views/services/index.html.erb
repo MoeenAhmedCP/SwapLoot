@@ -64,14 +64,16 @@
 <script>
 
   function changeSellingStatus(selling_filter_id, trade_service_id, steam_account_id){
-    $(`.toggle-price-cutting-${steam_account_id}`)[0].checked = true
     if(trade_service_id && selling_filter_id){
+      if(selling_status = $(`.toggle-${selling_filter_id}`)[0].checked){
+        $(`.toggle-price-cutting-${steam_account_id}`)[0].checked = true
+      }
       $.ajax({
         url: `/trade_services/${trade_service_id}`,
         type: 'PATCH',
         data: {
           trade_service: {
-            selling_status: $(`.toggle-${selling_filter_id}`)[0].checked
+            selling_status: selling_status
           },
           steam_account_id: steam_account_id
         },
