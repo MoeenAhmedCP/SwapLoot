@@ -8,9 +8,7 @@ class ApplicationController < ActionController::Base
   private
 
   def admin_controller?
-    def is_admin?
-      request.url.include?("admin")
-    end
+    request.url.include?("admin")
   end
 
   def set_steam_accounts
