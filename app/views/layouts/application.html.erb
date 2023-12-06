@@ -29,10 +29,10 @@
   <body data-controller="data" style="overflow-x:hidden" class="bg-transparent dark:bg-grayExtraDark">
   <div style="display:flex; flex-direction:row ">
     <% if current_user %>
-      <div style="width:225px;" >
+      <div style="width:224px;" >
         <%= render 'shared/sidebar' %>
       </div>
-      <div style="width: calc(100% - 225px); " class="flex flex-col dark:bg-grayExtraDark">
+      <div style="width: calc(100% - 224px); " class="flex flex-col dark:bg-grayExtraDark">
     <% else %>
       <div style="display:flex; flex-direction:column; width:100%; ">
     <%end%>
@@ -42,11 +42,11 @@
       <div class="h-20">  <%= render 'shared/navbar' %></div>
       <% end %>
 
-      <div id= 'searchingModal' class="min-h-[100vh]">
       <%= render partial: '/layouts/failure_toast'%>
       <%= render partial: '/layouts/success_toast'%>
         <%= yield %>       
-      </div>
+          <div id= 'searchingModal' class="min-h-[100vh]">
+          </div>
       </div>
 
       </div>
