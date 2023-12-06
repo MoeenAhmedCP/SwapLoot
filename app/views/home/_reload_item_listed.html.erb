@@ -1,6 +1,6 @@
 <table id="dataItemListed" class="display shadow-md rounded-lg" style="width:100%; border: none;">
 
-    <thead class="bg-blue-600 text-white">
+    <thead class="bg-blue text-white">
             <tr>
                 <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
                 <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Market Name</th>
@@ -25,7 +25,11 @@
     <script>
     $('#dataItemListed').DataTable({
         paging: true,
-        pageLength: 10, // Number of records per page
+        pageLength: 10,
+         language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search...",
+      } // Number of records per page
         // Other DataTables options...
     });
 </script>
