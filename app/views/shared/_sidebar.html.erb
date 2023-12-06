@@ -34,6 +34,12 @@
           <span class="text-sm font-medium <%= request.url.include?('/steam_accounts') ? 'text-white' : nil %> dark:text-white">Steam Accounts</span>
         </a>
       </li>
+      <li class="rounded-l-lg <%= request.url.include?('/analytics') ? 'bg-blue' : nil %>">
+        <a href="/analytics" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-white dark:hover:text-grayLight">
+          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/analytics') ? 'text-white' : 'text-gray' %> dark:text-white"><i class="bx bx-analyse"></i></span>
+          <span class="text-sm font-medium <%= request.url.include?('/analytics') ? 'text-white' : nil %> dark:text-white">Analytics</span>
+        </a>
+      </li>
       <li class="rounded-l-lg <%= request.url.include?('/notifications') ? 'bg-blue-600' : nil %>">
         <a href="/notifications" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
           <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/notifications') ? 'text-white' : 'text-gray' %> dark:text-white" ><i class="fa fa-bell"></i></span>
@@ -44,12 +50,6 @@
         <a href="/errors" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
           <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/error_logs') ? 'text-white' : 'text-gray' %> dark:text-white"><i class="fa-solid fa-triangle-exclamation"></i></span>
           <span class="text-sm font-medium <%= request.url.include?('/error_logs') ? 'text-white' : nil %> dark:text-white">Error Logs</span>
-        </a>
-      </li>
-      <li class="rounded-l-lg <%= request.url.include?('/analytics') ? 'bg-blue' : nil %>">
-        <a href="/analytics" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-white dark:hover:text-grayLight">
-          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/analytics') ? 'text-white' : 'text-gray' %> dark:text-white"><i class="fa fa-chart-simple"></i></span>
-          <span class="text-sm font-medium <%= request.url.include?('/analytics') ? 'text-white' : nil %> dark:text-white">Analytics</span>
         </a>
       </li>
     </ul>
