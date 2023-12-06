@@ -11,7 +11,7 @@ module ErrorHelper
     elsif severity == 'warning'
       'bg-yellow-500'
     else
-      'bg-blue'
+      'bg-blue-500'
     end
   end
 

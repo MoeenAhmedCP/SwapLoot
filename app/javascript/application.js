@@ -4,7 +4,6 @@ import "./controllers"
 import "./channels"
 import "chartkick/chart.js"
 
-
 var elements = document.querySelectorAll('.dataTables_length');
 
 // Loop through the selected elements and remove each one

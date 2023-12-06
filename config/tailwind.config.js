@@ -11,16 +11,8 @@ content: [
   theme: {
     extend: {
       colors: {
-        blue: "rgb(37 99 235)",
-        grayLight:"rgb(229 231 235)",
-        gray:"rgb(156 163 175)",
-        grayDark:"rgb(75 85 99)",
-        grayExtraDark:"rgb(31 41 55)" ,
-        slateDark:"rgb(15 23 42)",
-        white:"#ffff"
-        
-
-  }
+        primary: {"50":"#eff6ff","100":"#dbeafe","200":"#bfdbfe","300":"#93c5fd","400":"#60a5fa","500":"#3b82f6","600":"#2563eb","700":"#1d4ed8","800":"#1e40af","900":"#1e3a8a","950":"#172554"}
+      }
     },
     fontFamily: {
       'body': [
