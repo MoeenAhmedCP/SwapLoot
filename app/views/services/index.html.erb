@@ -24,8 +24,8 @@
             </div>
             <div class="p-3">
                 <label class="relative inline-flex items-center me-5 cursor-pointer" data-toggle="tooltip" data-placement="top" title="Tooltip for Price Under Cutting">
-                <%= check_box_tag 'price_cutting', price_cutting_status ? 'on' : 'off', price_cutting_status, class: "steam-checkbox sr-only peer toggle-price-cutting-#{steam_account&.selling_filter&.id}", onchange: "changePriceCuttingStatus('#{steam_account&.selling_filter&.id}', '#{ trade_service&.id }', '#{ steam_account&.id }')" %>
-                <div class="w-11 h-6 bg-grayLight rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-grayDark peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-grayDark peer-checked:bg-blue"></div>
+                <%= check_box_tag 'price_cutting', price_cutting_status ? 'on' : 'off', price_cutting_status, class: "steam-checkbox sr-only peer toggle-price-cutting-#{steam_account&.id}", onchange: "changePriceCuttingStatus('#{steam_account&.selling_filter&.id}', '#{ trade_service&.id }', '#{ steam_account&.id }')" %>
+               <div class="w-11 h-6 bg-grayLight rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-grayDark peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-grayDark peer-checked:bg-blue"></div>
                 <span class="ms-3 text-sm font-medium text-grayExtraDark dark:text-black">Price Under Cutting</span>
                 </label>
 
@@ -86,14 +86,14 @@
 
   }
 
-    function changePriceCuttingStatus(selling_filter_id, trade_service_id, steam_account_id){
+  function changePriceCuttingStatus(selling_filter_id, trade_service_id, steam_account_id){
     if(trade_service_id && selling_filter_id){
       $.ajax({
         url: `/trade_services/${trade_service_id}`,
         type: 'PATCH',
         data: {
           trade_service: {
-            price_cutting_status: $(`.toggle-price-cutting-${selling_filter_id}`)[0].checked
+            price_cutting_status: $(`.toggle-price-cutting-${steam_account_id}`)[0].checked
           },
           steam_account_id: steam_account_id
         },
@@ -102,7 +102,7 @@
       });
     }
     else{
-      $(`.toggle-price-cutting-${selling_filter_id}`).prop('checked', false)
+      $(`.toggle-price-cutting-${steam_account_id}`).prop('checked', false)
       alert('Trade Service not Found.')
     }
 
