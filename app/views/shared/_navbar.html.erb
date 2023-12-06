@@ -1,8 +1,10 @@
-<nav class="flex items-center bg-white shadow-md h-20 border-b border-solid border-blue-500 fixed w-[calc(100%_-_225px)] z-[999]">
+<nav class="flex items-center bg-white dark:bg-grayExtraDark h-20  fixed w-[calc(100%_-_225px)] z-[999]">
   <div class="w-[100%] mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+<%# <button onclick="toggleDarkMode()">Toggle Dark Mode</button> %>
+ 
     <div class="relative flex h-16 items-center justify-between">
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-        <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-200 hover:text-black focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-700" aria-controls="mobile-menu" aria-expanded="false">
+        <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-grayDark dark:text-white hover:bg-gray-200 dark:hover:bg-grayDark hover:text-black dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-grayDark" aria-controls="mobile-menu" aria-expanded="false">
           <span class="absolute -inset-0.5"></span>
           <span class="sr-only">Open main menu</span>
           <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
@@ -14,32 +16,36 @@
         </button>
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-      <% if request.url.include?("/users/") %>
-      <div class="text-gray-500 font-semibold text-center py-5 text-md">Associated Steam Accounts</div>
-      <%else%>
+        <% if request.url.include?("/users/") %>
+        <div class="text-gray-500 dark:text-white font-semibold text-center py-5 text-md">Associated Steam Accounts</div>
+        <% else %>
         <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
           <% if @steam_accounts.present? %>
-            <%= select_tag('steam_id', options_for_select([['All', 'all']] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: !@active_steam_account.respond_to?(:each) ? @active_steam_account.steam_id : 'all' ), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray-500 font-[300]", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', onchange: 'submitForm()') %>
+            <%= select_tag('steam_id', options_for_select([['All', 'all']] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: !@active_steam_account.respond_to?(:each) ? @active_steam_account.steam_id : 'all' ), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-grayDark dark:text-grayDark font-[300]", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', onchange: 'submitForm()') %>
           <% else %>
-            <%= select_tag('steam_id', options_for_select([['No accounts available', nil]]), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray-500 font-[300] disabled", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', disabled: true) %>
+            <%= select_tag('steam_id', options_for_select([['No accounts available', nil]]), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray dark:text-grayDark font-[300] disabled", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', disabled: true) %>
           <% end %>
         <% end %>
-      <%end%>
+        <% end %>
       </div>
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+      <div class="dark-mode">
+        <i class="fas fa-sun text-2xl" onclick="toggleDarkMode()"></i> <!-- Sun icon -->
+        <i class="fas fa-moon text-2xl" onclick="toggleDarkMode()"></i> <!-- Moon icon -->
+    </div>
         <div class="relative ml-12">
           <div>
-            <button type="button" class="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+            <button type="button" class="relative flex rounded-full bg-white dark:bg-grayDark text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
               <span class="absolute -inset-1.5"></span>
               <span class="sr-only">Open user menu</span>
               <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
             </button>
           </div>
 
-          <div class="absolute hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" id="user-dropdown" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+          <div class="absolute hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-grayDark py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" id="user-dropdown" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
             <!-- Active: "bg-gray-100", Not Active: "" -->
-            <a href="<%= user_path(current_user.id) %>" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
-            <%= button_to "Sign out", destroy_user_session_path, class: "block px-4 py-2 text-sm text-gray-700", id: "user-menu-item-2", method: :delete %>
+            <a href="<%= user_path(current_user.id) %>" class="block px-4 py-2 text-sm text-grayDark dark:text-white" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
+            <%= button_to "Sign out", destroy_user_session_path, class: "block px-4 py-2 text-sm text-grayDark dark:text-white", id: "user-menu-item-2", method: :delete %>
           </div>
         </div>
       </div>
@@ -48,12 +54,41 @@
 </nav>
 
 <script>
-$( document ).ready(function() {
-  const userMenuButton = document.getElementById("user-menu-button");
-  const userDropdown = document.getElementById("user-dropdown");
- 
- userMenuButton.addEventListener("click", () => {
-    userDropdown.classList.toggle("hidden");
- });
-});
+  function toggleDarkMode() {
+    const body = document.body;
+    const isDarkMode = body.classList.toggle('dark');
+    localStorage.setItem('darkMode', isDarkMode);
+  }
+
+  function applyDarkModePreference() {
+    const darkModePreference = localStorage.getItem('darkMode');
+    const body = document.body;
+    if (darkModePreference === 'true') {
+      body.classList.add('dark');
+    } else {
+      body.classList.remove('dark');
+    }
+  }
+
+  $(document).ready(function () {
+    applyDarkModePreference();
+
+    const userMenuButton = document.getElementById("user-menu-button");
+    const userDropdown = document.getElementById("user-dropdown");
+
+    userMenuButton.addEventListener("click", () => {
+      userDropdown.classList.toggle("hidden");
+    });
+  });
 </script>
+
+<%# <script>
+  $(document).ready(function () {
+    const userMenuButton = document.getElementById("user-menu-button");
+    const userDropdown = document.getElementById("user-dropdown");
+
+    userMenuButton.addEventListener("click", () => {
+      userDropdown.classList.toggle("hidden");
+    });
+  });
+</script> %>

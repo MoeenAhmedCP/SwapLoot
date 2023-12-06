@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="bg-transparent dark:bg-grayExtraDark">
   <head>
     <title>SwapLoot</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -23,16 +23,16 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer">
     </script>
+
   </head>
 
-  <body data-controller="data" style="overflow-x:hidden">
-
-  <div style="display:flex; flex-direction:row">
+  <body data-controller="data" style="overflow-x:hidden" class="bg-transparent dark:bg-grayExtraDark">
+  <div style="display:flex; flex-direction:row ">
     <% if current_user %>
-      <div style="width:225px;">
+      <div style="width:225px;" >
         <%= render 'shared/sidebar' %>
       </div>
-      <div style="display:flex; flex-direction:column; width: calc(100% - 225px); ">
+      <div style="width: calc(100% - 225px); " class="flex flex-col dark:bg-grayExtraDark">
     <% else %>
       <div style="display:flex; flex-direction:column; width:100%; ">
     <%end%>
@@ -42,7 +42,7 @@
       <div class="h-20">  <%= render 'shared/navbar' %></div>
       <% end %>
 
-      <div id= 'searchingModal'></div>
+      <div id= 'searchingModal' class="min-h-[100vh]">
       <%= render partial: '/layouts/failure_toast'%>
       <%= render partial: '/layouts/success_toast'%>
         <%= yield %>       
@@ -50,5 +50,6 @@
       </div>
 
       </div>
+
   </body>
 </html>
