@@ -42,11 +42,11 @@
       <div class="h-20">  <%= render 'shared/navbar' %></div>
       <% end %>
 
-      <div id= 'searchingModal' class="min-h-[100vh]">
       <%= render partial: '/layouts/failure_toast'%>
       <%= render partial: '/layouts/success_toast'%>
         <%= yield %>       
-      </div>
+          <div id= 'searchingModal' class="min-h-[100vh]">
+          </div>
       </div>
 
       </div>

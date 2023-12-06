@@ -1,22 +1,23 @@
 <%= form_for @selling_filter, remote: true, html: { class: 'grid grid-cols-1 gap-6 selling_filter_form' } do |f| %>
-  <h1 class="text-center text-2xl font-bold"><%= @selling_filter.steam_account.unique_name %></h1 class="text-center text-2xl font-bold">
+  <h1 class="text-center text-2xl font-bold text-black dark:text-white"><%= @selling_filter.steam_account.unique_name %></h1 class="text-center text-2xl font-bold">
+  <em class="text-red-600 text-center">These parameters define your selling algorithm</em>
   <div>
-    <%= f.label :min_profit_percentage, class: 'block text-sm font-medium text-grayDark' %>
+    <%= f.label :min_profit_percentage, class: 'block text-sm font-medium text-grayDark dark:text-white' %>
     <%= f.number_field :min_profit_percentage, class: 'mt-1 p-2 border rounded-md w-full' %>
   </div>
 
   <div>
-    <%= f.label :undercutting_price_percentage, class: 'block text-sm font-medium text-grayDark' %>
+    <%= f.label :undercutting_price_percentage, class: 'block text-sm font-medium text-grayDark dark:text-white' %>
     <%= f.number_field :undercutting_price_percentage, class: 'mt-1 p-2 border rounded-md w-full' %>
   </div>
 
   <div>
-    <%= f.label :undercutting_interval, class: 'block text-sm font-medium text-grayDark' %>
+    <%= f.label :undercutting_interval, class: 'block text-sm font-medium text-grayDark dark:text-white' %>
     <%= f.number_field :undercutting_interval, class: 'mt-1 p-2 border rounded-md w-full' %>
   </div>
 
   <div>
-    <%= f.submit 'Update Selling Filter', id: 'updateSellingFilterButton', class: 'bg-blue text-white px-4 py-2 rounded-md', onclick: 'hide_modal(event)' %>
+    <%= f.submit 'Update Selling Filter', id: 'updateSellingFilterButton', class: 'bg-blue-800 dark:bg-blue-600 text-white px-4 py-2 rounded-md', onclick: 'hide_modal(event)' %>
   </div>
 <% end %>
 
