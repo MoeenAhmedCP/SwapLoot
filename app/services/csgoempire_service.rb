@@ -46,30 +46,14 @@ class CsgoempireService < ApplicationService
       CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], buying_filter.min_percentage, buying_filter.max_price)
     elsif data['event'] == 'trade_status'
       data['item_data'].each do |item|
-        if item['data']['status_message'] == 'Sent'
-          service_hash = set_remove_item_hash data
-          RemoveItems.remove_item_from_all_services(@current_user, service_hash)
-          inventory = Inventory.find_by(item_id: item['data']['item_id'])
-          if inventory.present?
-            inventory.soft_delete_and_set_sold_at
-          end
-        end
         if item['data']['status_message'] == 'Sent' && item["type"] == "deposit"
-          generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Sold")
+          SendNotificationsJob.perform_async(item, "Sold")
         end
         if item['data']['status_message'] == 'Completed' && item["type"] == "withdrawal"
-          generate_notification(item["data"]["item_id"], item["data"]["item"]["market_name"], item["data"]["total_value"], "Bought")
+          SendNotificationsJob.perform_async(item, "Bought")
         end
       end
     end
-  end
-
-  def generate_notification(item_id, item_name, total_value, notification_type)
-    @notification = Notification.create(
-      title: "Item #{notification_type}", body: "#{item_name} #{notification_type} with ID: (#{item_id}) at price (#{(total_value.to_f)/100}) coins", 
-      notification_type: notification_type
-    )
-    notify_discord(@notification.body)
   end
 
   def fetch_item_listed_for_sale
@@ -286,9 +270,4 @@ class CsgoempireService < ApplicationService
     service_hash
   end
 
-  def notify_discord(message)
-    bot = Discordrb::Bot.new(token: DISCORD_TOKEN)
-    channel = bot.channel(DISCORD_CHANNEL_ID)
-    channel.send_message(message)
-  end
 end
