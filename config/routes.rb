@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
+  mount ActionCable.server => '/cable'
+
   root to: "home#index"
   resources :steam_accounts
   resources :inventories, only: [:index]
