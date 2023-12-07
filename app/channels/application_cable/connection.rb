@@ -9,7 +9,7 @@ module ApplicationCable
     private
 
     def find_verified_user
-      if (verified_user = SteamAccount.find(request.params['steam_id']).user)
+      if request.params.present? && (verified_user = SteamAccount.find(request.params['steam_id']).user)
         verified_user
       else
         reject_unauthorized_connection
