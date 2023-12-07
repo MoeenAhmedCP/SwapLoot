@@ -1,6 +1,6 @@
     <table id="activeTradePartial" class="display shadow-md rounded-lg" style="width:100%; border: none;">
 
-    <thead class="bg-blue-600 text-white">
+    <thead class="bg-blue text-white">
         <tr>
             <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
             <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Item Name</th>
@@ -16,7 +16,7 @@
         <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= active_trade["item"]["market_name"] %></td>
         <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= "$#{active_trade["item"]["market_value"]}" %></td>
         <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= active_trade["sellarbuy"] %></td>
-        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= Time.parse(active_trade["item"]["updated_at"]).strftime("%d/%B/%Y") %></td>
+        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= active_trade["item"]["updated_at"].present? ? Time.parse(active_trade["item"]["updated_at"]).strftime("%d/%B/%Y") : "" %></td>
     </tr>
     <% end %>
     </tbody>
@@ -24,7 +24,12 @@
 <script>
     $('#activeTradePartial').DataTable({
         paging: true,
-        pageLength: 10, // Number of records per page
+        pageLength: 10, 
+        
+         language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search...",
+      }// Number of records per page
         // Other DataTables options...
     });
 </script>

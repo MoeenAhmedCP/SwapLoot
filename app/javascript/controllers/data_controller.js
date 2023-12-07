@@ -5,7 +5,18 @@ import consumer from "../channels/consumer";
 // Connects to data-controller="csgo"
 export default class extends Controller {
   connect() {
-    this.startAllChannelsSubscriptions();
+    //this.startAllChannelsSubscriptions();
+    this.applyDarkModePreference();
+  }
+
+  applyDarkModePreference() {
+    const darkModePreference = localStorage.getItem('darkMode');
+    const body = document.body;
+    if (darkModePreference === 'true') {
+      body.classList.add('dark');
+    } else {
+      body.classList.remove('dark');
+    }
   }
 
   async startAllChannelsSubscriptions() {
@@ -14,6 +25,20 @@ export default class extends Controller {
     steamAccounts.forEach((account) => {
       this.subscribeEventsChannel(account);
     });
+  }
+
+  async triggerBuying(event) {
+    // const steamAccount = await this.fetchUserDate(event);
+    // if (steamAccount) {
+    //   this.subscribeEventsChannel(steamAccount);
+    // } else {
+    //   this.unsubscribeEventsChannel(steamAccount);
+    // }
+  };
+
+  async fetchUserDate(event) {
+    const steamAccounts = await this.fetchAllSteamAccounts();
+    return steamAccounts.find(hash => hash.account_id === parseInt(event.target.id));
   }
 
   subscribeEventsChannel(accountData) {

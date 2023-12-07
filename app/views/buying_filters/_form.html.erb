@@ -1,22 +1,24 @@
 <%= form_for @buying_filter, remote: true, html: { class: 'grid grid-cols-1 gap-6 buying_filter_form' } do |f| %>
-  <h1 class="text-center text-2xl font-bold"><%= @buying_filter.steam_account.unique_name %></h1 class="text-center text-2xl font-bold">
+  <h1 class="text-center text-2xl font-bold text-black dark:text-white"><%= @buying_filter.steam_account.unique_name %></h1 class="text-center text-2xl font-bold">
+    <em class="text-red-600 text-center">These parameters define your buying algorithm</em>
+
   <div>
-    <%= f.label :min_percentage, class: 'block text-sm font-medium text-gray-700' %>
+    <%= f.label :min_percentage, class: 'block text-sm font-medium text-grayDark dark:text-white' %>
     <%= f.number_field :min_percentage, class: 'mt-1 p-2 border rounded-md w-full' %>
   </div>
 
   <div>
-    <%= f.label :max_price, class: 'block text-sm font-medium text-gray-700' %>
+    <%= f.label :max_price, class: 'block text-sm font-medium text-grayDark dark:text-white' %>
     <%= f.number_field :max_price, class: 'mt-1 p-2 border rounded-md w-full' %>
   </div>
 
   <div>
-    <%= f.label :min_price, class: 'block text-sm font-medium text-gray-700' %>
+    <%= f.label :min_price, class: 'block text-sm font-medium text-grayDark dark:text-white' %>
     <%= f.number_field :min_price, class: 'mt-1 p-2 border rounded-md w-full' %>
   </div>
 
   <div>
-    <%= f.submit 'Update Buying Filter', id: 'updateBuyingingFilterButton', class: 'bg-blue-500 text-white px-4 py-2 rounded-md', onclick: 'hide_modal(event)' %>
+    <%= f.submit 'Update Buying Filter', id: 'updateBuyingingFilterButton', class: 'bg-blue dark:bg-blue text-white px-4 py-2 rounded-md', onclick: 'hide_modal(event)' %>
   </div>
 <% end %>
 
@@ -29,22 +31,22 @@
     }
   }
 
-  $('.selling_filter_form').on('ajax:success', function(event){
+  $('.buying_filter_form').on('ajax:success', function(event){
     // console.log('Ajax request successful:', data, status, xhr);
     var response = JSON.parse(event.detail[0]);
     message = response.message;
 
-    if(message == 'Selling filter updated successfully.'){
+    if(message == 'Buying filter updated successfully.'){
       $('#toast-success').removeClass('hidden').find('.success_message').text(message);
-      if($(`.toggle-${response.selling_id}`)[0].checked){
-        $(`.toggle-${response.selling_id}`).click();
+      if($(`.toggle-buying${response.buying_id}`)[0].checked){
+        $(`.toggle-buying${response.buying_id}`).click();
       }
     }
     else{
       $('#toast-danger').removeClass('hidden').find('.error_message').text(message);
     }
-  }).on('ajax:success', function(event){
-    $('#toast-danger').removeClass('hidden');
+  }).on('ajax:error', function(event){
+    $('#toast-danger').removeClass('hidden').find('.error_message').text('Something went Wrong!!!');
   })
 
 </script>

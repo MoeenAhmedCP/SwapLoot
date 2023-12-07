@@ -1,0 +1,48 @@
+<div class="m-10 flex items-center space-x-2 justify-start text-black dark:text-white">
+  Select Year:
+  <%= select_tag 'year', options_for_select((2023..2050).map { |year| [year, year] }, params[:year]), class: 'border p-2 rounded min-w-[100px] ml-5 text-grayDark', onchange: "selectYear(this)" %>
+</div>
+
+<div class="w-full flex flex-col items-center mb-10">
+
+  <div class="flex flex-col w-full items-center mb-5 max-w-[1000px]">
+    <h2 class='font-bold text-blue dark:text-white'>Profit Graph</h2>
+    <h3 style="font-size: 14px; margin-bottom: 8px;" class="text-gray dark:text-grayLight">This graph illustrates the profit over the selected year.</h3>
+    <div class="bg-white w-full max-w-[1000px] p-2 rounded-md	" >
+    <%= column_chart(@profit_by_month, ytitle: "Dollars") %>
+    </div>
+
+  </div>
+
+  <br>
+  <br>
+  <br>
+
+
+  <div class="flex flex-col w-full items-center mb-5 max-w-[1000px]">
+    <h2 class='font-bold text-blue dark:text-white'>Quantity Sold Graph</h2>
+    <h3 style="font-size: 14px; margin-bottom: 8px;" class="text-gray dark:text-grayLight">This graph displays the quantity sold over the selected year.</h3>
+       <div class="bg-white w-full max-w-[1000px] p-2 rounded-md	" >
+ <%= bar_chart(@quantity_sold_by_month, xtitle: "Quantity") %></div>
+  </div>
+
+  <br>
+  <br>
+  <br>
+
+  <div class="flex flex-col w-full items-center max-w-[1000px]">
+    <h2 class='font-bold text-blue dark:text-white'>Quantity Purchased Graph</h2>
+    <h3 style="font-size: 14px; margin-bottom: 8px;" class="text-gray dark:text-grayLight">This graph represents the quantity purchased over the selected year.</h3>
+       <div class="bg-white w-full max-w-[1000px] p-2 rounded-md	" >
+ <%= pie_chart(@quantity_purchased_by_month, ytitle: "Quantity") %></div>
+  </div>
+
+</div>
+
+<script>
+  function selectYear(element){
+    window.location.href = `/analytics?year=${element.value}`
+  }
+
+
+</script>

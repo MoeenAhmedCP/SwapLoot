@@ -2,6 +2,8 @@
 import "@hotwired/turbo-rails"
 import "./controllers"
 import "./channels"
+import "chartkick/chart.js"
+
 
 var elements = document.querySelectorAll('.dataTables_length');
 

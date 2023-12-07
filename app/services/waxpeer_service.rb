@@ -9,12 +9,7 @@ class WaxpeerService < ApplicationService
     }
   end
 
-  def fetch_sold_items
-    return [] if waxpeer_api_key_not_found?
-
-    res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: @params)
-    item_sold = []
-
+  def save_sold_item(res)
     if res['success'] == false
       report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
     else
@@ -24,6 +19,22 @@ class WaxpeerService < ApplicationService
             create_item(trade['item_id'], trade['name'], trade['give_amount'], trade['price'], trade['date'])
           end
         end
+      end
+    end
+  end
+
+  def fetch_sold_items
+    if @active_steam_account.present?
+      return [] if waxpeer_api_key_not_found?
+
+      res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: @params)
+      save_sold_item(res)
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.waxpeer_api_key.blank?
+
+        res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: site_params(steam_account))
+        save_sold_item(res)
       end
     end
   end

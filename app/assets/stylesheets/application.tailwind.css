@@ -6,11 +6,13 @@
 
 @layer components {
   .btn-primary {
-    @apply py-2 px-4 bg-blue-200;
   }
 }
 
 */
+
+
+
 .bg-image{
   background-image: url('<%= asset_path("background_image.jpg") %>');
   background-size: cover;
@@ -33,10 +35,6 @@
 
 .table-2{
   margin-left: 170px;
-}
-
-body{
-  background-color: #f9f9f9;
 }
 
 .error-msg {
@@ -65,3 +63,763 @@ body{
   padding: 0.5em;
 }
 
+
+   #dataTableSteamAccount_filter input::placeholder {
+    font-size:14px;
+    color: rgb(156 163 175); 
+  }
+
+  #dataTableSteamAccount_filter input {
+    width:300px !important;
+    border: 1px solid rgb(156 163 175); 
+    border-radius: 4px; 
+    padding: 5px; 
+  }
+
+  #dataTableSteamAccount_paginate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffff; 
+    margin-top: 10px; 
+  }
+
+   #dataTableSteamAccount_paginate .paginate_button {
+    margin: 0 5px; 
+    padding: 2px 10px;
+    font-size: 14px; 
+    background-color: transparent; 
+    color: rgb(75 85 99) !important; 
+    border: 1px solid rgb(37 99 235);
+    border-radius: 4px; 
+  }
+
+    #dataTableSteamAccount_paginate .paginate_button.current {
+    background-color: transparent ; 
+    color: #000 !important; 
+    border: 1px solid #095b9e;
+  }
+
+
+  #dataTableSteamAccount_paginate .paginate_button.current:hover {
+    background-color: transparent ; 
+    color: #000 !important; 
+    border: 1px solid #095b9e; 
+  }
+
+   #dataTableSteamAccount_paginate .paginate_button:hover {
+    color: #ffff !important; 
+    background-color: #095b9e; 
+    border: 1px solid #095b9e; 
+  }
+
+  #dataTableSteamAccount_info {
+    font-size: 14px; 
+    color: rgb(75 85 99); 
+  }
+
+  .dark #dataTableSteamAccount_filter input::placeholder {
+    /* Change placeholder color */
+    color: #ffff; /* Your desired placeholder color */
+  }
+
+ .dark #dataTableSteamAccount_filter input {
+    /* Change search input border color */
+    border: 1px solid #ffff; /* Your desired search input border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+    padding: 5px; /* Adjust padding as needed */
+  }
+
+  /* Customize DataTables Pagination styles */
+ .dark #dataTableSteamAccount_paginate {
+    /* Add your custom styles here */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffff; 
+    margin-top: 10px; /* Adjust margin as needed */
+  }
+
+ .dark  #dataTableSteamAccount_paginate .paginate_button {
+    margin: 0 5px; /* Adjust margin as needed */
+    padding: 2px 10px;
+    background-color: rgb(31 41 55); /* Your desired background color */
+    color: #ffff !important; /* Your desired text color */
+    border: 1px solid rgb(37 99 235); /* Your desired border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+  }
+
+   .dark #dataTableSteamAccount_paginate .paginate_button.current {
+    /* Styles for the current/active page button */
+    background-color: transparent ; /* Your desired current background color */
+    color: #000 !important; /* Your desired current text color */
+    border: 1px solid #095b9e; /* Your desired current border color */
+  }
+
+
+  .dark #dataTableSteamAccount_paginate .paginate_button:hover {
+    /* Styles for the pagination button on hover */
+    color: #ffff; 
+    background-color: #095b9e; /* Your desired hover background color */
+    border: 1px solid #095b9e; /* Your desired hover border color */
+  }
+
+  
+
+
+ .dark #dataTableSteamAccount_info {
+    /* Add your custom styles here */
+    font-size: 14px; /* Adjust font size as needed */
+    color: #fff; /* Your desired text color */
+  }
+
+
+#dataTableSteamAccount_paginate .ellipsis{
+    color:black 
+   }
+   
+  .dark #dataTableSteamAccount_paginate .ellipsis{
+    color:#ffff 
+   }
+
+  /* ===== */
+
+  #activeTradePartial_filter input::placeholder {
+    font-size:14px;
+    color: rgb(156 163 175); 
+  }
+
+  #activeTradePartial_filter input {
+    width:300px !important;
+    border: 1px solid rgb(156 163 175); 
+    border-radius: 4px; 
+    padding: 5px; 
+  }
+
+  #activeTradePartial_paginate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffff; 
+    margin-top: 10px; 
+  }
+
+   #activeTradePartial_paginate .paginate_button {
+    margin: 0 5px; 
+    padding: 2px 10px;
+    font-size: 14px; 
+    background-color: transparent; 
+    color: rgb(75 85 99) !important; 
+    border: 1px solid rgb(37 99 235);
+    border-radius: 4px; 
+  }
+
+    #activeTradePartial_paginate .paginate_button.current {
+    background-color: transparent ; 
+    color: #000 !important; 
+    border: 1px solid #095b9e;
+  }
+
+
+  #activeTradePartial_paginate .paginate_button.current:hover {
+    background-color: transparent ; 
+    color: #000 !important; 
+    border: 1px solid #095b9e; 
+  }
+
+   #activeTradePartial_paginate .paginate_button:hover {
+    color: #ffff !important; 
+    background-color: #095b9e; 
+    border: 1px solid #095b9e; 
+  }
+
+  #activeTradePartial_info {
+    font-size: 14px; 
+    color: rgb(75 85 99); 
+  }
+
+  .dark #activeTradePartial_filter input::placeholder {
+    /* Change placeholder color */
+    color: #ffff; /* Your desired placeholder color */
+  }
+
+ .dark #activeTradePartial_filter input {
+    /* Change search input border color */
+    border: 1px solid #ffff; /* Your desired search input border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+    padding: 5px; /* Adjust padding as needed */
+  }
+
+  /* Customize DataTables Pagination styles */
+ .dark #activeTradePartial_paginate {
+    /* Add your custom styles here */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffff; 
+    margin-top: 10px; /* Adjust margin as needed */
+  }
+
+ .dark  #activeTradePartial_paginate .paginate_button {
+    margin: 0 5px; /* Adjust margin as needed */
+    padding: 2px 10px;
+    background-color: rgb(31 41 55); /* Your desired background color */
+    color: #ffff !important; /* Your desired text color */
+    border: 1px solid rgb(37 99 235); /* Your desired border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+  }
+
+   .dark #activeTradePartial_paginate .paginate_button.current {
+    /* Styles for the current/active page button */
+    background-color: transparent ; /* Your desired current background color */
+    color: #000 !important; /* Your desired current text color */
+    border: 1px solid #095b9e; /* Your desired current border color */
+  }
+
+
+  .dark #activeTradePartial_paginate .paginate_button:hover {
+    /* Styles for the pagination button on hover */
+    color: #ffff; 
+    background-color: #095b9e; /* Your desired hover background color */
+    border: 1px solid #095b9e; /* Your desired hover border color */
+  }
+
+  
+
+
+ .dark #activeTradePartial_info {
+    /* Add your custom styles here */
+    font-size: 14px; /* Adjust font size as needed */
+    color: #fff; /* Your desired text color */
+  }
+
+  #activeTradePartial_paginate .ellipsis{
+    color:black 
+   }
+   
+  .dark #activeTradePartial_paginate .ellipsis{
+    color:#ffff 
+   }
+
+  /* ================ */
+
+  #dataTableItemsSold_filter input::placeholder {
+    font-size:14px;
+    color: rgb(156 163 175); 
+  }
+
+  #dataTableItemsSold_filter input {
+    width:300px !important;
+    border: 1px solid rgb(156 163 175); 
+    border-radius: 4px; 
+    padding: 5px; 
+  }
+
+  #dataTableItemsSold_paginate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffff; 
+    margin-top: 10px; 
+  }
+
+   #dataTableItemsSold_paginate .paginate_button {
+    margin: 0 5px; 
+    padding: 2px 10px;
+    font-size: 14px; 
+    background-color: transparent; 
+    color: rgb(75 85 99) !important; 
+    border: 1px solid rgb(37 99 235);
+    border-radius: 4px; 
+  }
+
+    #dataTableItemsSold_paginate .paginate_button.current {
+    background-color: transparent ; 
+    color: #000 !important; 
+    border: 1px solid #095b9e;
+  }
+
+
+  #dataTableItemsSold_paginate .paginate_button.current:hover {
+    background-color: transparent ; 
+    color: #000 !important; 
+    border: 1px solid #095b9e; 
+  }
+
+   #dataTableItemsSold_paginate .paginate_button:hover {
+    color: #ffff !important; 
+    background-color: #095b9e; 
+    border: 1px solid #095b9e; 
+  }
+
+  #dataTableItemsSold_info {
+    font-size: 14px; 
+    color: rgb(75 85 99); 
+  }
+
+  .dark #dataTableItemsSold_filter input::placeholder {
+    /* Change placeholder color */
+    color: #ffff; /* Your desired placeholder color */
+  }
+
+ .dark #dataTableItemsSold_filter input {
+    /* Change search input border color */
+    border: 1px solid #ffff; /* Your desired search input border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+    padding: 5px; /* Adjust padding as needed */
+  }
+
+  /* Customize DataTables Pagination styles */
+ .dark #dataTableItemsSold_paginate {
+    /* Add your custom styles here */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffff; 
+    margin-top: 10px; /* Adjust margin as needed */
+  }
+
+ .dark  #dataTableItemsSold_paginate .paginate_button {
+    margin: 0 5px; /* Adjust margin as needed */
+    padding: 2px 10px;
+    background-color: rgb(31 41 55); /* Your desired background color */
+    color: #ffff !important; /* Your desired text color */
+    border: 1px solid rgb(37 99 235); /* Your desired border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+  }
+
+   .dark #dataTableItemsSold_paginate .paginate_button.current {
+    /* Styles for the current/active page button */
+    background-color: transparent ; /* Your desired current background color */
+    color: #000 !important; /* Your desired current text color */
+    border: 1px solid #095b9e; /* Your desired current border color */
+  }
+
+
+  .dark #dataTableItemsSold_paginate .paginate_button:hover {
+    /* Styles for the pagination button on hover */
+    color: #ffff; 
+    background-color: #095b9e; /* Your desired hover background color */
+    border: 1px solid #095b9e; /* Your desired hover border color */
+  }
+
+  
+
+
+ .dark #dataTableItemsSold_info {
+    /* Add your custom styles here */
+    font-size: 14px; /* Adjust font size as needed */
+    color: #fff; /* Your desired text color */
+  }
+
+  #dataTableItemsSold_paginate .ellipsis{
+    color:black 
+   }
+   
+  .dark #dataTableItemsSold_paginate .ellipsis{
+    color:#ffff 
+   }
+  
+
+  /* =============== */
+
+
+  #dataItemListed_filter input::placeholder {
+    font-size:14px;
+    color: rgb(156 163 175); 
+  }
+
+  #dataItemListed_filter input {
+    width:300px !important;
+    border: 1px solid rgb(156 163 175); 
+    border-radius: 4px; 
+    padding: 5px; 
+  }
+
+  #dataItemListed_paginate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffff; 
+    margin-top: 10px; 
+  }
+
+   #dataItemListed_paginate .paginate_button {
+    margin: 0 5px; 
+    padding: 2px 10px;
+    font-size: 14px; 
+    background-color: transparent; 
+    color: rgb(75 85 99) !important; 
+    border: 1px solid rgb(37 99 235);
+    border-radius: 4px; 
+  }
+
+    #dataItemListed_paginate .paginate_button.current {
+    background-color: transparent ; 
+    color: #000 !important; 
+    border: 1px solid #095b9e;
+  }
+
+
+  #dataItemListed_paginate .paginate_button.current:hover {
+    background-color: transparent ; 
+    color: #000 !important; 
+    border: 1px solid #095b9e; 
+  }
+
+   #dataItemListed_paginate .paginate_button:hover {
+    color: #ffff !important; 
+    background-color: #095b9e; 
+    border: 1px solid #095b9e; 
+  }
+
+  #dataItemListed_info {
+    font-size: 14px; 
+    color: rgb(75 85 99); 
+  }
+
+  .dark #dataItemListed_filter input::placeholder {
+    /* Change placeholder color */
+    color: #ffff; /* Your desired placeholder color */
+  }
+
+ .dark #dataItemListed_filter input {
+    /* Change search input border color */
+    border: 1px solid #ffff; /* Your desired search input border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+    padding: 5px; /* Adjust padding as needed */
+  }
+
+  /* Customize DataTables Pagination styles */
+ .dark #dataItemListed_paginate {
+    /* Add your custom styles here */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffff; 
+    margin-top: 10px; /* Adjust margin as needed */
+  }
+
+ .dark  #dataItemListed_paginate .paginate_button {
+    margin: 0 5px; /* Adjust margin as needed */
+    padding: 2px 10px;
+    background-color: rgb(31 41 55); /* Your desired background color */
+    color: #ffff !important; /* Your desired text color */
+    border: 1px solid rgb(37 99 235); /* Your desired border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+  }
+
+   .dark #dataItemListed_paginate .paginate_button.current {
+    /* Styles for the current/active page button */
+    background-color: transparent ; /* Your desired current background color */
+    color: #000 !important; /* Your desired current text color */
+    border: 1px solid #095b9e; /* Your desired current border color */
+  }
+
+
+  .dark #dataItemListed_paginate .paginate_button:hover {
+    /* Styles for the pagination button on hover */
+    color: #ffff; 
+    background-color: #095b9e; /* Your desired hover background color */
+    border: 1px solid #095b9e; /* Your desired hover border color */
+  }
+
+  
+
+
+ .dark #dataItemListed_info {
+    /* Add your custom styles here */
+    font-size: 14px; /* Adjust font size as needed */
+    color: #fff; /* Your desired text color */
+  }
+
+  #dataItemListed_paginate .ellipsis{
+    color:black 
+   }
+   
+  .dark #dataItemListed_paginate .ellipsis{
+    color:#ffff 
+   }
+  
+
+ /* =============== */
+
+
+ #missingItemTable_filter input::placeholder {
+  font-size:14px;
+  color: rgb(156 163 175); 
+}
+
+#missingItemTable_filter input {
+  width:300px !important;
+  border: 1px solid rgb(156 163 175); 
+  border-radius: 4px; 
+  padding: 5px; 
+}
+
+#missingItemTable_paginate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffff; 
+  margin-top: 10px; 
+}
+
+ #missingItemTable_paginate .paginate_button {
+  margin: 0 5px; 
+  padding: 2px 10px;
+  font-size: 14px; 
+  background-color: transparent; 
+  color: rgb(75 85 99) !important; 
+  border: 1px solid rgb(37 99 235);
+  border-radius: 4px; 
+}
+
+  #missingItemTable_paginate .paginate_button.current {
+  background-color: transparent ; 
+  color: #000 !important; 
+  border: 1px solid #095b9e;
+}
+
+
+#missingItemTable_paginate .paginate_button.current:hover {
+  background-color: transparent ; 
+  color: #000 !important; 
+  border: 1px solid #095b9e; 
+}
+
+ #missingItemTable_paginate .paginate_button:hover {
+  color: #ffff !important; 
+  background-color: #095b9e; 
+  border: 1px solid #095b9e; 
+}
+
+#missingItemTable_info {
+  font-size: 14px; 
+  color: rgb(75 85 99); 
+}
+
+.dark #missingItemTable_filter input::placeholder {
+  /* Change placeholder color */
+  color: #ffff; /* Your desired placeholder color */
+}
+
+.dark #missingItemTable_filter input {
+  /* Change search input border color */
+  border: 1px solid #ffff; /* Your desired search input border color */
+  border-radius: 4px; /* Adjust border radius as needed */
+  padding: 5px; /* Adjust padding as needed */
+}
+
+/* Customize DataTables Pagination styles */
+.dark #missingItemTable_paginate {
+  /* Add your custom styles here */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffff; 
+  margin-top: 10px; /* Adjust margin as needed */
+}
+
+.dark  #missingItemTable_paginate .paginate_button {
+  margin: 0 5px; /* Adjust margin as needed */
+  padding: 2px 10px;
+  background-color: rgb(31 41 55); /* Your desired background color */
+  color: #ffff !important; /* Your desired text color */
+  border: 1px solid rgb(37 99 235); /* Your desired border color */
+  border-radius: 4px; /* Adjust border radius as needed */
+}
+
+ .dark #missingItemTable_paginate .paginate_button.current {
+  /* Styles for the current/active page button */
+  background-color: transparent ; /* Your desired current background color */
+  color: #000 !important; /* Your desired current text color */
+  border: 1px solid #095b9e; /* Your desired current border color */
+}
+
+
+.dark #missingItemTable_paginate .paginate_button:hover {
+  /* Styles for the pagination button on hover */
+  color: #ffff; 
+  background-color: #095b9e; /* Your desired hover background color */
+  border: 1px solid #095b9e; /* Your desired hover border color */
+}
+
+
+
+
+.dark #missingItemTable_info {
+  /* Add your custom styles here */
+  font-size: 14px; /* Adjust font size as needed */
+  color: #fff; /* Your desired text color */
+}
+
+#missingItemTable_paginate .ellipsis{
+  color:black 
+ }
+ 
+.dark #missingItemTable_paginate .ellipsis{
+  color:#ffff 
+ }
+/* =============== */
+
+
+#inventoryTable_filter input::placeholder {
+  font-size:14px;
+  color: rgb(156 163 175); 
+}
+
+#inventoryTable_filter input {
+  width:300px !important;
+  border: 1px solid rgb(156 163 175); 
+  border-radius: 4px; 
+  padding: 5px; 
+}
+
+#inventoryTable_paginate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffff; 
+  margin-top: 10px; 
+}
+
+ #inventoryTable_paginate .paginate_button {
+  margin: 0 5px; 
+  padding: 2px 10px;
+  font-size: 14px; 
+  background-color: transparent; 
+  color: rgb(75 85 99) !important; 
+  border: 1px solid rgb(37 99 235);
+  border-radius: 4px; 
+}
+
+  #inventoryTable_paginate .paginate_button.current {
+  background-color: transparent ; 
+  color: #000 !important; 
+  border: 1px solid #095b9e;
+}
+
+
+#inventoryTable_paginate .paginate_button.current:hover {
+  background-color: transparent ; 
+  color: #000 !important; 
+  border: 1px solid #095b9e; 
+}
+
+ #inventoryTable_paginate .paginate_button:hover {
+  color: #ffff !important; 
+  background-color: #095b9e; 
+  border: 1px solid #095b9e; 
+}
+
+#inventoryTable_info {
+  font-size: 14px; 
+  color: rgb(75 85 99); 
+}
+
+#inventoryTable_paginate .ellipsis{
+  color:black 
+ }
+ 
+.dark #inventoryTable_paginate .ellipsis{
+  color:#ffff 
+ }
+
+.dark #inventoryTable_filter input::placeholder {
+  /* Change placeholder color */
+  color: #ffff; /* Your desired placeholder color */
+}
+
+.dark #inventoryTable_filter input {
+  /* Change search input border color */
+  border: 1px solid #ffff; /* Your desired search input border color */
+  border-radius: 4px; /* Adjust border radius as needed */
+  padding: 5px; /* Adjust padding as needed */
+}
+
+/* Customize DataTables Pagination styles */
+.dark #inventoryTable_paginate {
+  /* Add your custom styles here */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffff; 
+  margin-top: 10px; /* Adjust margin as needed */
+}
+
+.dark  #inventoryTable_paginate .paginate_button {
+  margin: 0 5px; /* Adjust margin as needed */
+  padding: 2px 10px;
+  background-color: rgb(31 41 55); /* Your desired background color */
+  color: #ffff !important; /* Your desired text color */
+  border: 1px solid rgb(37 99 235); /* Your desired border color */
+  border-radius: 4px; /* Adjust border radius as needed */
+}
+
+ .dark #inventoryTable_paginate .paginate_button.current {
+  /* Styles for the current/active page button */
+  background-color: transparent ; /* Your desired current background color */
+  color: #000 !important; /* Your desired current text color */
+  border: 1px solid #095b9e; /* Your desired current border color */
+}
+
+
+.dark #inventoryTable_paginate .paginate_button:hover {
+  /* Styles for the pagination button on hover */
+  color: #ffff; 
+  background-color: #095b9e; /* Your desired hover background color */
+  border: 1px solid #095b9e; /* Your desired hover border color */
+}
+
+
+
+
+.dark #inventoryTable_info {
+  /* Add your custom styles here */
+  font-size: 14px; /* Adjust font size as needed */
+  color: #fff; /* Your desired text color */
+}
+
+
+
+.dark .fa-sun {
+  display: block;
+  color:#FFF
+}
+
+.fa-moon {
+  display: block;
+}
+
+ .fa-sun {
+  display: none;
+}
+
+.dark .fa-moon {
+  display: none;
+}
+
+.dark .textColor{
+  color:#ffff
+}
+
+.textColor{
+  color:rgb(37 99 235)
+}
+
+.dark .blackText{
+  color:#ffff
+}
+
+.dark .backgroundColor{
+  background:rgb(37 99 235)
+}
+
+.backgroundColor{
+  background:rgb(37 99 235)
+}
+
+.divider {
+  color:rgb(156 163 175);
+  }
