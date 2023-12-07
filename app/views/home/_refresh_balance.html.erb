@@ -8,7 +8,7 @@
                   CSGO Empire Balance
                </h5>
             </div>
-            <hr class="bg-gray h-px w-full">
+            <hr class="h-px w-full divider">
          </div>
          <div class="p-6 pt-0 text-2xl font-bold text-center">
             <%= !@csgo_empire_balance.present? ? "0 Coins" : "#{@csgo_empire_balance} coins" %>
@@ -22,7 +22,7 @@
                   Market dot CSGO Balance:
                </h5>
             </div>
-            <hr class="bg-gray h-px w-full">
+            <hr class="h-px w-full divider">
          </div>
          <div class="p-6 pt-0 text-2xl font-bold text-center">
             <%= !@csgo_market_balance.present? ? "$0" : "$#{@csgo_market_balance}" %>
@@ -36,7 +36,7 @@
                   Waxpeer Balance:
                </h5>
             </div>
-            <hr class="bg-gray h-px w-full">
+            <hr class="h-px w-full divider">
          </div>
          <div class="p-6 pt-0 text-2xl font-bold text-center">
             <%= !@waxpeer_balance.present? ? "$0" : "$#{@waxpeer_balance}" %>
@@ -57,7 +57,7 @@
                               CSGO Empire (<%= account[:account_name] %>):
                            </h5>
                         </div>
-                        <hr class="bg-gray h-px w-full">
+                        <hr class="h-px w-full divider">
                      </div>
                      <div class="p-6 pt-0 text-2xl font-bold text-center">
                         <%= !account[:csgo_empire_balance].present? ? "0 Coins" : "#{account[:csgo_empire_balance]}" %>
@@ -71,7 +71,7 @@
                               Market dot CSGO (<%= account[:account_name] %>):
                            </h5>
                         </div>
-                        <hr class="bg-gray h-px w-full">
+                        <hr class="h-px w-full divider">
                      </div>
                      <div class="p-6 pt-0 text-2xl font-bold text-center">
                         <%= !account[:csgo_market_balance].present? ? "0" : "$#{account[:csgo_market_balance]}" %>
@@ -86,7 +86,7 @@
                               Waxpeer (<%= account[:account_name] %>):
                            </h5>
                         </div>
-                        <hr class="bg-gray h-px w-full">
+                        <hr class="h-px w-full divider">
                      </div>
                      <div class="p-6 pt-0 text-2xl font-bold text-center">
                         <%= !account[:waxpeer_balance].present? ? "$0" : "$#{account[:waxpeer_balance]}" %>
