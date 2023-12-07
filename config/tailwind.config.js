@@ -12,6 +12,7 @@ content: [
     extend: {
       colors: {
         blue: "rgb(37 99 235)",
+        blueLight:"#93c5fd",
         grayLight:"rgb(229 231 235)",
         gray:"rgb(156 163 175)",
         grayDark:"rgb(75 85 99)",
