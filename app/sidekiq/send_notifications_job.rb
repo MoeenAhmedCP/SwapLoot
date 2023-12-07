@@ -1,14 +1,13 @@
 class SendNotificationsJob
   include Sidekiq::Job
     
-  def perform(*item, notification_type)
+  def perform(*item, notification_type, user, service_hash)
     p "<=========== Notification sending ===================>"
     @notification = Notification.create(title: "Item #{@notification_type}", body: "#{item[0]["data"]["item"]["market_name"]} #{notification_type} with ID: (#{item[0]["data"]["item_id"]}) at price (#{(item[0]["data"]["total_value"].to_f)/100}) coins", notification_type: notification_type)
     p "<=========== Discord Notification sending ===================>"
     notify_discord(@notification.body)
     if notification_type == "Sold"
-      # service_hash = set_remove_item_hash data
-      # RemoveItems.remove_item_from_all_services(@current_user, service_hash)
+      RemoveItems.remove_item_from_all_services(user, service_hash) if user.present?
       inventory = Inventory.find_by(item_id: item[0]['data']['item_id'])
       if inventory.present?
         inventory.soft_delete_and_set_sold_at
