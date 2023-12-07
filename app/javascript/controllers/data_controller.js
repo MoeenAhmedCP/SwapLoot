@@ -5,7 +5,7 @@ import consumer from "../channels/consumer";
 // Connects to data-controller="csgo"
 export default class extends Controller {
   connect() {
-    this.startAllChannelsSubscriptions();
+    //this.startAllChannelsSubscriptions();
   }
 
   async startAllChannelsSubscriptions() {
@@ -17,12 +17,12 @@ export default class extends Controller {
   }
 
   async triggerBuying(event) {
-    const steamAccount = await this.fetchUserDate(event);
-    if (steamAccount) {
-      this.subscribeEventsChannel(steamAccount);
-    } else {
-      this.unsubscribeEventsChannel(steamAccount);
-    }
+    // const steamAccount = await this.fetchUserDate(event);
+    // if (steamAccount) {
+    //   this.subscribeEventsChannel(steamAccount);
+    // } else {
+    //   this.unsubscribeEventsChannel(steamAccount);
+    // }
   };
 
   async fetchUserDate(event) {

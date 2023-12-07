@@ -41,7 +41,7 @@
                 </label>
 
                 <label class="relative inline-flex items-center me-5 cursor-pointer" data-toggle="tooltip" data-placement="top" title="Tooltip for Enable Buying Service">
-                <%= check_box_tag steam_account.id, buying_status ? 'on' : 'off', buying_status, class: "steam-checkbox sr-only peer steam-buying-services toggle-buying#{steam_account&.buying_filter&.id}", data: { action: 'change->data#triggerBuying' } ,onchange: "changeBuyingStatus('#{steam_account&.buying_filter&.id}', '#{ trade_service&.id }')" %>
+                <%= check_box_tag steam_account.id, buying_status ? 'on' : 'off', buying_status, class: "steam-checkbox sr-only peer steam-buying-services toggle-buying#{steam_account&.buying_filter&.id}" ,onchange: "changeBuyingStatus('#{steam_account&.buying_filter&.id}', '#{ trade_service&.id }')" %>
                 <div class="w-11 h-6 bg-grayLight rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-grayDark peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-grayDark peer-checked:bg-green-600"></div>
                 <a href="<%= edit_buying_filter_path(steam_account&.buying_filter) %>" class="edit-link" data-remote="true">
                   <i class="px-2 fa fa-pen text-grayDark" data-toggle="tooltip" data-placement="top" title="Edit Params for Buying Filter Service"></i>
