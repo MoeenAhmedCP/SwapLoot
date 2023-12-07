@@ -1,0 +1,24 @@
+<% if flash[:notice] %>
+    <div id="notice-top-right" class="z-[9999] absolute flex justify-between items-center w-full max-w-xs p-4 space-x-4 divide-x rtl:divide-x-reverse divide-grayLight rounded-lg shadow top-5 right-5 text-white mt-[50px] divide-grayDark space-x bg-green-800" role="alert" onClick="hidePopup()">
+        <div>
+            <%= flash[:notice] %>
+        </div>
+            <i class="fa fa-times fa-lg cursor-pointer cross"></i>
+    </div>
+<% end %>
+
+<% if flash[:alert] %>
+    <div id="alert-top-right" class="z-[9999] absolute flex justify-between items-center w-full max-w-xs p-4 space-x-4 divide-x rtl:divide-x-reverse divide-grayLight rounded-lg shadow top-5 right-5 text-white mt-[50px] divide-grayDark space-x bg-red-800" role="alert" onClick="hidePopup()">
+        <div>
+            <%= flash[:alert] %>
+        </div>
+            <i class="fa fa-times fa-lg cursor-pointer cross"></i>
+    </div>
+<% end %>
+
+
+<script>
+    function hidePopup(){
+        event.target.closest('.absolute').remove();
+    }
+</script>

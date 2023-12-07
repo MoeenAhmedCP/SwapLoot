@@ -5,6 +5,10 @@ ruby "3.2.2"
 
 gem "devise"
 
+gem 'httparty'
+
+gem 'sidekiq'
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.8"
 
@@ -44,8 +48,16 @@ gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
+gem 'will_paginate', '~> 3.3'
+
+gem 'geocoder'
+
+gem 'will_paginate-bootstrap4'
+
+gem 'rack-cors'
+
 # Use Sass to process CSS
-# gem "sassc-rails"
+gem "sassc-rails"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
@@ -53,6 +65,7 @@ gem "bootsnap", require: false
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem 'dotenv-rails'
 end
 
 group :development do
@@ -66,3 +79,10 @@ group :development do
   # gem "spring"
 end
 
+
+gem "tailwindcss-rails", "~> 2.0"
+
+gem "activeadmin", "~> 3.1"
+gem "chartkick"
+
+gem "discordrb"

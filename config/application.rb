@@ -23,6 +23,19 @@ module SwapLoot
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
+    config.active_job.queue_adapter = :sidekiq
+    config.autoload_paths += %W(#{config.root}/lib)
+
+    config.after_initialize do
+      if Rails.env.production? || Rails.env.development?
+        PermanentDeleteJob.set(wait_until: Date.tomorrow.to_time).perform_later
+        PriceEmpireSuggestedPriceJob.set(wait_until: Date.tomorrow.to_time).perform_later
+      end
+    end
+    config.action_cable.mount_path = '/cable'
+    config.action_cable.disable_request_forgery_protection = true
+
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
@@ -33,5 +46,13 @@ module SwapLoot
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    Bundler.require(*Rails.groups)
+
+    # Load dotenv only in development or test environment
+    if ['development', 'test'].include? ENV['RAILS_ENV']
+      Dotenv::Railtie.load
+    end
+
+    HOSTNAME = ENV['HOSTNAME']
   end
 end

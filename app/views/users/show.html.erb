@@ -1,0 +1,61 @@
+<h1 class="text-blue dark:text-white text-3xl font-bold py-3">Discord Credentials Form</h1>
+<%= form_for @user, url: user_path(id: @user), local: true do |form| %>
+  <div class="mb-4">
+    <%= form.label :discord_channel_id, 'Discord Channel ID', class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
+    <%= form.text_field :discord_channel_id, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue', value: @user.discord_channel_id  %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :discord_bot_token, class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
+    <%= form.text_field :discord_bot_token, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue', value: @user.discord_bot_token %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :discord_app_id, class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
+    <%= form.text_field :discord_app_id, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue', value: @user.discord_app_id %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :ma_file, "Upload MA File" %>
+    <%= form.file_field :ma_file %>
+    <% if @user.ma_file.attached? %>
+      <p>Current File: <%= @user.ma_file.filename %></p>
+    <% end %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.submit "Update Discord Credentials", class: 'bg-blue dark:bg-blue text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue' %>
+  </div>
+<% end %>
+
+<div class="m-10">
+    <% @user_accounts_data.each do |user_account_data| %>
+    <% @steam_account = SteamAccount.find_by(steam_id: user_account_data[:data]['steam_id']) %>
+    <div class="text-blue font-semibold mb-2 text-lg dark:text-white">Steam Account: <%= @steam_account.unique_name %></div>
+      <div class="flex  md:flex-row flex-wrap mb-10 shadow-md rounded-lg">
+        <div class="w-full border-b rounded-tl-lg md:w-1/4 bg-blue border-[#acadaf9c] p-4 text-center text-white text-md">Steam ID</div>
+        <div class="w-full border-b rounded-tr-lg md:w-3/4 bg-white p-4 text-center text-gray text-md"><%= user_account_data[:data]['steam_id'] %></div>
+
+        <div class="w-full border-b md:w-1/4 border-[#acadaf9c] bg-blue p-4 text-center text-white text-md">Steam Name</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray text-md"><%= user_account_data[:data]['steam_name'] %></div>
+
+        <div class="w-full border-b md:w-1/4 border-[#acadaf9c] bg-blue p-4 text-center text-white text-md">Last Login</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray text-md"><%= user_account_data[:data]['last_login'].to_datetime.strftime("%B-%d-%Y | %R") %></div>
+
+        <div class="w-full border-b md:w-1/4 border-[#acadaf9c] bg-blue p-4 text-center text-white text-md">Steam Level</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray text-md"><%= user_account_data[:data]['steam_level'] %></div>
+
+        <div class="w-full border-b md:w-1/4 border-[#acadaf9c] bg-blue p-4 text-center text-white text-md">Trade URL</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray text-md"><%= user_account_data[:data]['trade_url'] %></div>
+
+        <div class="w-full border-b md:w-1/4 border-[#acadaf9c] bg-blue p-4 text-center text-white text-md">CsgoEmpire Balance</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray text-md"><%= user_account_data[:data]['balance'] ? "#{number_with_precision(user_account_data[:data]['balance'].to_f / 100, precision: 2)} Coins" : "--" %></div>
+
+        <div class="w-full border-b md:w-1/4 border-[#acadaf9c] bg-blue p-4 text-center text-white text-md">Waxpeer Balance</div>
+        <div class="w-full border-b md:w-3/4 bg-white p-4 text-center text-gray text-md"><%= user_account_data[:waxpeer_balance] ? "$ #{user_account_data[:waxpeer_balance]}" : "--" %></div>
+
+        <div class="w-full border-b rounded-bl-lg md:w-1/4 border-[#acadaf9c] bg-blue p-4 text-center text-white text-md">Market.Csgo Balance</div>
+        <div class="w-full border-b rounded-br-lg md:w-3/4 bg-white p-4 text-center text-gray text-md"><%= user_account_data[:market_csgo_balance] ? "$ #{user_account_data[:market_csgo_balance]}" : "--" %></div>
+      </div>
+  <% end %>
+</div>

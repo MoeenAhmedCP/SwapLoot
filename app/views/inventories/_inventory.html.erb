@@ -1,0 +1,33 @@
+<table id="inventoryTable" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+
+    <thead class="bg-blue text-white">
+    <tr>
+        <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
+        <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Market Name</th>
+        <th class="text-sm px-4 py-2 rounded-tr-lg">Market Price</th>
+    </tr>
+    </thead>
+    <tbody>
+     <% inventories.each do |inventory| %>
+        <tr>
+         <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= inventory.item_id %></td>
+         <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= inventory.market_name %></td>
+         <td class=" text-sm text-center px-4 py-2"><%= "$#{inventory.market_price}" %></td>
+        </tr>
+     <% end %>    
+ </tbody>
+</table>
+
+<script>
+    var dataTable = $('#inventoryTable').DataTable({
+            "order": [[2, 'desc']],
+            paging: true,
+            pageLength: 10,
+            language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search...",
+      },
+        });
+</script>
+
+    

@@ -1,0 +1,43 @@
+<div class="container mx-auto bg-white dark:bg-grayExtraDark shadow rounded-lg p-4">
+  <div class='flex justify-between item-center mb-8'>
+    <h1 class="text-2xl text-blue dark:text-white font-[500]">Errors Dashboard</h1>
+
+  </div>
+
+  <%= render 'error_filters' %>
+
+  <div class="overflow-x-auto mt-4">
+    <table class="table w-full">
+      <tbody>
+        <% @errors.each do |error| %>
+          <tr class='border border-gray rounded-md'>
+            <td class="px-4 py-2">
+              <%= link_to error_path(error) do %>
+                <p class='text-blue dark:text-blue font-medium'><%= error.error_type %></p>
+                <p class='text-sm text-black dark:text-white'><%= error_message(error.message.capitalize) %></p>
+                <div class='flex items-center gap-x-6 ml-2 mt-1'>
+                  <div class="<%= error_severity_class(error.severity) %> text-white rounded-full w-fit text-xs px-2 py-1"><%= error.severity.capitalize %></div>
+                  <div class='<%= error_handled_class(error.handled) %> text-xs font-medium'><%= error_handled(error.handled) %></div>
+                  <div class='text-xs text-black dark:text-white'><i class="fa-regular fa-clock text-black dark:text-white"></i> <%= error_reported_duration(error.created_at) %></div>
+                </div>
+              <% end %>
+            </td>
+            <td>
+              <div class='flex text-sm gap-x-24 items-center text-black dark:text-white'>
+                <%= error_reported_at(error.created_at)  %>
+              </div>
+            </td>
+            <td>
+              <div class="<%= error_source_class(error.context['source']) %> text-white rounded-full w-fit text-xs px-2 py-1"><%= error.context['source'].capitalize %></div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  function submitForm() {
+          document.getElementById("postForm").submit();
+      }
+</script>
