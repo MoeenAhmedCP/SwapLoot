@@ -45,8 +45,8 @@ class CsgoempireService < ApplicationService
       # buying_filter = @active_steam_account.buying_filter
       # CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], buying_filter.min_percentage, buying_filter.max_price)
     elsif data['event'] == 'trade_status'
+      user = SteamAccount.find_by(id: data['steam_id'])&.user
       data['item_data'].each do |item|
-        user = SteamAccount.find_by(id: data['steam_id'])&.user
         if item['data']['status_message'] == 'Sent' && item["type"] == "deposit"
           SendNotificationsJob.perform_async(item, "Sold", user, set_remove_item_hash(data))
         end
