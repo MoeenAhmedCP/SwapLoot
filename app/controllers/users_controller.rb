@@ -26,7 +26,7 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:discord_app_id, :discord_channel_id, :discord_bot_token)
+    params.require(:user).permit(:discord_app_id, :discord_channel_id, :discord_bot_token, :ma_file)
   end
 
   def fetch_balance_waxpeer(steam_account)
