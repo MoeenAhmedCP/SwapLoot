@@ -54,6 +54,8 @@ gem 'geocoder'
 
 gem 'will_paginate-bootstrap4'
 
+gem 'rack-cors'
+
 # Use Sass to process CSS
 gem "sassc-rails"
 
