@@ -46,11 +46,12 @@ class CsgoempireService < ApplicationService
       CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], buying_filter.min_percentage, buying_filter.max_price)
     elsif data['event'] == 'trade_status'
       data['item_data'].each do |item|
+        user = SteamAccount.find_by(id: data['steam_id'])&.user
         if item['data']['status_message'] == 'Sent' && item["type"] == "deposit"
-          SendNotificationsJob.perform_async(item, "Sold")
+          SendNotificationsJob.perform_async(item, "Sold", user, set_remove_item_hash(data))
         end
         if item['data']['status_message'] == 'Completed' && item["type"] == "withdrawal"
-          SendNotificationsJob.perform_async(item, "Bought")
+          SendNotificationsJob.perform_async(item, "Bought", user, nil)
         end
       end
     end
@@ -252,15 +253,15 @@ class CsgoempireService < ApplicationService
     service_hash = { 'CsgoempireService': '', 'WaxpeerService': '' }
     trade_service_info = data['item_data'].first
     if trade_service_info['type'] == 'deposit' && trade_service_info.dig('data', 'status_message') == 'Sent'
-      service_hash['WaxpeerService'] = trade_service_info.dig('data', 'item', 'asset_id')
+      service_hash[:WaxpeerService] = trade_service_info.dig('data', 'item', 'asset_id')
     end
 
     csgo_desposit_data = fetch_item_listed_for_sale
-    if fetch_item_listed_for_sale.present?
+    if csgo_desposit_data.present?
       csgo_desposit_data.each do |record|
         record['items'].each do |item_data|
           if item_data['id'] == trade_service_info.dig('data', 'item_id')
-            service_hash['CsgoempireService'] = record['id']
+            service_hash[:CsgoempireService] = record['id']
             break
           end
         end
