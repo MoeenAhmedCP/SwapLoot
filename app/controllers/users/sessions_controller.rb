@@ -27,8 +27,8 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def notify_discord(message)
-    bot = Discordrb::Bot.new(token: DISCORD_TOKEN)
-    channel = bot.channel(DISCORD_CHANNEL_ID)
+    bot = Discordrb::Bot.new(token: current_user.discord_bot_token)
+    channel = bot.channel(current_user.discord_channel_id)
     channel.send_message(message)
   end
 end
