@@ -11,7 +11,7 @@ class TradeServicesController < ApplicationController
   end
 
   def send_status(steam_account, status)
-    base_url = "http://example.com/"
+    base_url = ENV['NODE_TOGGLE_SERVICE_URL']
     steam_id = steam_account.steam_id
     buying_status = status
 
