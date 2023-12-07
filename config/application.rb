@@ -32,6 +32,9 @@ module SwapLoot
         PriceEmpireSuggestedPriceJob.set(wait_until: Date.tomorrow.to_time).perform_later
       end
     end
+    config.action_cable.mount_path = '/cable'
+    config.action_cable.disable_request_forgery_protection = true
+
 
     # Configuration for the application, engines, and railties goes here.
     #
