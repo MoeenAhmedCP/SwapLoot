@@ -60,18 +60,9 @@
     localStorage.setItem('darkMode', isDarkMode);
   }
 
-  function applyDarkModePreference() {
-    const darkModePreference = localStorage.getItem('darkMode');
-    const body = document.body;
-    if (darkModePreference === 'true') {
-      body.classList.add('dark');
-    } else {
-      body.classList.remove('dark');
-    }
-  }
+  
 
   $(document).ready(function () {
-    applyDarkModePreference();
 
     const userMenuButton = document.getElementById("user-menu-button");
     const userDropdown = document.getElementById("user-dropdown");
