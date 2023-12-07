@@ -9,11 +9,11 @@
         <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4 md:space-y-6" }) do |f| %>
           <div class="mb-4">
             <%= f.label :email, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "name@company.com", required: true %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ", placeholder: "name@company.com", required: true %>
           </div>
           <div class="mb-4">
             <%= f.label :password, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-            <%= f.password_field :password, autocomplete: "current-password", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "••••••••", required: true %>
+            <%= f.password_field :password, autocomplete: "current-password", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ", placeholder: "••••••••", required: true %>
           </div>
           <% if devise_mapping.rememberable? %>
             <div class="mb-4">
@@ -21,17 +21,17 @@
                 <%= f.check_box :remember_me, class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" %>
                 <%= f.label :remember_me, class: "ml-3 text-sm text-gray-500 dark:text-gray-300" %>
               </div>
-            </div>
+            </div> 
           <% end %>
           <div class="mb-4">
-            <%= f.submit "Sign in", class: "w-full text-white bg-blue-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover-bg-primary-700 dark:focus-ring-primary-800" %>
+            <%= f.submit "Sign in", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover-bg-primary-700 dark:focus-ring-primary-800" %>
           </div>
         <% end %>
-        <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-          Don't have an account yet? <a href="/users/sign_up" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+        <p class="text-sm font-light text-gray ">
+          Don't have an account yet? <a href="/users/sign_up" class="font-medium text-blue hover:underline">Sign up</a>
         </p>
 
-         <%= link_to "Forgot Password", "#", class: "text-blue-500 underline", id: "forgot-password-link" %>
+         <%= link_to "Forgot Password", "#", class: "text-blue underline", id: "forgot-password-link" %>
           <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-4 md:space-y-6", id: "password-reset-form" }) do |f| %>
             <%= render "devise/shared/error_messages", resource: resource %>
             <div class="field hidden" id="email-field">
