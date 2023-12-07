@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   include HTTParty
+  before_action :set_user, only: %i[update show]
 
   BASE_URL_CSGOEMPIRE = 'https://csgoempire.com/api/v2'
   BASE_URL_WAXPEER = 'https://api.waxpeer.com/v1'
@@ -10,7 +11,23 @@ class UsersController < ApplicationController
     @user_accounts_data = fetch_user_accounts_data
   end
 
+  def edit; end
+
+  def update
+    @user.update(user_params)
+    flash[:notice] = "Discord Credentials updated successfully"
+    redirect_to user_path(id: @user)
+  end
+
   private
+
+  def set_user
+    @user = User.find_by(id: params[:id])
+  end
+
+  def user_params
+    params.require(:user).permit(:discord_app_id, :discord_channel_id, :discord_bot_token)
+  end
 
   def fetch_balance_waxpeer(steam_account)
     params = {
