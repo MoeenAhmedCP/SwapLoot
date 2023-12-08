@@ -61,10 +61,11 @@ class SteamAccountsController < ApplicationController
   end
 
   def set_steam_account_filters
-    @steam_account = SteamAccount.find_by(steam_id: params["steam_account"]["steam_id"])
-    TradeService.create(steam_account_id: @steam_account.id)
-    SellingFilter.create(steam_account_id: @steam_account.id)
-    BuyingFilter.create(steam_account_id: @steam_account.id)
+    if @steam_account.present?
+      TradeService.create(steam_account_id: @steam_account.id)
+      SellingFilter.create(steam_account_id: @steam_account.id)
+      BuyingFilter.create(steam_account_id: @steam_account.id)
+    end
   end
 
   def notify_discord(message)
