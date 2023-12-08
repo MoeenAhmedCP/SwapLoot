@@ -3,9 +3,9 @@ class SendNotificationsJob
     
   def perform(*current_user, item, notification_type)
     p "<=========== Notification sending ===================>"
-    @notification = Notification.create(title: "Item #{@notification_type}", body: "#{item[0]["data"]["item"]["market_name"]} #{notification_type} with ID: (#{item[0]["data"]["item_id"]}) at price (#{(item[0]["data"]["total_value"].to_f)/100}) coins", notification_type: notification_type)
+    @notification = current_user.notifications.create(title: "Item #{@notification_type}", body: "#{item[0]["data"]["item"]["market_name"]} #{notification_type} with ID: (#{item[0]["data"]["item_id"]}) at price (#{(item[0]["data"]["total_value"].to_f)/100}) coins", notification_type: notification_type)
     p "<=========== Discord Notification sending ===================>"
-    notify_discord(current_user, @notification.body)
+    notify_discord(current_user, @notification.body) if current_user.discord_bot_token.present? && current_user.discord_channel_id.present?
     if notification_type == "Sold"
       RemoveItems.remove_item_from_all_services(user, service_hash) if user.present?
       inventory = Inventory.find_by(item_id: item[0]['data']['item_id'])
