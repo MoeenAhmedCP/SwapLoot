@@ -76,8 +76,12 @@ module HomeControllerConcern
   def fetch_waxpeer_item_listed_for_sale
     waxpeer_service = WaxpeerService.new(current_user)
     item_listed_for_sale = waxpeer_service.fetch_item_listed_for_sale
-    item_listed_for_sale_hash = item_listed_for_sale.map do |item|
-      item.merge('site' => 'Waxpeer')
+    if item_listed_for_sale
+      item_listed_for_sale_hash = item_listed_for_sale.map do |item|
+        item.merge('site' => 'Waxpeer')
+      end
+    else
+      []
     end
   end
 
