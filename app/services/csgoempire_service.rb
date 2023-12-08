@@ -16,10 +16,15 @@ class CsgoempireService < ApplicationService
   def fetch_balance
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
+      begin
+        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
 
-      response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
       if response['success'] == false
-        report_api_error(response, [self&.class&.name, __method__.to_s])
+        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        return []
       else
         response_data = response['user'] ? response['user']['balance'].to_f / 100 : 0
       end
@@ -27,8 +32,11 @@ class CsgoempireService < ApplicationService
       response_data = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
-
-        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: headers(steam_account&.csgoempire_api_key))
+        begin
+          response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: headers(steam_account&.csgoempire_api_key))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         response = {
           account_id: steam_account.id,
           balance: response['user']['balance'].to_f / 100
@@ -61,7 +69,11 @@ class CsgoempireService < ApplicationService
     response = []
     if @active_steam_account.present?
       return [] if csgoempire_key_not_found?
-      res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
+      begin
+        res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
       if res['success'] == true
         response = res['data']['deposits']
       else
@@ -71,8 +83,11 @@ class CsgoempireService < ApplicationService
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
-
-        res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+        begin
+          res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         response += res['data']['deposits'] if res['success'] == true
       end
     end
@@ -81,10 +96,14 @@ class CsgoempireService < ApplicationService
 
   def self.fetch_user_data(steam_account)
     headers = { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" }
-    response = self.get(BASE_URL + '/metadata/socket', headers: headers)
-
+    begin
+      response = self.get(BASE_URL + '/metadata/socket', headers: headers)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
     if response['success'] == false
-      report_api_error(response, [self&.class&.name, __method__.to_s])
+      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      return []
     else
       response
     end
@@ -93,14 +112,20 @@ class CsgoempireService < ApplicationService
   def fetch_my_inventory
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
-
-      response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
+      begin
+        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
       save_inventory(response, @active_steam_account)
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
-
-        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account.csgoempire_api_key))
+        begin
+          response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account.csgoempire_api_key))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         save_inventory(response, steam_account)
       end
     end
@@ -119,11 +144,14 @@ class CsgoempireService < ApplicationService
   def fetch_active_trade
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
-
-      response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
-
+      begin
+        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
       if response['success'] == false
-        report_api_error(response, [self&.class&.name, __method__.to_s])
+        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        return []
       else
         response
       end
@@ -131,8 +159,11 @@ class CsgoempireService < ApplicationService
       response = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
-
-        res = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+        begin
+          res = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         response << res
       end
       if response.present?
@@ -156,10 +187,15 @@ class CsgoempireService < ApplicationService
   end
 
   def remove_item(deposit_id)
-    response = self.class.get("#{BASE_URL}/trading/deposit/#{deposit_id}/cancel", headers: @headers)
+    begin
+      response = self.class.get("#{BASE_URL}/trading/deposit/#{deposit_id}/cancel", headers: @headers)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
     if response['success'] == false
-      report_api_error(response, [self&.class&.name, __method__.to_s])
+      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      return []
     else
       response
     end
@@ -169,7 +205,11 @@ class CsgoempireService < ApplicationService
     if response['data']
       last_page = response['last_page'].to_i
       (1..last_page).each do |page_number|
-        response_data = self.class.get("#{BASE_URL}/user/transactions?page=#{page_number}", headers: @headers)
+        begin
+          response_data = self.class.get("#{BASE_URL}/user/transactions?page=#{page_number}", headers: @headers)
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         if response_data['data'].present?
           response_data['data'].each do |transaction_data|
             if transaction_data['key'] == 'deposit_invoices' && transaction_data['data']['status_name'] == 'Complete'
@@ -194,21 +234,31 @@ class CsgoempireService < ApplicationService
   def fetch_deposit_transactions
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
-
-      response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+      begin
+        response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
       save_transaction(response, @active_steam_account)
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
-
-        response = self.class.get("#{BASE_URL}/user/transactions", headers: headers(steam_account.csgoempire_api_key))
+        begin
+          response = self.class.get("#{BASE_URL}/user/transactions", headers: headers(steam_account.csgoempire_api_key))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         save_transaction(response, steam_account)
       end
     end
   end
 
   def process_transactions
-    response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+    begin
+      response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
     if response['data']
       last_page = response['last_page'].to_i
@@ -224,7 +274,11 @@ class CsgoempireService < ApplicationService
   end
 
   def process_page(page_number)
-    response_data = self.class.get("#{BASE_URL}/user/transactions?page=#{page_number}", headers: @headers)
+    begin
+      response_data = self.class.get("#{BASE_URL}/user/transactions?page=#{page_number}", headers: @headers)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
     return unless response_data['data'].present?
 
