@@ -37,7 +37,7 @@ class SteamAccountsController < ApplicationController
 
   def show_api_keys
     @success = check_password?
-    if current_password.discord_bot_token.present? && current_user.discord_channel_id.present?
+    if current_user.discord_bot_token.present? && current_user.discord_channel_id.present?
       @success ? notify_discord("#{current_user.email} successfully accessed API keys") :  notify_discord("#{current_user.email} tried to access API keys")
     end
     respond_to do |format|

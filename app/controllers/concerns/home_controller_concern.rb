@@ -35,9 +35,9 @@ module HomeControllerConcern
         wax_balance = @waxpeer_balance.find { |hash| hash[:account_id] == account }
         data_hash = {
           account_name: steam_account.unique_name.capitalize,
-          csgo_empire_balance: e_balance[:balance].nil? ? '$0' : "#{e_balance[:balance]} coins",
-          csgo_market_balance: mark_balance[:balance].nil? ? '$0' : "#{mark_balance[:balance]}",
-          waxpeer_balance: wax_balance[:balance].nil? ? '$0' : "#{wax_balance[:balance]}"
+          csgo_empire_balance: e_balance&.dig(:balance).nil? ? "" : "#{e_balance[:balance]} coins",
+          csgo_market_balance: mark_balance&.dig(:balance).nil? ? "" : "#{mark_balance[:balance]}",
+          waxpeer_balance: wax_balance&.dig(:balance).nil? ? "" : "#{wax_balance[:balance]}"
         }
         @balance_data << data_hash
       end
