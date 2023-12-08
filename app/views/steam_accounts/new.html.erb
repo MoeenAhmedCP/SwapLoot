@@ -3,37 +3,37 @@
 
   <%= form_with model: @steam_account, url: steam_accounts_path, local: true, method: :post do |form| %>
     <div class="mb-4">
-      <%= form.label :steam_id, 'Steam ID', class: 'block text-grayDark font-bold mb-2' %>
+      <%= form.label :steam_id, 'Steam ID', class: 'block text-grayDark font-bold mb-2 dark:text-white'%>
       <%= form.text_field :steam_id, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue', required: true %>
     </div>
 
     <div class="mb-4">
-      <%= form.label :unique_name, class: 'block text-grayDark font-bold mb-2' %>
+      <%= form.label :unique_name, class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
       <%= form.text_field :unique_name, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue', required: true %>
     </div>
 
     <div class="mb-4">
-      <%= form.label :steam_web_api_key, class: 'block text-grayDark font-bold mb-2' %>
+      <%= form.label :steam_web_api_key, class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
       <%= form.text_field :steam_web_api_key, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue' %>
     </div>
 
     <div class="mb-4">
-      <%= form.label :waxpeer_api_key, class: 'block text-grayDark font-bold mb-2' %>
+      <%= form.label :waxpeer_api_key, class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
       <%= form.text_field :waxpeer_api_key, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue' %>
     </div>
 
     <div class="mb-4">
-      <%= form.label :csgoempire_api_key, class: 'block text-grayDark font-bold mb-2' %>
+      <%= form.label :csgoempire_api_key, class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
       <%= form.text_field :csgoempire_api_key, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue' %>
     </div>
 
     <div class="mb-4">
-      <%= form.label :market_csgo_api_key, class: 'block text-grayDark font-bold mb-2' %>
+      <%= form.label :market_csgo_api_key, class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
       <%= form.text_field :market_csgo_api_key, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue' %>
     </div>
 
     <div class="mb-4">
-      <%= form.label :price_empire_api_key, class: 'block text-grayDark font-bold mb-2' %>
+      <%= form.label :price_empire_api_key, class: 'block text-grayDark font-bold mb-2 dark:text-white' %>
       <%= form.text_field :price_empire_api_key, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue' %>
     </div>
 
