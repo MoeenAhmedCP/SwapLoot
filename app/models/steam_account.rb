@@ -10,19 +10,25 @@ class SteamAccount < ApplicationRecord
   before_create :check_api_keys
 
   def check_api_keys
-    csgo_response = CsgoempireService.get("#{CSGO_EMPIRE_BASE_URL}/metadata/socket", headers: { 'Authorization' => "Bearer #{csgoempire_api_key}" }) if csgoempire_api_key.present?
-    if csgo_response['invalid_api_token'].present?
-      self.csgoempire_api_key = nil
+    if csgoempire_api_key.present?
+      csgo_response = CsgoempireService.get("#{CSGO_EMPIRE_BASE_URL}/metadata/socket", headers: { 'Authorization' => "Bearer #{csgoempire_api_key}" })
+      if csgo_response['invalid_api_token'].present?
+        self.csgoempire_api_key = nil
+      end
     end
 
-    waxpeer_response = WaxpeerService.get("#{WAXPEER_BASE_URL}/user", query: { api: waxpeer_api_key }) if waxpeer_api_key.present?
-    if waxpeer_response['msg'] == 'wrong api'
-      self.waxpeer_api_key = nil
+    if waxpeer_api_key.present?
+      waxpeer_response = WaxpeerService.get("#{WAXPEER_BASE_URL}/user", query: { api: waxpeer_api_key })
+      if waxpeer_response['msg'] == 'wrong api'
+        self.waxpeer_api_key = nil
+      end
     end
 
-    marketcsgo_response = MarketcsgoService.get("#{MARKET_CSGO_BASE_URL}/get-money", query: { key: market_csgo_api_key }) if market_csgo_api_key.present?
-    if marketcsgo_response['error'] == 'Bad KEY'
-      self.market_csgo_api_key = nil
+    if market_csgo_api_key.present?
+      marketcsgo_response = MarketcsgoService.get("#{MARKET_CSGO_BASE_URL}/get-money", query: { key: market_csgo_api_key })
+      if marketcsgo_response['error'] == 'Bad KEY'
+        self.market_csgo_api_key = nil
+      end
     end
   end
 end
