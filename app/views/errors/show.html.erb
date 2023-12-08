@@ -1,6 +1,6 @@
 <div class="container mt-16 mx-auto bg-white shadow rounded-lg p-4">
   <p class='text-blue text-xl font-medium'><%= @error.error_type %> <span class='text-base text-gray'>
-    <%= error_controller_action(@error.context) %></span>
+    <%= error_controller_action(@error) %></span>
   </p>
 
   <% error_messages = @error.message.split("\n") %>
@@ -42,52 +42,48 @@
       </div>
     </div>
 
-    <% if @error.context.fetch("controller", nil).present? %>
+    <% if @error.controller.present? %>
       <div class='text-sm border border-gray px-2 rounded-md w-fit'>
         <div class='flex'>
           <div class='text-grayDark'>controller</div>
           <div class='bg-gray w-px mx-2'></div>
-          <div class='text-blue'><%= @error.context['controller'] %></div>
+          <div class='text-blue'><%= @error.controller %></div>
         </div>
       </div>
-    <% end %>
 
-    <% if @error.context.fetch("action", nil).present? %>
       <div class='text-sm border border-gray px-2 rounded-md w-fit'>
         <div class='flex'>
           <div class='text-grayDark'>action</div>
           <div class='bg-gray w-px mx-2'></div>
-          <div class='text-blue'><%= @error.context['action'] %></div>
+          <div class='text-blue'><%= @error.action %></div>
         </div>
       </div>
     <% end %>
 
-    <% if @error.context.fetch("url", nil).present? %>
+    <% if @error.url.present? %>
       <div class='text-sm border border-gray px-2 rounded-md w-fit'>
         <div class='flex'>
           <div class='text-grayDark'>url</div>
           <div class='bg-gray w-px mx-2'></div>
-          <div class='text-blue'><%= @error.context['url'] %></div>
+          <div class='text-blue'><%= @error.url %></div>
         </div>
       </div>
     <% end %>
 
-    <% if @error.context.fetch("user_id", nil).present? %>
+    <% if @error.user.present? %>
       <div class='text-sm border border-gray px-2 rounded-md w-fit'>
         <div class='flex'>
           <div class='text-grayDark'>user id</div>
           <div class='bg-gray w-px mx-2'></div>
-          <div class='text-blue'><%= @error.context['user_id'] %></div>
+          <div class='text-blue'><%= @error.user.id %></div>
         </div>
       </div>
-    <% end %>
 
-    <% if @error.context.fetch("user_email", nil).present? %>
       <div class='text-sm border border-gray px-2 rounded-md w-fit'>
         <div class='flex'>
           <div class='text-grayDark'>user email</div>
           <div class='bg-gray w-px mx-2'></div>
-          <div class='text-blue'><%= @error.context['user_email'] %></div>
+          <div class='text-blue'><%= @error.user.email %></div>
         </div>
       </div>
     <% end %>
@@ -104,7 +100,7 @@
       <div class='flex'>
         <div class='text-grayDark'>source</div>
         <div class='bg-gray w-px mx-2'></div>
-        <div class='text-blue'><%= @error.context['source'] %></div>
+        <div class='text-blue'><%= @error.source %></div>
       </div>
     </div>
   </div>

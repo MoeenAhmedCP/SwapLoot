@@ -21,8 +21,6 @@ class ApplicationController < ActionController::Base
 
   def handle_error(error)
     context = {
-      user_id: current_user&.id,
-      user_email: current_user&.email,
       source: 'application',
       url: request&.url
     }
