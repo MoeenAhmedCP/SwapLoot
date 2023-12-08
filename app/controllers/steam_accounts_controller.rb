@@ -74,9 +74,9 @@ class SteamAccountsController < ApplicationController
   def response_message
     message = []
     message << 'Steam account was successfully added.'
-    message << 'CSGOEmpire API Key is wrong.' if @steam_account.csgoempire_api_key.nil?
-    message << 'WAXPEER API Key is wrong.' if @steam_account.waxpeer_api_key.nil?
-    message << 'Market.CSGO API Key is wrong.' if @steam_account.market_csgo_api_key.nil?
+    message << 'CSGOEmpire API Key is invalid.' if @steam_account.csgoempire_api_key.nil?
+    message << 'WAXPEER API Key is invalid.' if @steam_account.waxpeer_api_key.nil?
+    message << 'Market.CSGO API Key is invalid.' if @steam_account.market_csgo_api_key.nil?
     message.join(' ')
   end
 end
