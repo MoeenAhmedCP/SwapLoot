@@ -7,7 +7,7 @@ class SteamAccount < ApplicationRecord
   has_one :buying_filter, dependent: :destroy
   has_many :sold_items, dependent: :destroy
 
-  before_create :check_api_keys
+  before_save :check_api_keys
 
   def check_api_keys
     if csgoempire_api_key.present?
