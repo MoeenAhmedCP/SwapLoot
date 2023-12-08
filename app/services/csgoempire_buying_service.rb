@@ -26,7 +26,7 @@ class CsgoempireBuyingService < ApplicationService
       if response.code == 200
         return { status: 'success', message: 'Item purchased successfully', purchase_details: JSON.parse(response.body) }
       else
-        report_api_error("HTTP Error: #{response.code} - #{response.message}", [self&.class&.name, __method__.to_s])
+        report_api_error(response, [self&.class&.name, __method__.to_s])
         return { status: 'error', message: "HTTP Error: #{response.code} - #{response.message}" }
       end
     else

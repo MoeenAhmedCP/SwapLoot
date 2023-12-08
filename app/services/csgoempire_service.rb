@@ -19,7 +19,7 @@ class CsgoempireService < ApplicationService
 
       response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
       if response['success'] == false
-        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        report_api_error(response, [self&.class&.name, __method__.to_s])
       else
         response_data = response['user'] ? response['user']['balance'].to_f / 100 : 0
       end
@@ -65,7 +65,7 @@ class CsgoempireService < ApplicationService
       if res['success'] == true
         response = res['data']['deposits']
       else
-        report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        report_api_error(res, [self&.class&.name, __method__.to_s])
         []
       end
     else
@@ -84,7 +84,7 @@ class CsgoempireService < ApplicationService
     response = self.get(BASE_URL + '/metadata/socket', headers: headers)
 
     if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(response, [self&.class&.name, __method__.to_s])
     else
       response
     end
@@ -123,7 +123,7 @@ class CsgoempireService < ApplicationService
       response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
 
       if response['success'] == false
-        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        report_api_error(response, [self&.class&.name, __method__.to_s])
       else
         response
       end
@@ -159,7 +159,7 @@ class CsgoempireService < ApplicationService
     response = self.class.get("#{BASE_URL}/trading/deposit/#{deposit_id}/cancel", headers: @headers)
 
     if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(response, [self&.class&.name, __method__.to_s])
     else
       response
     end

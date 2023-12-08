@@ -11,13 +11,13 @@ class CsgoempireSellingService < ApplicationService
     response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers)
 
     if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s]) 
+      report_api_error(response, [self&.class&.name, __method__.to_s]) 
     else
       response = response["data"].select { |item| item["market_value"] != -1 }
       online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
 
       if online_trades_response['success'] == false
-        report_api_error(online_trades_response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        report_api_error(online_trades_response, [self&.class&.name, __method__.to_s])
       else
         online_trades = JSON.parse(online_trades_response.read_body)
         api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
@@ -55,7 +55,7 @@ class CsgoempireSellingService < ApplicationService
 
 
     if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(response, [self&.class&.name, __method__.to_s])
     else
       api_response = JSON.parse(response.read_body)
       # Sample API response is at the end of the file, You can use it for testing (here).
@@ -91,7 +91,7 @@ class CsgoempireSellingService < ApplicationService
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
 
     if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(response, [self&.class&.name, __method__.to_s])
     end
 
     puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
@@ -119,7 +119,7 @@ class CsgoempireSellingService < ApplicationService
     response = HTTParty.get(url)
 
     if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(response, [self&.class&.name, __method__.to_s])
     else
       response
     end
@@ -146,7 +146,7 @@ class CsgoempireSellingService < ApplicationService
     if response.code == SUCCESS_CODE
       result = JSON.parse(response.body)
     else
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(response, [self&.class&.name, __method__.to_s])
       result = API_FAILED
     end
     sell_csgoempire
@@ -197,7 +197,7 @@ class CsgoempireSellingService < ApplicationService
      if response.code == SUCCESS_CODE
        result = JSON.parse(response.body)
      else
-        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        report_api_error(response, [self&.class&.name, __method__.to_s])
         result = API_FAILED
      end
      result

@@ -14,7 +14,7 @@ class MissingItemsService < ApplicationService
     response = self.class.get(url, headers: @headers)
 
     if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(response, [self&.class&.name, __method__.to_s])
     else
       if response['items']
         api_inventory_item = response['items'].pluck('id')
