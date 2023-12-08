@@ -1,7 +1,6 @@
 class TradeServicesController < ApplicationController
   include TradeServiceConcern
-  require 'net/http'
-  require 'uri'
+  require 'httparty'
 
   def update
     @trade_service.update(trade_service_params)
@@ -15,11 +14,10 @@ class TradeServicesController < ApplicationController
     steam_id = steam_account.steam_id
     buying_status = status
 
-    url = URI.parse("#{base_url}stopBuying?id=#{steam_account.id}&steamId=#{steam_id}&toggle=#{buying_status}")
-    http = Net::HTTP.new(url.host, url.port)
+    url = "#{base_url}/toggleBuying"
+    params = { id: steam_account.id, steamId: steam_id, toggle: buying_status }
 
-    request = Net::HTTP::Get.new(url.path)
-    response = http.request(request)
+    response = HTTParty.post(url, query: params)
   end
 
   private
