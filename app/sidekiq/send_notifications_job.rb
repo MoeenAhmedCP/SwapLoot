@@ -12,6 +12,8 @@ class SendNotificationsJob
       if inventory.present?
         inventory.soft_delete_and_set_sold_at
       end
+    else
+      # Inventory.create(item_id: item[0]["data"]["item_id"], market_name: item[0]["data"]["item"]["market_name"] , market_price: (item[0]["data"]["item"]["market_value"] * 0.614) )
     end
   end
 
