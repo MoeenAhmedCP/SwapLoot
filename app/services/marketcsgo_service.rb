@@ -19,7 +19,7 @@ class MarketcsgoService < ApplicationService
 
       res = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: @params)
       if res['success'] == false
-        report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        report_api_error(res, [self&.class&.name, __method__.to_s])
       else
         res['money']
       end
