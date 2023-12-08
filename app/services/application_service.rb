@@ -12,7 +12,7 @@ class ApplicationService
 
     error = ApiError.new(message: message, backtrace: backtrace)
     reporter = Rails.error
-    reporter.subscribe(ErrorSubscriber.new)
+    reporter.subscribe(ErrorSubscriber.new(@current_user))
     reporter&.report(error, handled: false, context: context)
   end
 

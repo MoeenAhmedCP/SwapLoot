@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Error < ApplicationRecord
+  belongs_to :user, optional: true
+
   scope :newest_errors, -> { order(created_at: :desc) }
   scope :last_hour, -> { where('created_at >= ?', 1.hour.ago) }
   scope :last_day, -> { where('created_at >= ?', 1.day.ago) }
