@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
     }
 
     reporter = Rails.error
-    reporter.subscribe(ErrorSubscriber.new)
+    reporter.subscribe(ErrorSubscriber.new(current_user))
     reporter&.report(error, handled: false, context: context)
     
     raise error

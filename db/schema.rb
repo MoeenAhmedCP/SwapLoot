@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_08_114422) do
+ActiveRecord::Schema[7.0].define(version: 2023_12_08_140019) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -94,6 +94,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_08_114422) do
     t.json "context", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_errors_on_user_id"
   end
 
   create_table "inventories", force: :cascade do |t|
@@ -199,6 +201,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_08_114422) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "buying_filters", "steam_accounts"
+  add_foreign_key "errors", "users"
   add_foreign_key "selling_filters", "steam_accounts"
   add_foreign_key "sold_items", "steam_accounts"
   add_foreign_key "steam_accounts", "users"
