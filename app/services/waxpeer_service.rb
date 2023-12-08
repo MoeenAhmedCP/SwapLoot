@@ -11,7 +11,7 @@ class WaxpeerService < ApplicationService
 
   def save_sold_item(res)
     if res['success'] == false
-      report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(res, [self&.class&.name, __method__.to_s])
     else
       if res['data'].present?
         res['data']['trades'].each do |trade|
@@ -55,7 +55,7 @@ class WaxpeerService < ApplicationService
       res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: @params)
 
       if res['success'] == false
-        report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        report_api_error(res, [self&.class&.name, __method__.to_s])
         []
       else
         response = res['items'].present? ? res['items'] : []
@@ -79,7 +79,7 @@ class WaxpeerService < ApplicationService
       res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
 
       if res['success'] == false
-        report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+        report_api_error(res, [self&.class&.name, __method__.to_s])
         return 0
       else
         res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
@@ -107,7 +107,7 @@ class WaxpeerService < ApplicationService
     res = self.class.get("#{BASE_URL}/remove-items", query: @params.merge(id: item_id))
     
     if res['success'] == false
-      report_api_error(res&.keys&.at(1), [self&.class&.name, __method__.to_s])
+      report_api_error(res, [self&.class&.name, __method__.to_s])
     else
       res['removed'].count&.positive?
     end

@@ -6,8 +6,8 @@ class Users::SessionsController < Devise::SessionsController
       if resource.persisted?
         location = get_user_location(request.remote_ip)
         flash[:notice] = "User logged in with #{resource.email} from #{location}, (IP Address: #{request.remote_ip})"
-        @notification = Notification.create(title: "User Logged In", body: "User logged in with email: #{resource.email}, from #{location}, (IP Address: #{request.remote_ip})", notification_type: "Login" )
-        notify_discord(@notification.body)
+        @notification = current_user.notifications.create(title: "User Logged In", body: "User logged in with email: #{resource.email}, from #{location}, (IP Address: #{request.remote_ip})", notification_type: "Login" )
+        notify_discord(@notification.body) if current_user.discord_bot_token.present? && current_user.discord_channel_id.present?
       end
     end
   end
@@ -27,8 +27,8 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def notify_discord(message)
-    bot = Discordrb::Bot.new(token: DISCORD_TOKEN)
-    channel = bot.channel(DISCORD_CHANNEL_ID)
+    bot = Discordrb::Bot.new(token: current_user.discord_bot_token)
+    channel = bot.channel(current_user.discord_channel_id)
     channel.send_message(message)
   end
 end

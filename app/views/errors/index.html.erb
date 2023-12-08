@@ -28,7 +28,7 @@
               </div>
             </td>
             <td>
-              <div class="<%= error_source_class(error.context['source']) %> text-white rounded-full w-fit text-xs px-2 py-1"><%= error.context['source'].capitalize %></div>
+              <div class="<%= error_source_class(error.source) %> text-white rounded-full w-fit text-xs px-2 py-1"><%= error.source.capitalize %></div>
             </td>
           </tr>
         <% end %>

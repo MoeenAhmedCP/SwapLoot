@@ -1,10 +1,23 @@
 class TradeServicesController < ApplicationController
   include TradeServiceConcern
+  require 'httparty'
 
   def update
     @trade_service.update(trade_service_params)
     trigger_selling_service(@steam_account) if trade_service_params[:selling_status]
     trigger_price_cutting(@steam_account) if trade_service_params[:price_cutting_status]
+    send_status(@trade_service.steam_account, trade_service_params[:buying_status] ) if trade_service_params[:buying_status].present? 
+  end
+
+  def send_status(steam_account, status)
+    base_url = ENV['NODE_TOGGLE_SERVICE_URL']
+    steam_id = steam_account.steam_id
+    buying_status = status
+
+    url = "#{base_url}/toggleBuying"
+    params = { id: steam_account.id, steamId: steam_id, toggle: buying_status }
+
+    response = HTTParty.post(url, query: params)
   end
 
   private

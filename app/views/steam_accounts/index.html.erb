@@ -22,32 +22,85 @@
     <tbody>
      <% @steam_accounts.each do |steam_account| %>
         <tr class="hover:bg-grayLight">
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm "><%= steam_account.steam_id.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm "><%= steam_account.steam_id&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %></td>
           <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.unique_name %></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.steam_web_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.csgoempire_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
-          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.market_csgo_api_key.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %><i class="ml-3 text-grayDark fa fa-eye-slash"></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.steam_web_api_key&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.waxpeer_api_key&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.csgoempire_api_key&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %></td>
+          <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm"><%= steam_account.market_csgo_api_key&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %></td>
           <td class="text-center px-4 py-2 ">
-          <div class="flex item-center justify-center">
-            <%= link_to edit_steam_account_path(id: steam_account), class: "mr-3 text-blue hover:text-blue", data: { toggle: "tooltip", placement: "top" }, title: "Edit Steam Account" do %>
-              <i class="fa fa-pen"></i>
-            <% end %>
-
-            <%= form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
-              <button id="delete-steam-account-button-<%= steam_account.id %>" class='ml-3 text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
-                <i class="fa fa-trash"></i>
-              </button>
-            <% end %>
+          <div class="flex item-center justify-center gap-3">
+            <div>
+              <i id="steamWebApiKeyEye-<%= steam_account.id %>" class=" text-grayDark fa fa-eye-slash" onclick="openKeyModal(<%= steam_account.id %>)"></i>
+            </div>
+            <div>
+              <%= link_to edit_steam_account_path(id: steam_account), class: " text-blue hover:text-blue", data: { toggle: "tooltip", placement: "top" }, title: "Edit Steam Account" do %>
+                <i class="fa fa-pen"></i>
+              <% end %>
+            </div>
+            <div>
+              <%= form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
+                <button id="delete-steam-account-button-<%= steam_account.id %>" class='text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
+                  <i class="fa fa-trash"></i>
+                </button>
+              <% end %>
+            </div>
           </div>
          </td>
         </tr>
+
+
+        <!-- Modal for Steam Web API Key -->
+        <div id="steamWebApiKeyModal-<%= steam_account.id %>" class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center">
+          <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+          <div class="bg-white dark:bg-grayDark rounded-lg overflow-hidden shadow-xl transform transition-all max-w-3xl mx-auto p-6">
+            <div class="flex item-center justify-between gap-2">
+              <h2 class="text-xl dark:text-white font-semibold mb-4">Steam Web API Key Modal</h2>
+              <i id="closeSteamWebApiKeyModal-<%= steam_account.id %>" class="fa fa-close dark:text-white cursor-pointer text-grayDark dark:text-white text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-semibold dark:text-white mb-4"><%= steam_account.unique_name %></h2>
+             <p class="text-gray-700 dark:text-white mb-8">Enter current password to see API Keys</p>
+            <%= form_with(url: show_api_key_path(id: steam_account.id), method: :get, remote: true, local: false) do |form| %>
+              <%= form.label(:current_password, class: "block font-bold mb-2 dark:text-white text-black") %>
+              <%= form.password_field(:current_password, class: "w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue") %>
+              <%= form.submit("Submit", class: "mt-3 dark:text-white cursor-pointer bg-blue text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue") %>
+            <% end %>
+
+            <div id="error-div-<%= steam_account.id%>" class="hidden">
+              <p class="text-red-600 mt-3 text-lg">Invalid User Password</p>
+            </div>
+
+            <div id="keys-div-<%= steam_account.id%>" class="hidden p-4">
+              <div class="text-lg dark:text-white font-semibold">Steam Account Name</div>
+              <div class="font-semibold"><%= steam_account.unique_name %></div>
+              <hr class="h-px w-full mb-3 mt-1 divider">
+              <div class="text-lg dark:text-white font-semibold">Steam Account ID</div>
+              <div class="font-semibold"><%= steam_account.steam_id %></div>
+              <hr class="h-px w-full mb-3 mt-1 divider">
+              <div class="text-lg dark:text-white font-semibold">CSGOEmpire API Key</div>
+              <div class="font-semibold"><%= steam_account.csgoempire_api_key %></div>
+              <hr class="h-px w-full mb-3 mt-1 divider">
+              <div class="text-lg dark:text-white font-semibold">Steam Web API Key</div>
+              <div class="font-semibold"><%= steam_account.steam_web_api_key %></div>
+              <hr class="h-px w-full mb-3 mt-1 divider">
+              <div class="text-lg dark:text-white font-semibold">Waxpeer API Key</div>
+              <div class="font-semibold"><%= steam_account.waxpeer_api_key %></div>
+              <hr class="h-px w-full mb-3 mt-1 divider">
+              <div class="text-lg dark:text-white font-semibold">Market CSGO API Key</div>
+              <div class="font-semibold"><%= steam_account.market_csgo_api_key %></div>
+            </div>
+
+          </div>
+        </div>
+
+
+
+
         <% end %>
     </tbody>
 </table>
 </div>
 </div>
-
 
 
 <div id="small-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -107,14 +160,51 @@
         search: "_INPUT_",
         searchPlaceholder: "Search...",
       },});
-            const searchInputs = document.querySelectorAll('input[type="search"]');
-            searchInputs.forEach(function(input) {
-                input.style.marginBottom = '10px'
-            });
+      const searchInputs = document.querySelectorAll('input[type="search"]');
+      searchInputs.forEach(function(input) {
+          input.style.marginBottom = '10px'
+      });
 
-            var elements = document.querySelectorAll('.dataTables_length');
-            for (var i = 0; i < elements.length; i++) {
-            elements[i].parentNode.removeChild(elements[i]);
-            }
+      var elements = document.querySelectorAll('.dataTables_length');
+      for (var i = 0; i < elements.length; i++) {
+      elements[i].parentNode.removeChild(elements[i]);
+      }
     });
 </script>
+
+
+<script>
+  // Function to open key modal
+  function openKeyModal(steamAccountId) {
+    var modal = document.getElementById("steamWebApiKeyModal-" + steamAccountId);
+    modal.style.display = "flex";
+  }
+
+  // Function to close key modal
+  function closeKeyModal(steamAccountId) {
+    var modal = document.getElementById("steamWebApiKeyModal-" + steamAccountId);
+    modal.style.display = "none";
+  }
+
+  function submitForm() {
+    document.getElementById("postForm").submit();
+  }
+
+  // Event listeners for each eye-slash icon
+  <% @steam_accounts.each do |steam_account| %>
+    document.getElementById('steamWebApiKeyEye-<%= steam_account.id %>').addEventListener('click', function () {
+      openKeyModal(<%= steam_account.id %>);
+    });
+
+    document.getElementById('closeSteamWebApiKeyModal-<%= steam_account.id %>').addEventListener('click', function () {
+      closeKeyModal(<%= steam_account.id %>);
+      if (!$("#error-div-<%= steam_account.id %>")[0].classList.contains('hidden')){
+        $("#error-div-<%= steam_account.id %>")[0].classList.add('hidden')
+      }
+      if (!$("#keys-div-<%= steam_account.id %>")[0].classList.contains('hidden')){
+        $("#keys-div-<%= steam_account.id %>")[0].classList.add('hidden')
+      }
+    });
+  <% end %>
+</script>
+
