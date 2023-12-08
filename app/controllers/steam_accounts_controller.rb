@@ -13,7 +13,7 @@ class SteamAccountsController < ApplicationController
   def create
     @steam_account = current_user.steam_accounts.build(steam_account_params)
     if @steam_account.save
-      flash[:notice] = 'Steam account was successfully added.'
+      flash[:notice] = response_message
       redirect_to steam_accounts_path
     else
       render :new
@@ -72,5 +72,14 @@ class SteamAccountsController < ApplicationController
     bot = Discordrb::Bot.new(token: current_user.discord_bot_token)
     channel = bot.channel(current_user.discord_channel_id)
     channel.send_message(message)
+  end
+
+  def response_message
+    message = []
+    message << 'Steam account was successfully added.'
+    message << 'CSGOEmpire API Key is invalid.' if @steam_account.csgoempire_api_key.nil?
+    message << 'WAXPEER API Key is invalid.' if @steam_account.waxpeer_api_key.nil?
+    message << 'Market.CSGO API Key is invalid.' if @steam_account.market_csgo_api_key.nil?
+    message.join(' ')
   end
 end
