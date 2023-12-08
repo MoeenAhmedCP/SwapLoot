@@ -4,10 +4,10 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
          
-  has_one_attached :ma_file
-  has_many :steam_accounts
-  has_many :notifications
-  has_many :user_errors, class_name: 'Error'
+  has_one_attached :ma_file, dependent: :destroy
+  has_many :steam_accounts, dependent: :destroy
+  has_many :notifications, dependent: :destroy
+  has_many :user_errors, class_name: 'Error', dependent: :destroy
   has_one :active_steam_account, -> { joins(:user).merge(SteamAccount.active_accounts).limit(1) }, class_name: 'SteamAccount'
 
   def self.ransackable_attributes(auth_object = nil)
