@@ -27,8 +27,6 @@ class Errors::ErrorReportingService
 
   def context_details
     {
-      'user_id' => @context[:user_id].to_s,
-      'user_email' => @context[:user_email].to_s,
       'controller' => @context[:controller]&.class&.name,
       'action' => @context[:controller]&.action_name,
       'url' => @context[:url],

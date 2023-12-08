@@ -39,9 +39,9 @@ module ErrorHelper
     handled ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
   end
 
-  def error_controller_action(context)
-    if context.fetch("controller", nil).present?
-      "#{context["controller"]}##{context["action"]}"
+  def error_controller_action(error)
+    if error.controller.present?
+      "#{error.controller}##{error.action}"
     end
   end
 

@@ -3,8 +3,6 @@
 class ApplicationService
   def report_api_error(response, backtrace)
     context = {
-      user_id: @current_user&.id,
-      user_email: @current_user&.email,
       source: 'api'
     }
 
