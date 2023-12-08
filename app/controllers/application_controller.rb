@@ -21,14 +21,12 @@ class ApplicationController < ActionController::Base
 
   def handle_error(error)
     context = {
-      user_id: current_user&.id,
-      user_email: current_user&.email,
       source: 'application',
       url: request&.url
     }
 
     reporter = Rails.error
-    reporter.subscribe(ErrorSubscriber.new)
+    reporter.subscribe(ErrorSubscriber.new(current_user))
     reporter&.report(error, handled: false, context: context)
     
     raise error

@@ -1,5 +1,5 @@
 <div class="p-6">
-  <h1 class="text-2xl font-bold mb-6 text-blue dark:text-white">Add a New Steam Account</h1>
+  <h1 class="text-2xl font-bold mb-6 text-blue dark:text-white">Update Steam Account</h1>
 
   <%= form_with model: @steam_account, url: steam_account_path(id: @steam_account), local: true do |form| %>
     <div class="mb-4">
@@ -42,5 +42,5 @@
     </div>
   <% end %>
 
-  <a href="<%= steam_accounts_path %>" class="inline-block bg-gray text-grayDark dark:text-black font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray">Back to Steam Accounts</a>
+  <a href="<%= steam_accounts_path %>" class="inline-block bg-gray text-white dark:text-black font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray">Back to Steam Accounts</a>
 </div>

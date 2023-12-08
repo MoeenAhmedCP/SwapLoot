@@ -1,0 +1,7 @@
+<% if @success %>
+  var id = <%= @steam_account.id %>;
+  document.querySelector(`#keys-div-${id}`).classList.remove('hidden');
+<% else %>
+  var id = <%= @steam_account.id %>;
+  document.querySelector(`#error-div-${id}`).classList.remove('hidden');
+<% end %>

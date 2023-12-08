@@ -12,19 +12,21 @@ class ErrorsController < ApplicationController
   private
 
   def fetch_errors(time_range, error_source)
+    errors = current_user.user_errors
+
     errors = case time_range
     when 'Last hour'
-      Error.last_hour
+      errors.last_hour
     when 'Last day'
-      Error.last_day
+      errors.last_day
     when 'Last 7 days'
-      Error.last_7_days
+      errors.last_7_days
     when 'Last 14 days'
-      Error.last_14_days
+      errors.last_14_days
     when 'Last 1 month'
-      Error.last_1_month
+      errors.last_1_month
     else
-      Error.all
+      errors
     end
 
     errors = case error_source

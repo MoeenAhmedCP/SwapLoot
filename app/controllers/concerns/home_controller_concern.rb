@@ -35,9 +35,9 @@ module HomeControllerConcern
         wax_balance = @waxpeer_balance.find { |hash| hash[:account_id] == account }
         data_hash = {
           account_name: steam_account.unique_name.capitalize,
-          csgo_empire_balance: e_balance[:balance].nil? ? '$0' : "#{e_balance[:balance]} coins",
-          csgo_market_balance: mark_balance[:balance].nil? ? '$0' : "#{mark_balance[:balance]}",
-          waxpeer_balance: wax_balance[:balance].nil? ? '$0' : "#{wax_balance[:balance]}"
+          csgo_empire_balance: e_balance&.dig(:balance).nil? ? "" : "#{e_balance[:balance]} coins",
+          csgo_market_balance: mark_balance&.dig(:balance).nil? ? "" : "#{mark_balance[:balance]}",
+          waxpeer_balance: wax_balance&.dig(:balance).nil? ? "" : "#{wax_balance[:balance]}"
         }
         @balance_data << data_hash
       end
@@ -76,8 +76,12 @@ module HomeControllerConcern
   def fetch_waxpeer_item_listed_for_sale
     waxpeer_service = WaxpeerService.new(current_user)
     item_listed_for_sale = waxpeer_service.fetch_item_listed_for_sale
-    item_listed_for_sale_hash = item_listed_for_sale.map do |item|
-      item.merge('site' => 'Waxpeer')
+    if item_listed_for_sale
+      item_listed_for_sale_hash = item_listed_for_sale.map do |item|
+        item.merge('site' => 'Waxpeer')
+      end
+    else
+      []
     end
   end
 
