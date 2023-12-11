@@ -60,8 +60,11 @@
     const isDarkMode = body.classList.toggle('dark');
     localStorage.setItem('darkMode', isDarkMode);
   }
-
   
+  document.addEventListener("turbo:before-cache", function() {
+    $('.dataTables_filter').attr('data-turbo-cache', false);
+    $('.dataTables_paginate').attr('data-turbo-cache', false);
+  })
 
   $(document).ready(function () {
 
