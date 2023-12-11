@@ -15,16 +15,16 @@
     <%= form.text_field :discord_app_id, class: 'w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue', value: @user.discord_app_id %>
   </div>
 
+  <div class="mb-4">
+    <%= form.submit "Update Discord Credentials", class: 'bg-blue dark:bg-blue text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue' %>
+  </div>
+
   <div class="mb-4 dark:text-white">
     <%= form.label :ma_file, "Upload MA File" %>
     <%= form.file_field :ma_file %>
     <% if @user.ma_file.attached? %>
       <p>Current File: <%= @user.ma_file.filename %></p>
     <% end %>
-  </div>
-
-  <div class="mb-4">
-    <%= form.submit "Update Discord Credentials", class: 'bg-blue dark:bg-blue text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue' %>
   </div>
 <% end %>
 
