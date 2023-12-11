@@ -69,9 +69,13 @@ class SteamAccountsController < ApplicationController
   end
 
   def notify_discord(message)
-    bot = Discordrb::Bot.new(token: current_user.discord_bot_token)
-    channel = bot.channel(current_user.discord_channel_id)
-    channel.send_message(message)
+    begin
+      bot = Discordrb::Bot.new(token: current_user.discord_bot_token)
+      channel = bot.channel(current_user.discord_channel_id)
+      channel.send_message(message)
+    rescue StandardError => e
+      @notification = current_user.notifications.create(title: "Discord Login", body: "User is unauthorized", notification_type: "Login")
+    end
   end
 
   def response_message
