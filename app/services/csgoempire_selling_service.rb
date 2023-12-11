@@ -13,7 +13,7 @@ class CsgoempireSellingService < ApplicationService
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s]) 
     else
-      response = response["data"].select { |item| item["market_value"] != -1 }
+      response = response["data"].select { |item| item["market_value"] != -1 && item["tradable"] == true }
       online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
 
       if online_trades_response['success'] == false
@@ -28,7 +28,7 @@ class CsgoempireSellingService < ApplicationService
 
   def find_matching_data
     response_items = fetch_items
-    inventory = (fetch_inventory.map {|item| item if item["tradable"] == true }.compact)
+    inventory = fetch_inventory
     inventory ? matching_items = find_matching_items(response_items, inventory) : []
   end
   
@@ -144,13 +144,15 @@ class CsgoempireSellingService < ApplicationService
       'Content-Type' => 'application/json',
       'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
     }
-    hash = {"items"=> items}
-    response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: hash.to_json)
-    if response.code == SUCCESS_CODE
-      result = JSON.parse(response.body)
-    else
-      report_api_error(response, [self&.class&.name, __method__.to_s])
-      result = API_FAILED
+    items.each do |item|
+      hash = {"items"=> [item]}
+      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
+      if response.code == SUCCESS_CODE
+        result = JSON.parse(response.body)
+      else
+        report_api_error(response, [self&.class&.name, __method__.to_s])
+        result = API_FAILED
+      end
     end
     sell_csgoempire
   end
