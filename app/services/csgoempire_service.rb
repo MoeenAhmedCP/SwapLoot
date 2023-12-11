@@ -135,7 +135,7 @@ class CsgoempireService < ApplicationService
     res['data']&.each do |item|
       inventory = Inventory.find_by(item_id: item['id'])
       unless inventory.present?
-        item_price = item['market_value'] < 0 ? 0 : ((item['market_value'] / 100) * 0.614)
+        item_price = item['market_value'] < 0 ? 0 : ((item['market_value'].to_f / 100) * 0.614)
         Inventory.create(item_id: item['id'], steam_id: steam_account&.steam_id, market_name: item['market_name'], market_price: item_price, tradable: item['tradable'])
       end
     end
