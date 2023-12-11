@@ -79,8 +79,8 @@ class CsgoempireSellingService < ApplicationService
         end
       end
       items_for_resale.any? ? cutting_price_and_list_again(items_for_resale) : price_cutting_down_for_listed_items
-    else
-      price_cutting_down_for_listed_items
+    # else
+    #   price_cutting_down_for_listed_items
     end
   end
 

@@ -17,6 +17,6 @@ class ApplicationService
   private
 
   def response_message(response)
-    return response.map { |key, value| "#{key}: #{value}" }.join(', ')
+    return response.is_a?(Hash) ? response.map { |key, value| "#{key}: #{value}" }.join(', ') : response
   end
 end
