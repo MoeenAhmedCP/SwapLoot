@@ -38,7 +38,7 @@ class CsgoempireSellingService < ApplicationService
       sell_csgoempire
     end
     items_to_deposit = matching_items.map do |item|
-      if item["average"] > (item["coin_value_bought"] * 100)
+      if item["average"] > (item["coin_value_bought"] + (item["coin_value_bought"] * @steam_account.selling_filter.min_profit_percentage / 100 ).round(2)) * 100
         { "id" => item["id"], "coin_value" => item["average"] }
       else
         next
@@ -102,7 +102,10 @@ class CsgoempireSellingService < ApplicationService
     items.map do |item|
       suggested_items = waxpeer_suggested_prices
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-      if result_item
+      item_price = Inventory.find_by(item_id: item[:item_id]).market_price
+      lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
+      minimum_desired_price = (item_price + (item_price * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+      if result_item && lowest_price > minimum_desired_price
         filtered_items_for_deposit << item.merge(:lowest_price=> result_item["lowest_price"])
       end
     end
