@@ -133,7 +133,6 @@
     var modal = document.getElementById("small-modal");
 
     document.getElementById("delete").onclick = function() {
-      debugger;
       submitDeleteForm(steamAccountId);
     };
 
@@ -141,7 +140,6 @@
   }
 
   function submitDeleteForm(steamAccountId) {
-    debugger;
     var formId = "delete-steam-account-form-" + steamAccountId;
     var form = document.getElementById(formId);
 
