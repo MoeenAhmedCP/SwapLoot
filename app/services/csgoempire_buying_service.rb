@@ -6,6 +6,7 @@ class CsgoempireBuyingService < ApplicationService
   def initialize(user)
     @active_steam_account = SteamAccount.find_by(active: true, user_id: user.id)
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}", 'Content-Type' => 'application/json' }
+    reset_proxy
     set_proxy if @active_steam_account.proxy.present?
   end
 

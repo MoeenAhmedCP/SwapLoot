@@ -11,7 +11,8 @@ class MissingItemsService < ApplicationService
   end
 
   def headers(api_key, steam_account)
-    set_proxy(steam_account) if steam_account.proxy.present?
+    reset_proxy
+    add_proxy(steam_account) if steam_account.proxy.present?
     @headers = { 'Authorization' => "Bearer #{api_key}" }
   end
 
@@ -19,7 +20,7 @@ class MissingItemsService < ApplicationService
     response = []
     if @active_steam_account.present?
       url = CSGO_EMPIRE_BASE_URL + '/trading/user/inventory'
-      set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
+      add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
       response = self.class.get(url, headers: @headers)
       if response['success'] == false
         report_api_error(response, [self&.class&.name, __method__.to_s])
@@ -31,7 +32,7 @@ class MissingItemsService < ApplicationService
       end
     else
       @user.steam_accounts.each do |steam_account|
-        set_proxy(steam_account) if steam_account.proxy.present?
+        add_proxy(steam_account) if steam_account.proxy.present?
         response_data = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account&.csgoempire_api_key, steam_account))
         if response_data['success'] == false
           report_api_error(response_data, [self&.class&.name, __method__.to_s])
@@ -47,7 +48,7 @@ class MissingItemsService < ApplicationService
     response
   end
 
-  def set_proxy(steam_account)
+  def add_proxy(steam_account)
     proxy = steam_account.proxy
     self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
