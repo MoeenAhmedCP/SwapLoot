@@ -56,10 +56,10 @@ class CsgoempireService < ApplicationService
       user = SteamAccount.find_by(id: data['steam_id'])&.user
       data['item_data'].each do |item|
         if item['data']['status_message'] == 'Sent' && item["type"] == "deposit"
-          SendNotificationsJob.perform_async(@current_user ,item, "Sold")
+          SendNotificationsJob.perform_async(user ,item, "Sold")
         end
         if item['data']['status_message'] == 'Completed' && item["type"] == "withdrawal"
-          SendNotificationsJob.perform_async(@current_user, item, "Bought")
+          SendNotificationsJob.perform_async(user, item, "Bought")
         end
       end
     end
