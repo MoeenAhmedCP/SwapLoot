@@ -207,10 +207,6 @@
     modal.style.display = "none";
   }
 
-  function submitForm() {
-    document.getElementById("postForm").submit();
-  }
-
   // Event listeners for each eye-slash icon
   <% @steam_accounts.each do |steam_account| %>
     document.getElementById('steamWebApiKeyEye-<%= steam_account.id %>').addEventListener('click', function () {
@@ -242,10 +238,6 @@
     var modal = document.getElementById("steamWebApiKeyModalEdit-" + steamAccountId);
     modal.style.display = "none";
   }
-
-  // function submitForm() {
-  //   document.getElementById("postForm").submit();
-  // }
 
   // Event listeners for each eye-slash icon
   <% @steam_accounts.each do |steam_account| %>
