@@ -1,0 +1,6 @@
+<% if @success %>
+  window.location.href = '<%= edit_steam_account_path(id: @steam_account.id) %>';
+<% else %>
+  var id = <%= @steam_account.id %>;
+  document.querySelector("#edit-error-div-" + id).classList.remove('hidden');
+<% end %>
