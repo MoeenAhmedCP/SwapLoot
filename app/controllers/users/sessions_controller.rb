@@ -1,6 +1,13 @@
 class Users::SessionsController < Devise::SessionsController
   include Geocoder::Result
 
+  def new
+    if flash[:alert] == unauthenticated_message
+      flash.delete(:alert) unless requested_protected_page?
+    end
+    super
+  end
+
   def create
     super do |resource|
       if resource.persisted?
@@ -15,8 +22,16 @@ class Users::SessionsController < Devise::SessionsController
   def destroy
     super
   end
-
+  
   private
+  
+    def requested_protected_page?
+      session[:user_return_to] != root_path
+    end
+  
+    def unauthenticated_message
+      I18n.t('devise.failure.unauthenticated')
+    end
 
   def get_user_location(ip)
     result = Geocoder.search(ip).first
