@@ -12,6 +12,7 @@ class Errors::ErrorReportingService
   end
 
   def call
+    begin
     Error.create!(
       message: @error&.message,
       backtrace: @error&.backtrace&.reject{ |e| e.include? '/gems/ruby' },
@@ -19,8 +20,11 @@ class Errors::ErrorReportingService
       handled: @handled,
       severity: @severity.to_s,
       context: context_details,
-      user: @current_user
+      user_id: @current_user.id
     )
+    rescue
+      p "Error generation failed..."
+    end
   end
 
   private
