@@ -51,9 +51,9 @@ module HomeControllerConcern
     if @active_trades.present? 
       if  @active_trades['data'].present? 
         @deposits = @active_trades["data"]["deposits"]
-        @deposits.map! { |item| item.merge("sellarbuy" => "deposit") }
+        @deposits = @deposits.present? ? @deposits.map { |item| item.merge("sellarbuy" => "deposit") } : []
         @withdrawls = @active_trades["data"]["withdrawals"]
-        @withdrawls.map! { |item| item.merge("sellarbuy" => "withdrawl") } 
+        @withdrawls = @withdrawls.present? ? @withdrawls.map { |item| item.merge("sellarbuy" => "withdrawl") } : []
         @active_trades = @deposits + @withdrawls
       end
     else
