@@ -7,7 +7,6 @@ class WaxpeerService < ApplicationService
     @params = {
       api: @active_steam_account&.waxpeer_api_key
     }
-    set_proxy if @active_steam_account.proxy.present?
   end
 
   def save_sold_item(res)
@@ -27,13 +26,13 @@ class WaxpeerService < ApplicationService
   def fetch_sold_items
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
-
+      set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
       res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: @params)
       save_sold_item(res)
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
-
+        set_proxy(steam_account) if steam_account.proxy.present?
         res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: site_params(steam_account))
         save_sold_item(res)
       end
@@ -52,7 +51,7 @@ class WaxpeerService < ApplicationService
   def fetch_item_listed_for_sale
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
-
+      set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
       res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: @params)
 
       if res['success'] == false
@@ -66,6 +65,7 @@ class WaxpeerService < ApplicationService
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
 
+        set_proxy(steam_account) if steam_account.proxy.present?
         res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: site_params(steam_account))
         response += res['items'].present? ? res['items'] : []
       end
@@ -77,6 +77,7 @@ class WaxpeerService < ApplicationService
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
 
+      set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
       res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
 
       if res['success'] == false
@@ -91,6 +92,7 @@ class WaxpeerService < ApplicationService
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
 
+        set_proxy(steam_account) if steam_account.proxy.present?
         response = self.class.get(WAXPEER_BASE_URL + '/user', query: site_params(steam_account))
         response_hash = {
           account_id: steam_account.id,
@@ -113,12 +115,11 @@ class WaxpeerService < ApplicationService
   end
 
   def waxpeer_api_key_not_found?
-    rotate_proxy
     @active_steam_account&.waxpeer_api_key.blank?
   end
 
-  def set_proxy
-    proxy = @active_steam_account.proxy
+  def set_proxy(steam_account)
+    proxy = steam_account.proxy
     self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
 end

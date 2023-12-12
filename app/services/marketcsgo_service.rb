@@ -7,7 +7,6 @@ class MarketcsgoService < ApplicationService
     @params = {
       key: "#{@active_steam_account&.market_csgo_api_key}"
     }
-    set_proxy if @active_steam_account.proxy.present?
   end
 
   def site_params(steam_account)
@@ -17,7 +16,7 @@ class MarketcsgoService < ApplicationService
   def fetch_balance
     if @active_steam_account.present?
       return if market_csgo_api_key_not_found?
-
+      set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
       res = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: @params)
       if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
@@ -28,7 +27,7 @@ class MarketcsgoService < ApplicationService
       response_data = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.market_csgo_api_key.blank?
-
+        set_proxy(steam_account) if steam_account.proxy.present?
         response = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: site_params(steam_account))
         response_hash = {
           account_id: steam_account.id,
@@ -41,12 +40,11 @@ class MarketcsgoService < ApplicationService
   end
 
   def market_csgo_api_key_not_found?
-    rotate_proxy
     @active_steam_account&.market_csgo_api_key.blank?
   end
 
-  def set_proxy
-    proxy = @active_steam_account.proxy
+  def set_proxy(steam_account)
+    proxy = steam_account.proxy
     self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
 end
