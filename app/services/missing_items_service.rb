@@ -51,8 +51,41 @@ class MissingItemsService < ApplicationService
     self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password if proxy.present?
   end
 
-  def set_proxy
-    proxy = @active_steam_account.proxy
+  def missing_items
+    response = []
+    if @active_steam_account.present?
+      url = CSGO_EMPIRE_BASE_URL + '/trading/user/inventory'
+      set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
+      response = self.class.get(url, headers: @headers)
+
+      if response['success'] == false
+        report_api_error(response, [self&.class&.name, __method__.to_s])
+      else
+        if response['items']
+          api_inventory_item = response['items'].pluck('id')
+          response = Inventory.where.not(item_id: api_inventory_item).where(steam_id: @active_steam_account.steam_id, sold_at: nil)
+        end
+      end
+    else
+      @user.steam_accounts.each do |steam_account|
+        set_proxy(steam_account) if steam_account.proxy.present?
+        response_data = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account&.csgoempire_api_key, steam_account))
+        if response_data['success'] == false
+          report_api_error(response_data, [self&.class&.name, __method__.to_s])
+        else
+          if response_data['items']
+            api_inventory_item = response_data['items'].pluck('id')
+            res = Inventory.where.not(item_id: api_inventory_item).where(steam_id: steam_account.steam_id, sold_at: nil)
+            response << res
+          end
+        end
+      end
+    end
+    response
+  end
+
+  def set_proxy(steam_account)
+    proxy = steam_account.proxy
     self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
 end

@@ -18,7 +18,7 @@ class MarketcsgoService < ApplicationService
   def fetch_balance
     if @active_steam_account.present?
       return if market_csgo_api_key_not_found?
-
+      set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
       res = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: @params)
       if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
