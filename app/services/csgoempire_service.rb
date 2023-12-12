@@ -21,7 +21,7 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
       begin
-        set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
+        add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
         response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
         return []
@@ -97,7 +97,7 @@ class CsgoempireService < ApplicationService
   def self.fetch_user_data(steam_account)
     headers = { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" }
     begin
-      set_proxy(steam_account) if steam_account.proxy.present?
+      add_proxy(steam_account) if steam_account.proxy.present?
       response = self.get(BASE_URL + '/metadata/socket', headers: headers)
     rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
       return []
@@ -114,7 +114,7 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
       begin
-        set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
+        add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
         response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
         save_inventory(response, @active_steam_account) if response['success'] == true
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
@@ -226,7 +226,7 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
       begin
-        set_proxy(@active_steam_account) if @active_steam_account.proxy.present?
+        add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
         response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
         return []

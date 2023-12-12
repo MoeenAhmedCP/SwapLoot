@@ -13,6 +13,10 @@ class CsgoempireSellingService < ApplicationService
       'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
       'Content-Type' => 'application/json'
     }
+  def add_proxy
+    reset_proxy
+    proxy = @steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
 
   def add_proxy
@@ -128,7 +132,6 @@ class CsgoempireSellingService < ApplicationService
   #Function for search items by (:market_name) from Waxpeer API 
   def search_items_by_names(item)
     url = "https://api.waxpeer.com/v1/search-items-by-name?api=#{@steam_account.waxpeer_api_key}&game=csgo&names=#{item[:market_name]}&minified=0"
-    set_proxy if @steam_account.proxy.present?
     response = HTTParty.get(url)
 
     if response['success'] == false
@@ -229,7 +232,6 @@ class CsgoempireSellingService < ApplicationService
 
   # Fetch Suggested price of items from Waxpeer
   def waxpeer_suggested_prices
-    set_proxy if @steam_account.proxy.present?
      response = HTTParty.get(WAXPEER_BASE_URL + '/suggested-price?game=csgo')
      if response.code == SUCCESS_CODE
        result = JSON.parse(response.body)
