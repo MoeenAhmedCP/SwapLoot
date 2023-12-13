@@ -12,6 +12,7 @@ class CsgoempireService < ApplicationService
   end
 
   def headers(api_key, steam_account)
+    reset_proxy
     add_proxy(steam_account) if steam_account.proxy.present?
     { 'Authorization' => "Bearer #{api_key}" }
   end
@@ -20,7 +21,6 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
       begin
-        add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
         response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
         return []
@@ -60,7 +60,6 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return [] if csgoempire_key_not_found?
       begin
-        add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
         res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
         return []
@@ -88,7 +87,6 @@ class CsgoempireService < ApplicationService
   def self.fetch_user_data(steam_account)
     headers = { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" }
     begin
-      add_proxy(steam_account) if steam_account.proxy.present?
       response = self.get(BASE_URL + '/metadata/socket', headers: headers)
     rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
       return []
@@ -105,7 +103,6 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
       begin
-        add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
         response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
         save_inventory(response, @active_steam_account) if response['success'] == true
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
@@ -146,7 +143,6 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
       begin
-        add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
         response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
         return []
@@ -223,7 +219,6 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
       begin
-        add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
         response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
         return []
@@ -291,7 +286,7 @@ class CsgoempireService < ApplicationService
   def csgoempire_key_not_found?
     @active_steam_account&.csgoempire_api_key.blank?
   end
-  
+
   def add_proxy(steam_account)
     proxy = steam_account.proxy
     self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
