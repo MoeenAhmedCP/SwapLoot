@@ -28,11 +28,13 @@ class WaxpeerService < ApplicationService
   def fetch_sold_items
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
+
       res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: @params)
       save_sold_item(res)
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
+
         res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: site_params(steam_account))
         save_sold_item(res)
       end
@@ -51,6 +53,7 @@ class WaxpeerService < ApplicationService
   def fetch_item_listed_for_sale
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
+
       res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: @params)
       if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
@@ -77,6 +80,7 @@ class WaxpeerService < ApplicationService
   def fetch_balance
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
+
       res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
 
       if res['success'] == false
