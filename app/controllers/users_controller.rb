@@ -33,7 +33,11 @@ class UsersController < ApplicationController
     params = {
       api: "#{steam_account.waxpeer_api_key}"
     }
-    res = self.class.get(BASE_URL_WAXPEER + '/user', query: params)
+    begin
+      res = self.class.get(BASE_URL_WAXPEER + '/user', query: params)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
     res['user'].present? ? res['user']['wallet'].to_f / 1000 : 0
   end
 
@@ -41,7 +45,11 @@ class UsersController < ApplicationController
     params = {
       key: "#{steam_account.market_csgo_api_key}"
     }
-    res = self.class.get(BASE_URL_MARKETCSGO + '/get-money', query: params)
+    begin
+      res = self.class.get(BASE_URL_MARKETCSGO + '/get-money', query: params)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
     res['money'] if res
   end
 

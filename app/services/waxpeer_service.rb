@@ -26,14 +26,20 @@ class WaxpeerService < ApplicationService
   def fetch_sold_items
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
-
-      res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: @params)
+      begin
+        res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: @params)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
       save_sold_item(res)
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
-
-        res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: site_params(steam_account))
+        begin
+          res = self.class.post(WAXPEER_BASE_URL + '/my-history', query: site_params(steam_account))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         save_sold_item(res)
       end
     end
