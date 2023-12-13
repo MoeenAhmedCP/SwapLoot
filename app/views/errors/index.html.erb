@@ -36,6 +36,22 @@
     </table>
   </div>
 </div>
+
+  <div class="flickr_pagination flex justify-between items-center px-4 py-3 bg-white dark:bg-grayExtraDark border-grayLight sm:px-6">
+  <div class="text-sm text-grayDark dark:text-white">
+    <%= page_entries_info @errors %>
+  </div>
+  <div class="flex items-center space-x-4">
+    <%= will_paginate @errors, 
+        previous_label: 'Previous', 
+        next_label: 'Next',
+        inner_window: 3,
+        outer_window: 1,
+        renderer: WillPaginate::ActionView::LinkRenderer,
+        class: 'flex items-center space-x-2'
+    %>
+  </div>
+</div>
 <script>
   function submitForm() {
           document.getElementById("postForm").submit();
