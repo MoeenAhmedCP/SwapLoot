@@ -8,13 +8,21 @@ class CsgoempireSellingService < ApplicationService
   
   def fetch_inventory
     headers = { 'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}" }
-    response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers)
+    begin
+      response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s]) 
     else
       response = response["data"].select { |item| item["market_value"] != -1 && item["tradable"] == true }
-      online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
+      begin 
+        online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
 
       if online_trades_response['success'] == false
         report_api_error(online_trades_response, [self&.class&.name, __method__.to_s])
@@ -51,7 +59,11 @@ class CsgoempireSellingService < ApplicationService
     headers = {
       'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
     }
-    response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
+    begin
+      response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
 
     if response['success'] == false
@@ -88,7 +100,11 @@ class CsgoempireSellingService < ApplicationService
     headers = {
       'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
     }
-    response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
+    begin
+      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])
@@ -119,7 +135,11 @@ class CsgoempireSellingService < ApplicationService
 
   def search_items_by_names(item)
     url = "https://api.waxpeer.com/v1/search-items-by-name?api=#{@steam_account.waxpeer_api_key}&game=csgo&names=#{item[:market_name]}&minified=0"
-    response = HTTParty.get(url)
+    begin
+      response = HTTParty.get(url)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])
@@ -146,7 +166,11 @@ class CsgoempireSellingService < ApplicationService
     }
     items.each do |item|
       hash = {"items"=> [item]}
-      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
+      begin
+        response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
       if response.code == SUCCESS_CODE
         result = JSON.parse(response.body)
       else
@@ -163,7 +187,11 @@ class CsgoempireSellingService < ApplicationService
       'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
     }
     hash = {"items"=> items}
-    response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: hash.to_json)
+    begin
+      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: hash.to_json)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
     if response.code == SUCCESS_CODE
       result = JSON.parse(response.body)
     else
@@ -198,7 +226,11 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def waxpeer_suggested_prices
+    begin
      response = HTTParty.get(WAXPEER_BASE_URL + '/suggested-price?game=csgo')
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
      if response.code == SUCCESS_CODE
        result = JSON.parse(response.body)
      else

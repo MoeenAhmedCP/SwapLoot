@@ -51,7 +51,11 @@ class UsersController < ApplicationController
     steam_accounts = current_user.steam_accounts
     steam_accounts.each do |steam_account|
       headers = { 'Authorization' => "Bearer #{steam_account.csgoempire_api_key}" }
-      response = self.class.get(BASE_URL_CSGOEMPIRE + '/metadata/socket', headers: headers)
+      begin
+        response = self.class.get(BASE_URL_CSGOEMPIRE + '/metadata/socket', headers: headers)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
 
       if JSON.parse(response.body)['user'].present?
         user_account_data = {

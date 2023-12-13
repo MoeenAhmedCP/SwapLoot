@@ -15,7 +15,11 @@ class BuyingFiltersController < ApplicationController
       buying_status = status
       url = "#{base_url}/toggleBuying"
       params = { id: steam_account.id, steamId: steam_account.steam_id, toggle: false }
-      response = HTTParty.post(url, query: params)
+      begin
+        response = HTTParty.post(url, query: params)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
     end
     respond_to do |format|
       format.js { render json: { message: message, buying_id: @buying_filter.id }.to_json }

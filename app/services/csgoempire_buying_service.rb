@@ -14,14 +14,17 @@ class CsgoempireBuyingService < ApplicationService
     if price_check_result[:status] == 'success'
       bid_value = data['market_value'] + (data['market_value'] * CSGO_EMPIRE_BID_FACTOR.to_f / 100.0).round(2)
       url = "#{CSGO_EMPIRE_API_BASE_URL}/trading/deposit/#{data['id']}/bid"
-
-      response = HTTParty.post(
-        url,
-        headers: @headers,
-        body: {
-          bid_value: bid_value.to_i
-        }.to_json
-      )
+      begin
+        response = HTTParty.post(
+          url,
+          headers: @headers,
+          body: {
+            bid_value: bid_value.to_i
+          }.to_json
+        )
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
 
       if response.code == 200
         return { status: 'success', message: 'Item purchased successfully', purchase_details: JSON.parse(response.body) }
@@ -37,7 +40,11 @@ class CsgoempireBuyingService < ApplicationService
   private
   
   def check_price(name, price, max_percentage, specific_price)
-    response = HTTParty.get("#{WAXPEER_API_BASE_URL}/suggested-price?game=csgo")
+    begin
+      response = HTTParty.get("#{WAXPEER_API_BASE_URL}/suggested-price?game=csgo")
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
     if response.code == 200
       data = JSON.parse(response.body)

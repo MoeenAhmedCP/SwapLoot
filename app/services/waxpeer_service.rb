@@ -51,8 +51,11 @@ class WaxpeerService < ApplicationService
   def fetch_item_listed_for_sale
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
-
-      res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: @params)
+      begin
+        res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: @params)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
 
       if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
@@ -64,8 +67,11 @@ class WaxpeerService < ApplicationService
       response = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
-
-        res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: site_params(steam_account))
+        begin
+          res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: site_params(steam_account))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         response += res['items'].present? ? res['items'] : []
       end
     end
@@ -75,14 +81,21 @@ class WaxpeerService < ApplicationService
   def fetch_balance
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
-
-      res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
+      begin
+        res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
 
       if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
         return 0
       else
-        res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
+        begin
+          res = self.class.get(WAXPEER_BASE_URL + '/user', query: @params)
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         res['user'].present? ? res['user']['wallet'].to_f / 1000 : 0
       end
     else
@@ -90,7 +103,11 @@ class WaxpeerService < ApplicationService
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
 
-        response = self.class.get(WAXPEER_BASE_URL + '/user', query: site_params(steam_account))
+        begin
+          response = self.class.get(WAXPEER_BASE_URL + '/user', query: site_params(steam_account))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         response_hash = {
           account_id: steam_account.id,
           balance: response['user'].present? ? response['user']['wallet'].to_f / 1000 : 0
@@ -103,9 +120,11 @@ class WaxpeerService < ApplicationService
 
   def remove_item(item_id)
     return [] if waxpeer_api_key_not_found?
-
-    res = self.class.get("#{BASE_URL}/remove-items", query: @params.merge(id: item_id))
-    
+    begin
+      res = self.class.get("#{BASE_URL}/remove-items", query: @params.merge(id: item_id))
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
     if res['success'] == false
       report_api_error(res, [self&.class&.name, __method__.to_s])
     else

@@ -16,8 +16,11 @@ class TradeServicesController < ApplicationController
 
     url = "#{base_url}/toggleBuying"
     params = { id: steam_account.id, steamId: steam_id, toggle: buying_status }
-
-    response = HTTParty.post(url, query: params)
+    begin
+      response = HTTParty.post(url, query: params)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
   end
 
   private
