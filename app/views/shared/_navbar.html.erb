@@ -66,6 +66,7 @@
   document.addEventListener("turbo:before-cache", function() {
     $('.dataTables_filter').attr('data-turbo-cache', false);
     $('.dataTables_paginate').attr('data-turbo-cache', false);
+    $('.dataTables_info').attr('data-turbo-cache', false);
   })
 
   $(document).ready(function () {

@@ -2,7 +2,7 @@
 
 class ErrorsController < ApplicationController
   def index
-    @errors = fetch_errors(params[:time_range], params[:error_source])
+    @errors = fetch_errors(params[:time_range], params[:error_source]).order(updated_at: :desc).paginate(page: params[:page], per_page: 15)
   end
 
   def show
