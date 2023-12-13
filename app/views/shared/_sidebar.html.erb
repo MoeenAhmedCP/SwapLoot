@@ -22,6 +22,14 @@
           <span class="text-sm font-medium <%= request.url.include?('/inventories') ? 'text-white' : nil %> dark:text-white">Inventory</span>
         </a>
       </li>
+
+       <li class="rounded-l-lg <%= request.url.include?('/sold_items') ? 'bg-blue' : nil %>">
+        <a href="/sold_items" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
+          <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/sold_items') ? 'text-white' : 'text-gray' %> dark:text-white"><i class="fa-solid fa-archive"></i></span>
+          <span class="text-sm font-medium <%= request.url.include?('/sold_items') ? 'text-white' : nil %> dark:text-white">Sold Items</span>
+        </a>
+      </li>
+
       <li class="rounded-l-lg <%= request.url.include?('/services') ? 'bg-blue' : nil %>">
         <a href="/services" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray hover:text-grayExtraDark dark:text-gray dark:hover:text-grayLight">
           <span class="inline-flex items-center justify-center h-12 w-12 text-lg <%= request.url.include?('/services') ? 'text-white' : 'text-gray' %> dark:text-white"><i class="fa-solid fa-money-bill-1-wave"></i></span>
