@@ -13,7 +13,11 @@ class SteamAccountsController < ApplicationController
   def create
     @steam_account = current_user.steam_accounts.build(steam_account_params)
     if @steam_account.save
-      flash[:notice] = response_message
+      if response_message.empty?
+        flash[:notice] = "Steam Account Successfully created."
+      else
+        flash[:alert] = response_message
+      end
       redirect_to steam_accounts_path
     else
       render :new
@@ -90,7 +94,7 @@ class SteamAccountsController < ApplicationController
 
   def response_message
     message = []
-    message << 'Steam account was successfully added.'
+    message << "Steam Account is created but "
     message << 'CSGOEmpire API Key is invalid.' if @steam_account.csgoempire_api_key.nil?
     message << 'WAXPEER API Key is invalid.' if @steam_account.waxpeer_api_key.nil?
     message << 'Market.CSGO API Key is invalid.' if @steam_account.market_csgo_api_key.nil?

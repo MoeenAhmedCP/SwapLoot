@@ -7,10 +7,10 @@ class ApplicationService
     }
 
     message = response_message(response)
-
     error = ApiError.new(message: message, backtrace: backtrace)
     reporter = Rails.error
-    reporter.subscribe(ErrorSubscriber.new(@current_user))
+    user = @steam_account.present? ? @steam_account&.user : current_user
+    reporter.subscribe(ErrorSubscriber.new(user))
     reporter&.report(error, handled: false, context: context)
   end
 
