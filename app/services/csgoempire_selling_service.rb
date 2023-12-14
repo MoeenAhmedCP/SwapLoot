@@ -79,8 +79,6 @@ class CsgoempireSellingService < ApplicationService
         end
       end
       items_for_resale.any? ? cutting_price_and_list_again(items_for_resale) : price_cutting_down_for_listed_items
-    # else
-    #   price_cutting_down_for_listed_items
     end
   end
 
@@ -130,7 +128,6 @@ class CsgoempireSellingService < ApplicationService
 
   def calculate_pricing(item)
     (((item[:lowest_price]/1000.to_f / 0.614 ).round(2) - 0.01) * 100).to_i
-    # deposit_value = (item[:total_value]) - (( item[:total_value] * percentage )/100)
   end
 
   def item_ready_to_price_cutting?(updated_at, no_of_minutes)
