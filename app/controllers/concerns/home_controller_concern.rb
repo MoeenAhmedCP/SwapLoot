@@ -4,7 +4,7 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_active_trade, :fetch_item_listed_for_sale, :fetch_sold_items, only: [:index]
+    before_action :fetch_active_trade, :fetch_sold_items, only: [:index]
     before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: [:refresh_balance]
   end
 
@@ -70,8 +70,7 @@ module HomeControllerConcern
   end
 
   def fetch_item_listed_for_sale
-    # @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
-    @item_listed_for_sale_hash = []
+    @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
   end
 
   def fetch_waxpeer_item_listed_for_sale
