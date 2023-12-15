@@ -1,6 +1,6 @@
 class SoldItemsController < ApplicationController
 
-  before_action :fetch_sold_items , only: [:index]
+  # before_action :fetch_sold_items , only: [:index]
   def index
     @steam_accounts = SteamAccount.where(user_id: current_user.id)
     @items_sold = !@active_steam_account.respond_to?(:each) ? SoldItem.where(steam_account: current_user.active_steam_account) : SoldItem.where(steam_account: current_user.steam_accounts)
