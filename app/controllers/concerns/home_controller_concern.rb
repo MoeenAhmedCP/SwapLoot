@@ -71,7 +71,7 @@ module HomeControllerConcern
 
   def fetch_item_listed_for_sale
     # @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
-    []
+    @item_listed_for_sale_hash = []
   end
 
   def fetch_waxpeer_item_listed_for_sale
