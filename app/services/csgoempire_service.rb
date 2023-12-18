@@ -187,9 +187,7 @@ class CsgoempireService < ApplicationService
   end
 
   def save_transaction(response, steam_account)
-    if response['data']
-      SaveTransactionWorker.perform_async(response, steam_account.id, @headers)
-    end
+    SaveTransactionWorker.perform_async(response, steam_account.id, @headers) if response['data']
   end
 
   def create_item(id, market_name, b_price, s_price, date, steam_account)

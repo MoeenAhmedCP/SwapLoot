@@ -1,0 +1,39 @@
+<div class="flex">
+  <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">All Item Sold</h2>
+  <i class="fa fa-refresh text-blue dark:text-white" aria-hidden="true" onclick="fetchAllItemData()"></i>
+</div>
+
+<table id="dataTableAllItemsSold" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+  <thead class="bg-blue text-white">
+    <tr>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Item Name</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Bought Price</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Sold Price</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Profit</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Profit (%)</th>
+      <th class="text-sm px-4 py-2 rounded-tr-lg">Date</th>
+    </tr>
+  </thead>
+  <tbody class="dataAllItemsSold">
+    <tr>
+      <%= render partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] } %>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+  function fetchAllItemData(){
+    $('.item-history-loader').removeClass('hidden');
+    $.ajax({
+      url: '/fetch_sold_items.js',
+      type: 'GET',
+      success: function(response){
+        if($('.dataAllItemsSold').children().length == 0){
+          $('.item-history-loader').removeClass('hidden');
+        }
+      },
+      error: function(){}
+    });
+  }
+</script>

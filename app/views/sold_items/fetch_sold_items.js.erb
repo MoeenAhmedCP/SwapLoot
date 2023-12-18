@@ -1,0 +1,1 @@
+$('.dataAllItemsSold').html("<%= escape_javascript(render(partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] })) %>")

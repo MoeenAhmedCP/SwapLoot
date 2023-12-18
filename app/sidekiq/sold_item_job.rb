@@ -24,7 +24,7 @@ class SoldItemJob
   end
 
   def create_item(id, market_name, b_price, s_price, date, steam_account_id)
-    item = SoldItem.find_by(item_id: id)
-    SoldItem.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account_id: steam_account_id) unless item.present?
+    item = SoldItemHistory.find_by(item_id: id)
+    SoldItemHistory.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account_id: steam_account_id) unless item.present?
   end
 end
