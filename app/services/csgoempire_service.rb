@@ -188,26 +188,7 @@ class CsgoempireService < ApplicationService
 
   def save_transaction(response, steam_account)
     if response['data']
-      last_page = response['last_page'].to_i
-      (1..last_page).each do |page_number|
-        begin
-          response_data = self.class.get("#{BASE_URL}/user/transactions?page=#{page_number}", headers: @headers)
-        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-          return []
-        end
-        if response_data['data'].present?
-          response_data['data'].each do |transaction_data|
-            if transaction_data['key'] == 'deposit_invoices' && transaction_data['data']['status_name'] == 'Complete'
-              item_data = transaction_data['data']['metadata']['item']
-              item_id = transaction_data['data']['metadata']['item_id']
-              sold_price = (transaction_data['delta']).to_f / 100
-              if item_data
-                create_item(item_data['asset_id'], item_data['market_name'], sold_price, item_data['market_value'], item_data['updated_at'], steam_account)
-              end
-            end
-          end
-        end
-      end
+      SaveTransactionWorker.perform_async(response, steam_account.id, @headers)
     end
   end
 
