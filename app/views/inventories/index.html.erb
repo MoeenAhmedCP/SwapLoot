@@ -19,6 +19,15 @@
     
          <%= render partial: 'inventory' , locals:{ inventories: @inventories }%>
   </div>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div style= "display: flex; ">
+      <h2 class="text-2xl text-blue dark:text-white font-[500] absolute">Sellable Inventory</h2>
+    </div>
+      <%= render partial: 'sellable_inventory' , locals:{ sellable_inventory: @sellable_inventory }%>
+    </div>
+</div>
+
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div style= "display: flex; ">
       <h2 class="text-2xl text-blue dark:text-white font-[500] absolute">Missing Items</h2>

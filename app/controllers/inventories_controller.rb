@@ -2,6 +2,7 @@ class InventoriesController < ApplicationController
   before_action :fetch_inventory, only: %i[index]
 
   def index
+    @sellable_inventory = SellableInventory.all.order(created_at: :desc)
     if params["tradable"] == "true"
       @inventories = Inventory.tradable_steam_inventories(@active_steam_account)
     elsif params["tradable"] == "false"
@@ -9,8 +10,10 @@ class InventoriesController < ApplicationController
     else
       if @active_steam_account.respond_to?(:each)
         @inventories = Inventory.where(steam_id: @active_steam_account.map(&:steam_id))
+        @sellable_inventory = SellableInventory.where(steam_id: @active_steam_account.map(&:steam_id))
       else
         @inventories = Inventory.where(steam_id: @active_steam_account.steam_id)
+        @sellable_inventory = SellableInventory.where(steam_id: @active_steam_account.steam_id)
       end
     end
     @total_market_price = @inventories.sum(:market_price).round(3)

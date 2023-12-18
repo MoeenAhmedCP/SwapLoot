@@ -5,24 +5,23 @@ class CsgoempireSellingService < ApplicationService
   def initialize(steam_account)
     @steam_account = steam_account
   end
+
+  def headers
+    headers = {
+      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
+    }
+  end
   
   def fetch_inventory
-    headers = { 'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}" }
-    response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers)
+    response = SellableInventory.inventory(@steam_account).where(listed_for_sale: false)
+    online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
 
-    if response['success'] == false
-      report_api_error(response, [self&.class&.name, __method__.to_s]) 
+    if online_trades_response['success'] == false
+      report_api_error(online_trades_response, [self&.class&.name, __method__.to_s])
     else
-      response = response["data"].select { |item| item["market_value"] != -1 && item["tradable"] == true }
-      online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
-
-      if online_trades_response['success'] == false
-        report_api_error(online_trades_response, [self&.class&.name, __method__.to_s])
-      else
-        online_trades = JSON.parse(online_trades_response.read_body)
-        api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
-        filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
-      end
+      online_trades = JSON.parse(online_trades_response.read_body)
+      api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
+      filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
     end
   end
 
@@ -48,12 +47,7 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def price_cutting_down_for_listed_items
-    headers = {
-      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
-    }
     response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
-
-
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])
     else
@@ -78,14 +72,15 @@ class CsgoempireSellingService < ApplicationService
           items_for_resale << item
         end
       end
-      items_for_resale.any? ? cutting_price_and_list_again(items_for_resale) : price_cutting_down_for_listed_items
+      if items_for_resale.any?
+        cutting_price_and_list_again(items_for_resale)
+      else
+        PriceCuttingJob.set(wait: 2.minutes).perform_later
+      end
     end
   end
 
   def cancel_item_deposit(item)
-    headers = {
-      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
-    }
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
 
     if response['success'] == false
@@ -100,7 +95,7 @@ class CsgoempireSellingService < ApplicationService
     items.map do |item|
       suggested_items = waxpeer_suggested_prices
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-      item_price = Inventory.find_by(item_id: item[:item_id]).market_price
+      item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
       lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
       minimum_desired_price = (item_price + (item_price * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
       if result_item && lowest_price > minimum_desired_price
@@ -137,13 +132,10 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def deposit_items_for_sale(items)
-    headers = {
-      'Content-Type' => 'application/json',
-      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
-    }
     items.each do |item|
       hash = {"items"=> [item]}
-      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
+      SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
+      # response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
       if response.code == SUCCESS_CODE
         result = JSON.parse(response.body)
       else
@@ -151,14 +143,10 @@ class CsgoempireSellingService < ApplicationService
         result = API_FAILED
       end
     end
-    sell_csgoempire
+    # sell_csgoempire
   end
 
   def deposit_items_for_resale(items)
-    headers = {
-      'Content-Type' => 'application/json',
-      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
-    }
     hash = {"items"=> items}
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: hash.to_json)
     if response.code == SUCCESS_CODE
@@ -182,7 +170,7 @@ class CsgoempireSellingService < ApplicationService
         buff_price = item["buff"]["price"]
         greater_price = [waxpeer_price, buff_price].max
         matching_item = {
-          'id' => inventory_hash[market_name]['id'],
+          'id' => inventory_hash[market_name]['item_id'],
           'name' => market_name,
           'average' => ((greater_price/100.to_f / 0.614 - 0.01) * 100).round, #final
           'coin_value_bought' => inventory_hash[market_name]['market_value'].to_f / 100,
