@@ -1,5 +1,10 @@
 class SaveTransactionWorker
   include Sidekiq::Worker
+  include Sidekiq::Status::Worker
+
+  def expiration
+    @expiration ||= 60 * 60 * 24 * 30
+  end
 
   def perform(response, steam_account_id, headers)
     response = JSON.parse(response)

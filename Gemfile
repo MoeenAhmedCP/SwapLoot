@@ -85,3 +85,4 @@ gem "activeadmin", "~> 3.1"
 gem "chartkick"
 
 gem "discordrb"
+gem 'sidekiq-status'
