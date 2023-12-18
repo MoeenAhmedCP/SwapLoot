@@ -11,7 +11,11 @@ class MissingItemsService < ApplicationService
   def missing_items
     return [] if @active_steam_account.nil?
     url = CSGO_EMPIRE_BASE_URL + '/trading/user/inventory'
-    response = self.class.get(url, headers: @headers)
+    begin
+      response = self.class.get(url, headers: @headers)
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
 
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])

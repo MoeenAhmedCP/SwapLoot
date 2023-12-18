@@ -16,8 +16,11 @@ class MarketcsgoService < ApplicationService
   def fetch_balance
     if @active_steam_account.present?
       return if market_csgo_api_key_not_found?
-
-      res = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: @params)
+      begin
+        res = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: @params)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
       if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
       else
@@ -27,8 +30,11 @@ class MarketcsgoService < ApplicationService
       response_data = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.market_csgo_api_key.blank?
-
-        response = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: site_params(steam_account))
+        begin
+          response = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: site_params(steam_account))
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
         response_hash = {
           account_id: steam_account.id,
           balance: response['money']
