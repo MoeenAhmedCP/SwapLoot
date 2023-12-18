@@ -64,11 +64,12 @@
   </div>
 </div>
 
-  <div class="flickr_pagination flex justify-between items-center px-4 py-3 bg-white dark:bg-grayExtraDark border-grayLight sm:px-6">
-  <div class="text-sm text-grayDark dark:text-white">
+
+  <div class="apple_pagination flex justify-center justify-between">
+  <div class="page_info">
     <%= page_entries_info @notifications %>
   </div>
-  <div class="flex items-center space-x-4">
+  <div>
     <%= will_paginate @notifications, 
         previous_label: 'Previous', 
         next_label: 'Next',
@@ -77,11 +78,6 @@
         renderer: WillPaginate::ActionView::LinkRenderer,
         class: 'flex items-center space-x-2'
     %>
-  </div>
-</div>
- 
-  
-  
   </div>
 </div>
 
