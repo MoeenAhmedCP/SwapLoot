@@ -48,27 +48,7 @@ class CsgoempireService < ApplicationService
   end
 
   def socket_data(data)
-    if data['event'] == 'new_item'
-      # for now, pass dummy values i.e. max_percentage = 20, specific_price = 100
-      # buying_filter = @active_steam_account.buying_filter
-      # CsgoEmpireBuyingInitiateJob.perform_async(@current_user, data['item_data'], buying_filter.min_percentage, buying_filter.max_price)
-    elsif data['event'] == 'trade_status'
-      steam_account = SteamAccount.find_by(id: data['steam_id'])
-      user = steam_account&.user
-      data['item_data'].each do |item|
-        if item['data']['status_message'] == 'Sent' && item["type"] == "deposit"
-          SendNotificationsJob.perform_async(user ,item, "Sold")
-          begin
-            sold_price = (item['total_value']).to_f / 100
-            create_item(item['data']['item_id'], item['data']['item']['market_name'], sold_price, item['data']['market_value'] * 0.614, item['data']['created_at'], steam_account)
-          rescue StandardError => e
-          end
-        end
-        if item['data']['status_message'] == 'Completed' && item["type"] == "withdrawal"
-          SendNotificationsJob.perform_async(user, item, "Bought")
-        end
-      end
-    end
+    TradeStatusJob.perform_async(data)
   end
 
   def fetch_item_listed_for_sale
