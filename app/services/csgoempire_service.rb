@@ -180,7 +180,6 @@ class CsgoempireService < ApplicationService
     end
 
     if response['success'] == false
-      report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
       return []
     else
       response
@@ -287,28 +286,6 @@ class CsgoempireService < ApplicationService
 
   def csgoempire_key_not_found?
     @active_steam_account&.csgoempire_api_key.blank?
-  end
-
-  def set_remove_item_hash(data)
-    service_hash = { 'CsgoempireService': '', 'WaxpeerService': '' }
-    trade_service_info = data['item_data'].first
-    if trade_service_info['type'] == 'deposit' && trade_service_info.dig('data', 'status_message') == 'Sent'
-      service_hash[:WaxpeerService] = trade_service_info.dig('data', 'item', 'asset_id')
-    end
-
-    csgo_desposit_data = fetch_item_listed_for_sale
-    if csgo_desposit_data.present?
-      csgo_desposit_data.each do |record|
-        record['items'].each do |item_data|
-          if item_data['id'] == trade_service_info.dig('data', 'item_id')
-            service_hash[:CsgoempireService] = record['id']
-            break
-          end
-        end
-      end
-    end
-
-    service_hash
   end
 
 end
