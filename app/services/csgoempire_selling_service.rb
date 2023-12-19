@@ -157,7 +157,6 @@ class CsgoempireSellingService < ApplicationService
     price_cutting_down_for_listed_items
   end
 
-
   def find_matching_items(response_items, inventory)
     matching_items = []
     inventory_hash = inventory.each_with_object({}) do |item, hash|

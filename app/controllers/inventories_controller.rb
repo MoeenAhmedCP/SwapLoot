@@ -2,7 +2,6 @@ class InventoriesController < ApplicationController
   before_action :fetch_inventory, only: %i[index]
 
   def index
-    @sellable_inventory = SellableInventory.all.order(created_at: :desc)
     if params["tradable"] == "true"
       @inventories = Inventory.tradable_steam_inventories(@active_steam_account).paginate(page: params[:page], per_page: 15)
     elsif params["tradable"] == "false"
