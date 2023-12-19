@@ -20,7 +20,7 @@
   </tbody>
 </table>
 <%if @sold_items_history.count.positive? %>
-  <%= render partial: 'pagination', locals: { data: @sold_items_history || [], table_page_name: 'sold_item_history_page' } %>
+  <%= render partial: 'pagination', locals: { data: @sold_items_history || [], table_page_name: 'sold_item_history_page', remote: true } %>
 <%end%>
 
 <script>
