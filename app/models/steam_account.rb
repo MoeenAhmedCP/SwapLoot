@@ -6,6 +6,7 @@ class SteamAccount < ApplicationRecord
   has_one :selling_filter, dependent: :destroy
   has_one :buying_filter, dependent: :destroy
   has_many :sold_items, dependent: :destroy
+  has_many :sold_item_histories, dependent: :destroy
 
   before_save :check_api_keys
 

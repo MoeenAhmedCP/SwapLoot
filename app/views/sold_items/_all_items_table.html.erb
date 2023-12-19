@@ -3,7 +3,7 @@
   <i class="fa fa-refresh text-blue dark:text-white" aria-hidden="true" onclick="fetchAllItemData()"></i>
 </div>
 
-<table id="dataTableAllItemsSold" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+<table id="dataTableAllItemsSold" class="display shadow-md rounded-lg mt-10" style="width:100%; border: none;">
   <thead class="bg-blue text-white">
     <tr>
       <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
@@ -16,11 +16,25 @@
     </tr>
   </thead>
   <tbody class="dataAllItemsSold">
-    <tr>
-      <%= render partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] } %>
-    </tr>
+    <%= render partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] } %>
   </tbody>
 </table>
+<div class="apple_pagination flex justify-center justify-between">
+  <div class="page_info">
+    <%= page_entries_info @sold_items_history %>
+  </div>
+  <div>
+    <%= will_paginate @sold_items_history, 
+        previous_label: 'Previous', 
+        next_label: 'Next',
+        inner_window: 3,
+        outer_window: 1,
+        renderer: WillPaginate::ActionView::LinkRenderer,
+        class: 'flex items-center space-x-2',
+        param_name: 'sold_item_history_page'
+    %>
+  </div>
+</div>
 
 <script>
   function fetchAllItemData(){
