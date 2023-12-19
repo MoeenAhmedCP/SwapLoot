@@ -41,6 +41,9 @@
     $('.item-history-loader').removeClass('hidden');
     $.ajax({
       url: '/fetch_sold_items.js',
+      data: {
+        sold_item_history_page: "<%= params[:sold_item_history_page] || 1%>"
+      },
       type: 'GET',
       success: function(response){
         if($('.dataAllItemsSold').children().length == 0){
