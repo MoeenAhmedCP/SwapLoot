@@ -86,3 +86,4 @@ gem "chartkick"
 
 gem "discordrb"
 gem 'sidekiq-status'
+gem 'net-ping'

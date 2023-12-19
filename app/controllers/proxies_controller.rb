@@ -14,12 +14,14 @@ class ProxiesController < ApplicationController
   end
 
   def create
-    message = I18n.t("proxy.create.#{Proxy.create(proxy_params) ? 'success' : 'failure'}")
+    @proxy = Proxy.create(proxy_params)
+    message = I18n.t("proxy.create.#{@proxy.persisted? ? 'success' : 'failure'}", errors: @proxy.errors.full_messages.join(', '))
     redirect_to request.referer, notice: message
   end
 
   def update
-    message = I18n.t("proxy.update.#{@proxy.update(proxy_params) ? 'success' : 'failure'}")
+    @proxy = @proxy.update(proxy_params)
+    message = I18n.t("proxy.update.#{@proxy.update(proxy_params) ? 'success' : 'failure'}", errors: @proxy.errors.full_messages.join(', '))
     redirect_to request.referer, notice: message
   end
 
