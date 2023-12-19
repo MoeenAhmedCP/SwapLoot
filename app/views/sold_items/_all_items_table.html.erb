@@ -19,22 +19,9 @@
     <%= render partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] } %>
   </tbody>
 </table>
-<div class="apple_pagination flex justify-center justify-between">
-  <div class="page_info">
-    <%= page_entries_info @sold_items_history %>
-  </div>
-  <div>
-    <%= will_paginate @sold_items_history, 
-        previous_label: 'Previous', 
-        next_label: 'Next',
-        inner_window: 3,
-        outer_window: 1,
-        renderer: WillPaginate::ActionView::LinkRenderer,
-        class: 'flex items-center space-x-2',
-        param_name: 'sold_item_history_page'
-    %>
-  </div>
-</div>
+<%if @sold_items_history.count.positive? %>
+  <%= render partial: 'pagination', locals: { data: @sold_items_history || [], table_page_name: 'sold_item_history_page' } %>
+<%end%>
 
 <script>
   function fetchAllItemData(){
@@ -46,8 +33,8 @@
       },
       type: 'GET',
       success: function(response){
-        if($('.dataAllItemsSold').children().length == 0){
-          $('.item-history-loader').removeClass('hidden');
+        if($('.dataAllItemsSold').children().length != 0){
+          $('.item-history-loader').addClass('hidden');
         }
       },
       error: function(){}

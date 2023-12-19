@@ -1,1 +1,4 @@
 $('.dataAllItemsSold').html("<%= escape_javascript(render(partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] })) %>")
+<%if @sold_items_history.count.positive? %>
+  $("<%= escape_javascript(render(partial: 'pagination', locals: { data: @sold_items_history || [], table_page_name: 'sold_item_history_page' })) %>").insertAfter($('#dataTableAllItemsSold_wrapper'));
+<%end%>
