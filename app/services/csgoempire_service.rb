@@ -187,7 +187,7 @@ class CsgoempireService < ApplicationService
   end
 
   def save_transaction(response, steam_account)
-    if steam_account.sold_item_job_id.present? 
+    if steam_account.sold_item_job_id.present? && !(Sidekiq::Status::failed?(steam_account.sold_item_job_id))
       return unless Sidekiq::Status::complete?(steam_account.sold_item_job_id)
     end
 
