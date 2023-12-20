@@ -3,7 +3,7 @@ class SteamAccountsController < ApplicationController
   after_action :set_steam_account_filters, only: %i[create]
   
   def index
-    @steam_accounts = current_user.steam_accounts
+    @steam_accounts = current_user.steam_accounts.paginate(page: params[:page], per_page: 10)
   end
 
   def new
