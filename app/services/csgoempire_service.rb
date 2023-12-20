@@ -187,14 +187,15 @@ class CsgoempireService < ApplicationService
   end
 
   def save_transaction(response, steam_account)
-    if steam_account.sold_item_job_id.present? && !(Sidekiq::Status::failed?(steam_account.sold_item_job_id))
-      return unless Sidekiq::Status::complete?(steam_account.sold_item_job_id)
-    end
+    return if steam_account.sold_item_job_id.present? &&
+              !Sidekiq::Status::get_all(steam_account.sold_item_job_id).empty? &&
+              !Sidekiq::Status::failed?(steam_account.sold_item_job_id) &&
+              !Sidekiq::Status::complete?(steam_account.sold_item_job_id)
 
-    if response['data']
-      job_id = SaveTransactionWorker.perform_async(response, steam_account.id, @headers)
-      steam_account.update(sold_item_job_id: job_id)
-    end
+    return if response['data'].blank?
+
+    job_id = SaveTransactionWorker.perform_async(response, steam_account.id, @headers)
+    steam_account.update(sold_item_job_id: job_id)
   end
 
   def create_item(id, market_name, b_price, s_price, date, steam_account)

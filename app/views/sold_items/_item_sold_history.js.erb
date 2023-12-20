@@ -1,5 +1,5 @@
 $('.dataAllItemsSold').html("<%= escape_javascript(render(partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] })) %>");
-<% if @sold_items_history.count.positive? %>
+<% if @sold_items_history && @sold_items_history.count.positive? %>
   $('#dataTableAllItemsSold_wrapper').parent().closest('div').children('.apple_pagination').remove()
   $("<%= escape_javascript(render(partial: 'shared/pagination', locals: { data: @sold_items_history || [], table_page_name: 'sold_item_history_page', remote: true })) %>").insertAfter($('#dataTableAllItemsSold_wrapper'));
 <% end %>
