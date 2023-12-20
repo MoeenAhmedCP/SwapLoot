@@ -54,6 +54,12 @@
       empty_div.remove();
       show_loader();
     }
+    else{
+      $('#toast-success').removeClass('hidden').find('.success_message').text('This might take some minutes...');
+      setTimeout(() => {
+        $('#toast-success').addClass('hidden')
+      }, 3000);
+    }
   }
 
   function disable_search(){
