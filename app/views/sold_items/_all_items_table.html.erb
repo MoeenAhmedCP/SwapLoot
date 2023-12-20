@@ -25,7 +25,8 @@
 
 <script>
   function fetchAllItemData(){
-    $('.item-history-loader').removeClass('hidden');
+    checkEmptyTable();
+
     $.ajax({
       url: '/fetch_sold_items.js',
       data: {
@@ -33,11 +34,41 @@
       },
       type: 'GET',
       success: function(response){
-        if($('.dataAllItemsSold').children().length != 0){
-          $('.item-history-loader').addClass('hidden');
+        table_rows = $('.dataAllItemsSold').children();
+        if(table_rows.length != 0){
+          show_loader();
+        }
+        else{
+          hide_loader();
+          enable_search();
         }
       },
       error: function(){}
     });
+  }
+
+  function checkEmptyTable(){
+    empty_div = $('.dataAllItemsSold').find('.dataTables_empty');
+    if(empty_div.length == 1 && empty_div.text() == 'No data available in table'){
+      disable_search();
+      empty_div.remove();
+      show_loader();
+    }
+  }
+
+  function disable_search(){
+    $('#dataTableAllItemsSold_filter').find("[type='search']").attr('disabled', true)
+  }
+
+  function enable_search(){
+    $('#dataTableAllItemsSold_filter').find("[type='search']").attr('disabled', false)
+  }
+
+  function show_loader(){
+    $('.item-history-loader').removeClass('hidden');
+  }
+
+  function hide_loader(){
+    $('.item-history-loader').addClass('hidden');
   }
 </script>
