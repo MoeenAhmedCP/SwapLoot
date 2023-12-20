@@ -34,6 +34,30 @@
           </div>
           </div>
   </div>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div style= "display: flex; ">
+      <h2 class="text-2xl text-blue dark:text-white font-[500] absolute">Sellable Inventory</h2>
+    </div>
+      <%= render partial: 'sellable_inventory' , locals:{ sellable_inventory: @sellable_inventory }%>
+      <div class="apple_pagination flex justify-center justify-between">
+          <div class="page_info">
+            <%= page_entries_info @sellable_inventory %>
+          </div>
+          <div>
+            <%= will_paginate @sellable_inventory, 
+                previous_label: 'Previous', 
+                next_label: 'Next',
+                inner_window: 3,
+                outer_window: 1,
+                renderer: WillPaginate::ActionView::LinkRenderer,
+                class: 'flex items-center space-x-2'
+            %>
+          </div>
+          </div>
+    </div>
+</div>
+
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div style= "display: flex; ">
       <h2 class="text-2xl text-blue dark:text-white font-[500] absolute">Missing Items</h2>
