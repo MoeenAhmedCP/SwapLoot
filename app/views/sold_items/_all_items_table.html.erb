@@ -37,10 +37,10 @@
         table_rows = $('.dataAllItemsSold').children();
         if(table_rows.length != 0){
           hide_loader();
+          enable_search();
         }
         else{
           show_loader();
-          enable_search();
         }
       },
       error: function(){}
