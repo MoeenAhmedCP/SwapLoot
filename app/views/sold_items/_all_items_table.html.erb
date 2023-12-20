@@ -36,10 +36,10 @@
       success: function(response){
         table_rows = $('.dataAllItemsSold').children();
         if(table_rows.length != 0){
-          show_loader();
+          hide_loader();
         }
         else{
-          hide_loader();
+          show_loader();
           enable_search();
         }
       },
