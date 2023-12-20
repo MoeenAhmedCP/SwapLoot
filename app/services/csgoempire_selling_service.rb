@@ -130,7 +130,7 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def item_ready_to_price_cutting?(updated_at, no_of_minutes)
-    updated_time = updated_at.to_datetime + 5.hours
+    updated_time = updated_at.to_datetime
     estimated_time = Time.current + no_of_minutes.minutes
     updated_time <= estimated_time
   end
