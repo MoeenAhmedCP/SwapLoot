@@ -9,8 +9,10 @@ class InventoriesController < ApplicationController
     else
       if @active_steam_account.respond_to?(:each)
         @inventories = Inventory.where(steam_id: @active_steam_account.map(&:steam_id)).paginate(page: params[:page], per_page: 15)
+        @sellable_inventory = SellableInventory.where(steam_id: @active_steam_account.map(&:steam_id)).paginate(page: params[:page], per_page: 15)
       else
         @inventories = Inventory.where(steam_id: @active_steam_account.steam_id).paginate(page: params[:page], per_page: 15)
+        @sellable_inventory = SellableInventory.where(steam_id: @active_steam_account.steam_id).paginate(page: params[:page], per_page: 15)
       end
     end
     @total_market_price = @inventories.sum(:market_price).round(3)
