@@ -28,6 +28,13 @@ class TradeServicesController < ApplicationController
       price_cutting_job_id = PriceCuttingJob.perform_async(steam_account.id)
       @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id, price_cutting_status: true)
     else
+      remove_items_listed_for_sale_response = RemoveItemListedForSaleJob.perform_async(steam_account.id)
+      if remove_items_listed_for_sale_response == SUCCESS
+        flash[:notice] = "Selling Terminated, Items have been removed from Listing.."
+      else
+        flash[:alert] = "Failed to remove items from Listing. Retrying in 2 minutes..."
+        RetryRemoveItemListedForSaleJob.perform_in(2.minutes, steam_account.id) # Schedule a retry after 2 minutes
+      end
       selling_job_id = @trade_service.selling_job_id
       delete_enqueued_job(selling_job_id)
       @trade_service.update(selling_job_id: nil)
