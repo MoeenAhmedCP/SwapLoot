@@ -3,7 +3,7 @@
   <i class="fa fa-refresh text-blue dark:text-white" aria-hidden="true" onclick="fetchAllItemData()"></i>
 </div>
 
-<table id="dataTableAllItemsSold" class="display shadow-md rounded-lg mt-10" style="width:100%; border: none;">
+<table id="dataTableAllItemsSold" class="relative display shadow-md rounded-lg mt-10" style="width:100%; border: none;">
   <thead class="bg-blue text-white">
     <tr>
       <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
@@ -16,6 +16,7 @@
     </tr>
   </thead>
   <tbody class="dataAllItemsSold">
+    <%# <%= render partial: 'shared/loader_modal' %> 
     <%= render partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] } %>
   </tbody>
 </table>
@@ -36,11 +37,11 @@
       success: function(response){
         table_rows = $('.dataAllItemsSold').children();
         if(table_rows.length != 0){
-          hide_loader();
-          enable_search();
+          hideLoader();
+          enableSearch();
         }
         else{
-          show_loader();
+          showLoader();
         }
       },
       error: function(){}
@@ -50,25 +51,45 @@
   function checkEmptyTable(){
     empty_div = $('.dataAllItemsSold').find('.dataTables_empty');
     if(empty_div.length == 1 && empty_div.text() == 'No data available in table'){
-      disable_search();
+      disableSearch();
       empty_div.remove();
-      show_loader();
+      showLoader();
+    }
+    else{
+      showTableSearchingLoader()
     }
   }
 
-  function disable_search(){
+  function disableSearch(){
     $('#dataTableAllItemsSold_filter').find("[type='search']").attr('disabled', true)
   }
 
-  function enable_search(){
+  function enableSearch(){
     $('#dataTableAllItemsSold_filter').find("[type='search']").attr('disabled', false)
   }
 
-  function show_loader(){
+  function showLoader(){
     $('.item-history-loader').removeClass('hidden');
   }
 
-  function hide_loader(){
+  function hideLoader(){
     $('.item-history-loader').addClass('hidden');
+  }
+
+  function showTableSearchingLoader(){
+    disableSearch();
+    var loadingModal = $('<div id="loadingModal" class="hidden absolute inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center backdrop-blur-md" style="z-index: 2000000;">' +
+                            '<div class="flex flex-col items-center bg-white p-8 rounded-lg shadow-lg">' +
+                              '<div class="loader"></div>' +
+                              '<p class="text-center dark:text-white text-gray text-lg font-semibold">This might take some minutes...</p>' +
+                            '</div>' +
+                          '</div>');
+      
+    $('#dataTableAllItemsSold').append(loadingModal);
+    $('#loadingModal').removeClass('hidden');
+  }
+
+  function hideTableSearchingLoader(){
+    $('#loadingModal').addClass('hidden');
   }
 </script>
