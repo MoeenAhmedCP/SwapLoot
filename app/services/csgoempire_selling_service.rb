@@ -2,7 +2,6 @@ class CsgoempireSellingService < ApplicationService
   include HTTParty
   require 'json'
 
-  #initialize steam account fro service
   def initialize(steam_account)
     @steam_account = steam_account
   end
@@ -14,36 +13,26 @@ class CsgoempireSellingService < ApplicationService
     }
   end
   
-  #fuction for get inventory data from api
+  
   def fetch_inventory
     response = SellableInventory.inventory(@steam_account).where(listed_for_sale: false)
     online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
     if online_trades_response['success'] == false
       report_api_error(online_trades_response, [self&.class&.name, __method__.to_s])
     else
-      response = response["data"].select { |item| item["market_value"] != -1 && item["tradable"] == true }
-      online_trades_response = fetch_active_trades
-
-      if online_trades_response['success'] == false
-        report_api_error(online_trades_response, [self&.class&.name, __method__.to_s])
-      else
-        online_trades = JSON.parse(online_trades_response.read_body)
-        api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
-        filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
-      end
-
+      online_trades = JSON.parse(online_trades_response.read_body)
+      api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
+      filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
     end
     filtered_response
   end
 
-  # function to fetch matching items data from inventory and price empire api
   def find_matching_data
-    response_items = fetch_items_from_pirce_empire
+    response_items = fetch_items
     inventory = fetch_inventory
     inventory ? matching_items = find_matching_items(response_items, inventory) : []
   end
   
-  # function to initiate selling service from toggle of web app
   def sell_csgoempire
     matching_items =  find_matching_data
     unless matching_items
@@ -59,9 +48,8 @@ class CsgoempireSellingService < ApplicationService
     deposit_items_for_sale(items_to_deposit)
   end
 
-  # fucntion to get active trades and prepare items which are ready for price cutting
   def price_cutting_down_for_listed_items
-    response = fetch_active_trades
+    response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])
     else
@@ -69,21 +57,21 @@ class CsgoempireSellingService < ApplicationService
       # Sample API response is at the end of the file, You can use it for testing (here).
       items_listed_for_sale = []
       items_listed_for_sale = api_response["data"]["deposits"].map do |deposit|
+        debugger
         {
           deposit_id: deposit["id"],
           item_id: deposit["item_id"],
           market_name: deposit["item"]["market_name"],
           total_value: deposit["total_value"],
           market_value: deposit["item"]["market_value"],
-          updated_at: deposit["item"]["updated_at"],
-          created_at: deposit["item"]["created_at"],
+          updated_at: deposit["created_at"],
           auction_number_of_bids: deposit["metadata"]["auction_number_of_bids"],
           suggested_price: deposit["suggested_price"]
         }
       end
       items_for_resale = []
       items_listed_for_sale.each do |item|
-        if item_ready_to_price_cutting?(item[:updated_at], @steam_account.selling_filter.undercutting_interval)
+          if item_ready_to_price_cutting?(item[:updated_at], @steam_account.selling_filter.undercutting_interval)
           items_for_resale << item
         end
       end
@@ -95,7 +83,7 @@ class CsgoempireSellingService < ApplicationService
       end
     end
   end
-  
+
   def cancel_item_deposit(item)
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
     if response['success'] == true
@@ -107,7 +95,6 @@ class CsgoempireSellingService < ApplicationService
     puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
   end
   
-  # Function for Cutting Prices of Items and List them again for sale
   def cutting_price_and_list_again(items)
     filtered_items_for_deposit = []
     items.map do |item|
@@ -127,7 +114,6 @@ class CsgoempireSellingService < ApplicationService
     deposit_items_for_resale(items_to_deposit)
   end
 
-  #Function for search items by (:market_name) from Waxpeer API 
   def search_items_by_names(item)
     url = "https://api.waxpeer.com/v1/search-items-by-name?api=#{@steam_account.waxpeer_api_key}&game=csgo&names=#{item[:market_name]}&minified=0"
     response = HTTParty.get(url)
@@ -139,19 +125,16 @@ class CsgoempireSellingService < ApplicationService
     end
   end
 
-  # Function for the conversion of dollars to coins for listing items
   def calculate_pricing(item)
     (((item[:lowest_price]/1000.to_f / 0.614 ).round(2) - 0.01) * 100).to_i
   end
 
-  # function to check if the items are ready to price cutting, (e.g. Intervel is completed)
   def item_ready_to_price_cutting?(updated_at, no_of_minutes)
     updated_time = updated_at.to_datetime
     estimated_time = Time.current + no_of_minutes.minutes
     updated_time <= estimated_time
   end
 
-  # function to list items for sale at the first item on price empire suggested prices (Waxpeer/Buff)
   def deposit_items_for_sale(items)
     items.each do |item|
       hash = {"items" => [item]}
@@ -167,7 +150,6 @@ class CsgoempireSellingService < ApplicationService
     # sell_csgoempire
   end
 
-  # Function to List Items again for resale after price cutting algorithm
   def deposit_items_for_resale(items)
     items.each do |item|
       hash = {"items": [item]}
@@ -183,7 +165,6 @@ class CsgoempireSellingService < ApplicationService
     price_cutting_down_for_listed_items
   end
 
- # function to fetch matching items between Price Empire API data and Inventory Data
   def find_matching_items(response_items, inventory)
     matching_items = []
         # inventory_hash = inventory.each_with_object({}) do |item, hash|
@@ -226,7 +207,6 @@ class CsgoempireSellingService < ApplicationService
     return matching_items
   end
 
-  # Fetch Suggested price of items from Waxpeer
   def waxpeer_suggested_prices
      response = HTTParty.get(WAXPEER_BASE_URL + '/suggested-price?game=csgo')
      if response.code == SUCCESS_CODE
@@ -238,57 +218,8 @@ class CsgoempireSellingService < ApplicationService
      result
   end
 
-  # Function to fetch Items and Its Prices from different platforms from Price Empire API
-  def fetch_items_from_pirce_empire
+  def fetch_items
     response = PriceEmpire.all
-  end
-
-  # Function to cancel deposit (Remove Item That are already listed for sale)
-  def cancel_item_deposit(item)
-    headers = {
-      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
-    }
-    response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
-    if response['success'] == false
-      report_api_error(response, [self&.class&.name, __method__.to_s])
-    end
-    puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
-  end
-
-  # Remove Items listed for sale when the selling is turned off
-  def remove_listed_items_for_sale
-    active_trades = fetch_active_trades
-    begin
-      if active_trades["data"]["deposits"]&.present? && active_trades["data"].present?
-        items_listed_for_sale = []
-        items_listed_for_sale = active_trades["data"]["deposits"].map do |deposit|
-          {
-            deposit_id: deposit["id"],
-            item_id: deposit["item_id"],
-            market_name: deposit["item"]["market_name"],
-            total_value: deposit["total_value"],
-            market_value: deposit["item"]["market_value"],
-            updated_at: deposit["item"]["updated_at"],
-            auction_number_of_bids: deposit["metadata"]["auction_number_of_bids"],
-            suggested_price: deposit["suggested_price"]
-          }
-        end
-        items_listed_for_sale.each do |item|
-          cancel_item_deposit(item)
-        end
-        return true
-      end
-    rescue
-      return false
-    end
-  end
-
-# Function to fecth active trades
-  def fetch_active_trades
-    headers = {
-      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
-    }
-    HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
   end
 end
 

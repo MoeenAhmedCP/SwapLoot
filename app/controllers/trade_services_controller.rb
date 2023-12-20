@@ -33,7 +33,7 @@ class TradeServicesController < ApplicationController
         flash[:notice] = "Selling Terminated, Items have been removed from Listing.."
       else
         flash[:alert] = "Failed to remove items from Listing. Retrying in 2 minutes..."
-        RetryRemoveItemListedForSaleJob.perform_in(2.minutes, steam_account.id) # Schedule a retry after 2 minutes
+        RemoveItemListedForSaleJob.perform_in(2.minutes, steam_account.id) # Schedule a retry after 2 minutes
       end
       selling_job_id = @trade_service.selling_job_id
       delete_enqueued_job(selling_job_id)
