@@ -57,7 +57,6 @@ class CsgoempireSellingService < ApplicationService
       # Sample API response is at the end of the file, You can use it for testing (here).
       items_listed_for_sale = []
       items_listed_for_sale = api_response["data"]["deposits"].map do |deposit|
-        debugger
         {
           deposit_id: deposit["id"],
           item_id: deposit["item_id"],
