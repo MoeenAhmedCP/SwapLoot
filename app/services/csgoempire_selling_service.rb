@@ -7,15 +7,16 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def headers
-    headers = {
+    {
       'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
+      'Content-Type' => 'application/json'
     }
   end
+  
   
   def fetch_inventory
     response = SellableInventory.inventory(@steam_account).where(listed_for_sale: false)
     online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
-
     if online_trades_response['success'] == false
       report_api_error(online_trades_response, [self&.class&.name, __method__.to_s])
     else
@@ -23,6 +24,7 @@ class CsgoempireSellingService < ApplicationService
       api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
       filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
     end
+    filtered_response
   end
 
   def find_matching_data
@@ -62,6 +64,7 @@ class CsgoempireSellingService < ApplicationService
           total_value: deposit["total_value"],
           market_value: deposit["item"]["market_value"],
           updated_at: deposit["item"]["updated_at"],
+          created_at: deposit["item"]["created_at"],
           auction_number_of_bids: deposit["metadata"]["auction_number_of_bids"],
           suggested_price: deposit["suggested_price"]
         }
@@ -75,18 +78,20 @@ class CsgoempireSellingService < ApplicationService
       if items_for_resale.any?
         cutting_price_and_list_again(items_for_resale)
       else
-        PriceCuttingJob.set(wait: 2.minutes).perform_later
+        price_cutting_job_id = PriceCuttingJob.perform_in(2.minutes, @steam_account.id)
+        @steam_account.trade_service.update(price_cutting_job_id: price_cutting_job_id)
       end
     end
   end
 
   def cancel_item_deposit(item)
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
-
-    if response['success'] == false
+    if response['success'] == true
+      sellable_item = SellableInventory.find_by(item_id: item["id"])
+      sellable_item.update(listed_for_sale: false) if sellable_item.present?
+    else
       report_api_error(response, [self&.class&.name, __method__.to_s])
     end
-
     puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
   end
   
@@ -97,12 +102,11 @@ class CsgoempireSellingService < ApplicationService
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
       item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
       lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
-      minimum_desired_price = (item_price + (item_price * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
       if result_item && lowest_price > minimum_desired_price
         filtered_items_for_deposit << item.merge(:lowest_price=> result_item["lowest_price"])
       end
     end
-
     filtered_items_for_deposit.each do |item_to_deposit|
       cancel_item_deposit(item_to_deposit)
     end
@@ -126,17 +130,17 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def item_ready_to_price_cutting?(updated_at, no_of_minutes)
-    updated_time = updated_at.to_datetime
+    updated_time = updated_at.to_datetime + 5.hours
     estimated_time = Time.current + no_of_minutes.minutes
     updated_time <= estimated_time
   end
 
   def deposit_items_for_sale(items)
     items.each do |item|
-      hash = {"items"=> [item]}
-      SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
-      # response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
+      hash = {"items" => [item]}
+      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
       if response.code == SUCCESS_CODE
+        SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
         result = JSON.parse(response.body)
       else
         report_api_error(response, [self&.class&.name, __method__.to_s])
@@ -147,35 +151,57 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def deposit_items_for_resale(items)
-    hash = {"items"=> items}
-    response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: hash.to_json)
-    if response.code == SUCCESS_CODE
-      result = JSON.parse(response.body)
-    else
-      result = API_FAILED
+    items.each do |item|
+      hash = {"items": [item]}
+      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
+      if response.code == SUCCESS_CODE
+        SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
+        result = JSON.parse(response.body)
+      else
+        report_api_error(response, [self&.class&.name, __method__.to_s])
+        result = API_FAILED
+      end
     end
     price_cutting_down_for_listed_items
   end
 
   def find_matching_items(response_items, inventory)
     matching_items = []
-    inventory_hash = inventory.each_with_object({}) do |item, hash|
-      hash[item['market_name']] = item
-    end
-    response_items.each do |item|
-      market_name = item.item_name
-      if inventory_hash.key?(market_name)
-        waxpeer_price = item["waxpeer"]["price"]
-        buff_price = item["buff"]["price"]
+        # inventory_hash = inventory.each_with_object({}) do |item, hash|
+        #   hash[item['market_name']] = item
+        # end
+        # response_items.each do |item|
+        #   market_name = item.market_name
+        #   if inventory_hash.keys.include?(market_name)
+        #     waxpeer_price = item["waxpeer"]["price"]
+        #     buff_price = item["buff"]["price"]
+        #     greater_price = [waxpeer_price, buff_price].max
+        #     matching_item = {
+        #       'id' => inventory_hash[market_name]['item_id'],
+        #       'name' => market_name,
+        #       'average' => ((greater_price/100.to_f / 0.614 - 0.01) * 100).round, #final
+        #       'coin_value_bought' => inventory_hash[market_name]['market_value'].to_f / 100,
+        #       'coin_to_dollar' => inventory_hash[market_name]['market_value'].to_f / 100 * 0.614
+        #     }
+        #     matching_items << matching_item
+        #   end
+        # end
+    inventory.each do |inventory_item|
+      item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
+      if item_found_from_price_empire
+        waxpeer_price = item_found_from_price_empire["waxpeer"]["price"]
+        buff_price = item_found_from_price_empire["buff"]["price"]
         greater_price = [waxpeer_price, buff_price].max
         matching_item = {
-          'id' => inventory_hash[market_name]['item_id'],
-          'name' => market_name,
+          'id' => inventory_item.item_id,
+          'name' => inventory_item.market_name,
           'average' => ((greater_price/100.to_f / 0.614 - 0.01) * 100).round, #final
-          'coin_value_bought' => inventory_hash[market_name]['market_value'].to_f / 100,
-          'coin_to_dollar' => inventory_hash[market_name]['market_value'].to_f / 100 * 0.614
+          'coin_value_bought' => inventory_item.market_price.to_f / 100,
+          'coin_to_dollar' => inventory_item.market_price.to_f / 100 * 0.614
         }
         matching_items << matching_item
+      else
+        next
       end
     end
     return matching_items

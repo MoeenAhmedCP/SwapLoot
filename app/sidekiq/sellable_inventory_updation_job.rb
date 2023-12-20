@@ -1,7 +1,7 @@
 class SellableInventoryUpdationJob
-  include Sidekiq::Job
-
-  def perform
+	include Sidekiq::Job
+	
+	def perform
 		p "<============= Sellable Inventory Updation Database Job started... ================>"
 		@users = User.all
 		@users.each do |user|
@@ -11,7 +11,7 @@ class SellableInventoryUpdationJob
 					tradeable_inventory_to_save.each do |item|
 						begin
 							SellableInventory.find_or_create_by!(
-								item_id: item["id"]
+							item_id: item["id"]
 							) do |sellable_inventory|
 								sellable_inventory.market_name = item["market_name"]
 								sellable_inventory.market_price = item["market_value"].to_f / 100 * 0.614
@@ -24,9 +24,9 @@ class SellableInventoryUpdationJob
 						end
 					end
 				rescue => e
-						puts "Something went wrong with Fetch inventory API for user #{user.email}: #{e} in Sellable Inventory Updation Job"
+					puts "Something went wrong with Fetch inventory API for user #{user.email}: #{e} in Sellable Inventory Updation Job"
 				end
 			end
 		end
-  end
+	end
 end
