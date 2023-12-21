@@ -26,12 +26,12 @@ module SwapLoot
     config.active_job.queue_adapter = :sidekiq
     config.autoload_paths += %W(#{config.root}/lib)
 
-    config.after_initialize do
-      if Rails.env.production? || Rails.env.development?
-        PermanentDeleteJob.set(wait_until: Date.tomorrow.to_time).perform_later
-        PriceEmpireSuggestedPriceJob.set(wait_until: Date.tomorrow.to_time).perform_later
-      end
-    end
+    # config.after_initialize do
+    #   if Rails.env.production? || Rails.env.development?
+    #     PermanentDeleteJob.set(wait_until: Date.tomorrow.to_time).perform_later
+    #     PriceEmpireSuggestedPriceJob.set(wait_until: Date.tomorrow.to_time).perform_later
+    #   end
+    # end
     config.action_cable.mount_path = '/cable'
     config.action_cable.disable_request_forgery_protection = true
 

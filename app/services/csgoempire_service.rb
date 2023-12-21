@@ -118,13 +118,22 @@ class CsgoempireService < ApplicationService
   end
 
   def save_inventory(res, steam_account)
+    items_to_insert = []
+
     res['data']&.each do |item|
       inventory = Inventory.find_by(item_id: item['id'])
       unless inventory.present?
         item_price = item['market_value'] < 0 ? 0 : ((item['market_value'].to_f / 100) * 0.614).round(2)
-        Inventory.create(item_id: item['id'], steam_id: steam_account&.steam_id, market_name: item['market_name'], market_price: item_price, tradable: item['tradable'])
+        items_to_insert << {
+          item_id: item['id'],
+          steam_id: steam_account&.steam_id,
+          market_name: item['market_name'],
+          market_price: item_price,
+          tradable: item['tradable']
+        }
       end
     end
+    Inventory.insert_all(items_to_insert) unless items_to_insert.empty?
   end
 
   def fetch_active_trade

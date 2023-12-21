@@ -1,11 +1,15 @@
-class PermanentDeleteJob < ApplicationJob
-  queue_as :default
+class PermanentDeleteJob
+	include Sidekiq::Job
 
   def perform
-    Inventory.soft_deleted_sold.where("sold_at < ?", Time.now - 30.days).destroy_all
-    BidItems.where("created_at < ?", Time.now - 1.days).destroy_all
-    Notifications.where("created_at < ?", Time.now - 30.days).destroy_all
-    Errors.where("created_at < ?", Time.now - 14.days).destroy_all
-    PermanentDeleteJob.set(wait_until: Time.now.tomorrow.beginning_of_day).perform_later
+    p "<---------------- Permanent Delete Job Started --------------->"
+    begin
+      Inventory.soft_deleted_sold.where("sold_at < ?", Time.now - 30.days).destroy_all
+      BidItem.where("created_at < ?", Time.now - 1.days).destroy_all
+      Notification.where("created_at < ?", Time.now - 30.days).destroy_all
+      Error.where("created_at < ?", Time.now - 14.days).destroy_all
+    rescue
+      PermanentDeleteJob.perform_in(2.minutes)
+    end
   end
 end
