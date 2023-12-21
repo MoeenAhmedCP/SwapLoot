@@ -1,0 +1,95 @@
+<div class="flex">
+  <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">All Item Sold</h2>
+  <i class="fa fa-refresh text-blue dark:text-white" aria-hidden="true" onclick="fetchAllItemData()"></i>
+</div>
+
+<table id="dataTableAllItemsSold" class="relative display shadow-md rounded-lg mt-10" style="width:100%; border: none;">
+  <thead class="bg-blue text-white">
+    <tr>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Item Name</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Bought Price</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Sold Price</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Profit</th>
+      <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Profit (%)</th>
+      <th class="text-sm px-4 py-2 rounded-tr-lg">Date</th>
+    </tr>
+  </thead>
+  <tbody class="dataAllItemsSold">
+    <%# <%= render partial: 'shared/loader_modal' %> 
+    <%= render partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] } %>
+  </tbody>
+</table>
+<%if @sold_items_history.count.positive? %>
+  <%= render partial: 'shared/pagination', locals: { data: @sold_items_history || [], table_page_name: 'sold_item_history_page', remote: true } %>
+<%end%>
+
+<script>
+  function fetchAllItemData(){
+    checkEmptyTable();
+
+    $.ajax({
+      url: '/fetch_sold_items.js',
+      data: {
+        sold_item_history_page: "<%= params[:sold_item_history_page] || 1%>"
+      },
+      type: 'GET',
+      success: function(response){
+        table_rows = $('.dataAllItemsSold').children();
+        if(table_rows.length != 0){
+          hideLoader();
+          enableSearch();
+        }
+        else{
+          showLoader();
+        }
+      },
+      error: function(){}
+    });
+  }
+
+  function checkEmptyTable(){
+    empty_div = $('.dataAllItemsSold').find('.dataTables_empty');
+    if(empty_div.length == 1 && empty_div.text() == 'No data available in table'){
+      disableSearch();
+      empty_div.remove();
+      showLoader();
+    }
+    else{
+      showTableSearchingLoader()
+    }
+  }
+
+  function disableSearch(){
+    $('#dataTableAllItemsSold_filter').find("[type='search']").attr('disabled', true)
+  }
+
+  function enableSearch(){
+    $('#dataTableAllItemsSold_filter').find("[type='search']").attr('disabled', false)
+  }
+
+  function showLoader(){
+    $('.item-history-loader').removeClass('hidden');
+  }
+
+  function hideLoader(){
+    $('.item-history-loader').addClass('hidden');
+  }
+
+  function showTableSearchingLoader(){
+    disableSearch();
+    var loadingModal = $('<div id="loadingModal" class="hidden absolute inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center backdrop-blur-md" style="z-index: 2000000;">' +
+                            '<div class="flex flex-col items-center bg-white p-8 rounded-lg shadow-lg">' +
+                              '<div class="loader"></div>' +
+                              '<p class="text-center dark:text-white text-gray text-lg font-semibold">This might take some minutes...</p>' +
+                            '</div>' +
+                          '</div>');
+      
+    $('#dataTableAllItemsSold').append(loadingModal);
+    $('#loadingModal').removeClass('hidden');
+  }
+
+  function hideTableSearchingLoader(){
+    $('#loadingModal').addClass('hidden');
+  }
+</script>

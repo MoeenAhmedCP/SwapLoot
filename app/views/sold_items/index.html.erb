@@ -48,6 +48,12 @@
 </div>
 </div>
 
+<br>
+<br>
+<%= render partial: 'all_items_table' %>
+<div class= 'item-history-loader mt-3 hidden'>
+  <%= render partial: 'shared/loader'%>
+</div>
 <script>
     $(document).ready(function() {
         const searchInputs = document.querySelectorAll('input[type="search"]');
@@ -70,6 +76,13 @@ function submitForm() {
             paging: false,
             info: false,
             language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search...",
+      }});
+  $('#dataTableAllItemsSold').DataTable({ 
+        paging: false,
+        info: false,
+        language: {
         search: "_INPUT_",
         searchPlaceholder: "Search...",
       }});
