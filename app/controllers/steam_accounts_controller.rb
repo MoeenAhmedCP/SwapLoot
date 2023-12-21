@@ -20,7 +20,8 @@ class SteamAccountsController < ApplicationController
       end
       redirect_to steam_accounts_path
     else
-      render :new
+      flash[:alert] = "#{@steam_account.errors.full_messages[0]}"
+      redirect_to new_steam_account_path
     end
   end
 
@@ -94,7 +95,7 @@ class SteamAccountsController < ApplicationController
 
   def response_message
     message = []
-    message << "Steam Account is created but "
+    message << "Steam Account is created but " if @steam_account.csgoempire_api_key.nil? || @steam_account.waxpeer_api_key.nil? || @steam_account.market_csgo_api_key.nil?
     message << 'CSGOEmpire API Key is invalid.' if @steam_account.csgoempire_api_key.nil?
     message << 'WAXPEER API Key is invalid.' if @steam_account.waxpeer_api_key.nil?
     message << 'Market.CSGO API Key is invalid.' if @steam_account.market_csgo_api_key.nil?
