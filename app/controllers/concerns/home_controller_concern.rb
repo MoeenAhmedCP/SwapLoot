@@ -41,6 +41,7 @@ module HomeControllerConcern
         }
         @balance_data << data_hash
       end
+      flash[:notice] = "Something went wrong" unless @balance_data.present?
       @balance_data
     end
   end
@@ -57,6 +58,7 @@ module HomeControllerConcern
         @active_trades = @deposits + @withdrawls
       end
     else
+      flash[:notice] = "Something went wrong" unless @active_trades.present?
       @active_trades = []
     end
   end
@@ -73,6 +75,7 @@ module HomeControllerConcern
         item.merge('site' => 'Waxpeer')
       end
     else
+      flash[:notice] = "Something went wrong" unless @item_listed_for_sale.present?
       []
     end
   end
