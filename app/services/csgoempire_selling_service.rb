@@ -13,6 +13,8 @@ class CsgoempireSellingService < ApplicationService
       'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
       'Content-Type' => 'application/json'
     }
+  end
+
   def add_proxy
     reset_proxy
     proxy = @steam_account.proxy
