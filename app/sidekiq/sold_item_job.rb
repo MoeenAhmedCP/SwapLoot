@@ -6,7 +6,7 @@ class SoldItemJob
     p "<=========== Sold Item Job started, page number: #{page_number} ===================>"
     begin
       response_data = CsgoempireService.get("#{CSGO_EMPIRE_BASE_URL}/user/transactions?page=#{page_number}", headers: headers)
-    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+    rescue
       return []
     end
     if response_data['data'].present?
