@@ -2,7 +2,7 @@ class HomeController < ApplicationController
   include HomeControllerConcern
 
   def index
-    @steam_accounts = SteamAccount.where(user_id: current_user.id)
+    @steam_accounts = current_user.steam_accounts
   end
 
   def fetch_all_steam_accounts
