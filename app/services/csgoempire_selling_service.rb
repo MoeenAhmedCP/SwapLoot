@@ -12,13 +12,14 @@ class CsgoempireSellingService < ApplicationService
       'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
       'Content-Type' => 'application/json'
     }
+  end
+
   def add_proxy
     reset_proxy
     proxy = @steam_account.proxy
     self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
   end
-  
-  
+
   def fetch_inventory
     response = SellableInventory.inventory(@steam_account).where(listed_for_sale: false)
     online_trades_response = HTTParty.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers)
