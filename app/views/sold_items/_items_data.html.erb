@@ -1,0 +1,13 @@
+<%if sold_items_history.count.positive? %>
+  <% sold_items_history.each do |sold_item| %>
+    <tr>
+      <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item.item_id %></td>
+      <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item.item_name %></td>
+      <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item.bought_price %></td>
+      <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item.sold_price  %></td>
+      <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item.sold_price - sold_item.bought_price %></td>
+      <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= (((sold_item.sold_price - sold_item.bought_price)/sold_item.bought_price) * 100).round(2) %></td>
+      <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= sold_item.date %></td>
+    </tr>
+  <% end %>
+<%end%>

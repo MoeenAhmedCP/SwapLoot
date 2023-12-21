@@ -1,0 +1,24 @@
+<div class="apple_pagination flex justify-center justify-between <%= table_page_name %>">
+  <div class="page_info">
+    <%= page_entries_info data %>
+  </div>
+  <div>
+    <%= will_paginate data,
+        previous_label: 'Previous', 
+        next_label: 'Next',
+        inner_window: 3,
+        outer_window: 1,
+        renderer: WillPaginate::ActionView::LinkRenderer,
+        class: 'flex items-center space-x-2',
+        param_name: table_page_name
+    %>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function(){
+    <% if defined?(remote) %>
+      $(".<%= table_page_name %> a").attr('data-remote', "<%= remote ? 'true' : 'false' %>")
+    <% end %>
+  })
+</script>

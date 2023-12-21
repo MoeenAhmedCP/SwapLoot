@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_08_140019) do
+ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -129,10 +129,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_08_140019) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "sellable_inventories", force: :cascade do |t|
+    t.string "item_id"
+    t.string "market_name"
+    t.string "market_price"
+    t.string "steam_id"
+    t.boolean "listed_for_sale"
+    t.boolean "tradable"
+    t.datetime "sold_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "selling_filters", force: :cascade do |t|
     t.integer "min_profit_percentage", default: 2
     t.integer "undercutting_price_percentage", default: 10
-    t.integer "undercutting_interval", default: 12
+    t.integer "undercutting_interval", default: 3
     t.bigint "steam_account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

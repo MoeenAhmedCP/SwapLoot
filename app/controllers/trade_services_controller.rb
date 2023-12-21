@@ -18,6 +18,11 @@ class TradeServicesController < ApplicationController
     params = { id: steam_account.id, steamId: steam_id, toggle: buying_status }
 
     response = HTTParty.post(url, query: params)
+    if status == "true"
+      flash[:notice] = "Buying service started"
+    else
+      flash[:notice] = "Buying service stopped"
+    end
   end
 
   private
@@ -27,10 +32,19 @@ class TradeServicesController < ApplicationController
       selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
       price_cutting_job_id = PriceCuttingJob.perform_async(steam_account.id)
       @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id, price_cutting_status: true)
+      flash[:notice] = "Selling service started"
     else
+      remove_items_listed_for_sale_response = RemoveItemListedForSaleJob.perform_async(steam_account.id)
+      if remove_items_listed_for_sale_response == SUCCESS
+        flash[:notice] = "Selling Terminated, Items have been removed from Listing.."
+      else
+        flash[:alert] = "Failed to remove items from Listing. Retrying in 2 minutes..."
+        RemoveItemListedForSaleJob.perform_in(2.minutes, steam_account.id) # Schedule a retry after 2 minutes
+      end
       selling_job_id = @trade_service.selling_job_id
       delete_enqueued_job(selling_job_id)
       @trade_service.update(selling_job_id: nil)
+      flash[:notice] = "Selling service stopped"
     end
   end
   

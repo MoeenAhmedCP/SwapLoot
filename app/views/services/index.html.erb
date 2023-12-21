@@ -77,7 +77,9 @@
           },
           steam_account_id: steam_account_id
         },
-        success: function(){},
+        success: function(){
+          window.location.reload();
+        },
         error: function(){}
       });
     }
@@ -99,7 +101,9 @@
           },
           steam_account_id: steam_account_id
         },
-        success: function(){},
+        success: function(){
+          window.location.reload();
+        },
         error: function(){}
       });
     }
@@ -120,7 +124,9 @@
             buying_status: $(`.toggle-buying${buying_filter_id}`)[0].checked
           }
         },
-        success: function(){},
+        success: function(){
+          window.location.reload();
+        },
         error: function(){}
       });
     }
