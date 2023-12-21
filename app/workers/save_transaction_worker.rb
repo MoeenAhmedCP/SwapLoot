@@ -1,6 +1,7 @@
 class SaveTransactionWorker
   include Sidekiq::Worker
   include Sidekiq::Status::Worker
+  queue_as :save_transaction
 
   def expiration
     @expiration ||= 60 * 60 * 24 * 30
