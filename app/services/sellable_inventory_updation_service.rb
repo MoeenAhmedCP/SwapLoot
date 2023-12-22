@@ -17,7 +17,7 @@ class SellableInventoryUpdationService < ApplicationService
 			end
 		rescue
 			puts "Something went wrong with Fetch inventory API.. retrying in 2 minutes"
-			SellableInventoryUpdationJob.perform_in(2.minutes, @steam_account.id)
+			SellableInventoryUpdationJob.perform_in(2.minutes)
 		end
 	end
 end

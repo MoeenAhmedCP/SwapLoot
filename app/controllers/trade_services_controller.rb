@@ -28,7 +28,6 @@ class TradeServicesController < ApplicationController
 
   def trigger_selling_service(steam_account)
     if trade_service_params[:selling_status] == SUCCESS
-      debugger
       selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
       price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
       @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id, price_cutting_status: true)
