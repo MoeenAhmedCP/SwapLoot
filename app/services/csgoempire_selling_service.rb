@@ -86,11 +86,12 @@ class CsgoempireSellingService < ApplicationService
       end
     end
   end
-  
+
+  # function to cancel deposit of the items listed for sale
   def cancel_item_deposit(item)
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
     if response['success'] == true
-      sellable_item = SellableInventory.find_by(item_id: item["id"])
+      sellable_item = SellableInventory.find_by(item_id: item[:item_id])
       sellable_item.update(listed_for_sale: false) if sellable_item.present?
     else
       report_api_error(response, [self&.class&.name, __method__.to_s])
@@ -234,18 +235,6 @@ class CsgoempireSellingService < ApplicationService
     response = PriceEmpire.all
   end
 
-  # Function to cancel deposit (Remove Item That are already listed for sale)
-  def cancel_item_deposit(item)
-    headers = {
-      'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}",
-    }
-    response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
-    if response['success'] == false
-      report_api_error(response, [self&.class&.name, __method__.to_s])
-    end
-    puts response.code == SUCCESS_CODE ? "#{item[:market_name]}'s deposit has been cancelled." : "Something went wrong with #{item[:item_id]} - #{item[:market_name]} Unable to Cancel Deposit."
-  end
-
   # Remove Items listed for sale when the selling is turned off
   def remove_listed_items_for_sale
     active_trades = fetch_active_trades
@@ -259,7 +248,7 @@ class CsgoempireSellingService < ApplicationService
             market_name: deposit["item"]["market_name"],
             total_value: deposit["total_value"],
             market_value: deposit["item"]["market_value"],
-            updated_at: deposit["item"]["updated_at"],
+            updated_at: deposit["created_at"],
             auction_number_of_bids: deposit["metadata"]["auction_number_of_bids"],
             suggested_price: deposit["suggested_price"]
           }
