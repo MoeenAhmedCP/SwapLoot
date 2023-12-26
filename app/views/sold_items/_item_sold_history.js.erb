@@ -1,5 +1,5 @@
-$('.dataAllItemsSold').html("<%= escape_javascript(render(partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] })) %>");
-$('#dataTableAllItemsSold_wrapper').parent().closest('div').children('.apple_pagination').remove()
+$('.dataAllItemsSold').html("<%= escape_javascript(render(partial: 'items_history_data', locals: { sold_items_history: @sold_items_history || [] })) %>");
+$('#dataTableAllItemsSold_wrapper').parent().closest('div').find('.apple_pagination').remove()
 <% if @sold_items_history && @sold_items_history.count.positive? %>
   $("<%= escape_javascript(render(partial: 'shared/pagination', locals: { data: @sold_items_history || [], table_page_name: 'sold_item_history_page', remote: true })) %>").insertAfter($('#dataTableAllItemsSold_wrapper'));
 <% end %>

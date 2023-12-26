@@ -2,6 +2,16 @@
   <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">All Item Sold</h2>
   <i class="fa fa-refresh text-blue dark:text-white" aria-hidden="true" onclick="fetchAllItemData()"></i>
 </div>
+<%= search_form_for @q_sold_items_history, as: :sold_item_history, url: sold_items_path(format: :js), remote: true do |f| %>
+  <div class="dataTables_wrapper no-footer">
+    <div id = "dataTableAllItemsSold_filter" class="dataTables_filter">
+      <label>
+        <%= f.search_field :item_id_or_item_name_cont, id: "items_sold_search", placeholder: "Search...", onkeyup: 'searchItemSoldHistory()' %>
+      </label>
+    </div>
+  </div>
+  <%= f.submit "Submit", data: { disable_with: false }, class: "hidden"%>
+<% end %>
 
 <table id="dataTableAllItemsSold" class="relative display shadow-md rounded-lg mt-10" style="width:100%; border: none;">
   <thead class="bg-blue text-white">
@@ -17,7 +27,7 @@
   </thead>
   <tbody class="dataAllItemsSold">
     <%# <%= render partial: 'shared/loader_modal' %> 
-    <%= render partial: 'items_data', locals: { sold_items_history: @sold_items_history || [] } %>
+    <%= render partial: 'items_history_data', locals: { sold_items_history: @sold_items_history || [] } %>
   </tbody>
 </table>
 <%if @sold_items_history.count.positive? %>
@@ -91,5 +101,9 @@
 
   function hideTableSearchingLoader(){
     $('#loadingModal').addClass('hidden');
+  }
+
+  function searchItemSoldHistory(){
+    $('.sold_item_history_search input[type=submit]').click();
   }
 </script>

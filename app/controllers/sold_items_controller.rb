@@ -3,8 +3,12 @@ class SoldItemsController < ApplicationController
   # before_action :fetch_sold_items , only: [:index]
   def index
     steam_account = !@active_steam_account.respond_to?(:each) ? current_user.active_steam_account : current_user.steam_accounts
-    @items_sold = SoldItem.where(steam_account: steam_account).paginate(page: params[:page], per_page: 15)
-    @sold_items_history = SoldItemHistory.where(steam_account: steam_account).paginate(page: params[:sold_item_history_page], per_page: 15)
+
+    @q_sold_items = SoldItem.where(steam_account: steam_account).ransack(params[:sold_items])
+    @items_sold = @q_sold_items.result.paginate(page: params[:page], per_page: 15)
+
+    @q_sold_items_history = SoldItemHistory.where(steam_account: steam_account).ransack(params[:sold_item_history])
+    @sold_items_history = @q_sold_items_history.result.paginate(page: params[:sold_item_history_page], per_page: 15)
     respond_to do |format|
       format.js
       format.html
