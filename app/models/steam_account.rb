@@ -7,9 +7,7 @@ class SteamAccount < ApplicationRecord
   has_one :buying_filter, dependent: :destroy
   has_many :sold_items, dependent: :destroy
   has_many :sold_item_histories, dependent: :destroy
-  validates :steam_id, uniqueness: true
-  validates :unique_name, uniqueness: true
-  validates :csgoempire_api_key, uniqueness: true
+  validates :steam_id, :unique_name, :steam_web_api_key, uniqueness: true
 
   before_save :check_api_keys
 
