@@ -1,5 +1,4 @@
 class InventoriesController < ApplicationController
-  # before_action :fetch_inventory, only: %i[index]
 
   def index
     if params["refresh"].present?
