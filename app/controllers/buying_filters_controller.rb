@@ -12,14 +12,17 @@ class BuyingFiltersController < ApplicationController
       @buying_filter.steam_account.trade_service.update(buying_status: false)
       base_url = ENV['NODE_TOGGLE_SERVICE_URL']
       steam_account = @buying_filter.steam_account
-      buying_status = status
       url = "#{base_url}/toggleBuying"
       params = { id: steam_account.id, steamId: steam_account.steam_id, toggle: false }
-      response = HTTParty.post(url, query: params)
+      HTTParty.post(url, query: params)
     end
     respond_to do |format|
+      if message.include?("success")
+        flash[:notice] = "Buying filter updated successfully."
+      else
+        flash[:alert] = "Something went wrong"
+      end
       format.js { render json: { message: message, buying_id: @buying_filter.id }.to_json }
     end
   end
 end
-  
