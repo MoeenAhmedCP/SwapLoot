@@ -138,9 +138,11 @@ class CsgoempireSellingService < ApplicationService
 
   # function to check if the items are ready to price cutting, (e.g. Intervel is completed)
   def item_ready_to_price_cutting?(updated_at, no_of_minutes)
-    updated_time = updated_at.to_datetime
-    estimated_time = Time.current + no_of_minutes.minutes
-    updated_time <= estimated_time
+    estimated_time = updated_at.to_datetime + no_of_minutes.minutes
+    estimated_time < Time.current
+    # updated_time = updated_at.to_datetime
+    # estimated_time = Time.current + no_of_minutes.minutes
+    # updated_time <= estimated_time
   end
 
   # function to list items for sale at the first item on price empire suggested prices (Waxpeer/Buff)
