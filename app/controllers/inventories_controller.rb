@@ -1,7 +1,10 @@
 class InventoriesController < ApplicationController
-  before_action :fetch_inventory, only: %i[index]
+  # before_action :fetch_inventory, only: %i[index]
 
   def index
+    if params["refresh"].present?
+      fetch_inventory
+    end
     if params["tradable"] == "true"
       @inventories = Inventory.tradable_steam_inventories(@active_steam_account).paginate(page: params[:page], per_page: 15)
     elsif params["tradable"] == "false"
