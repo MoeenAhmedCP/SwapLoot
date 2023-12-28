@@ -12,7 +12,7 @@ class SellableInventory < ApplicationRecord
         selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
         trade_service.update(selling_job_id: selling_job_id)
       end
-      if trade_service.price_cutting_status == true && trade_service.price_cutting_job_id.present?
+      if trade_service.price_cutting_job_id.present?
         price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
         trade_service.update(price_cutting_job_id: price_cutting_job_id)
       end
