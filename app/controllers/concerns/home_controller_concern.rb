@@ -41,7 +41,7 @@ module HomeControllerConcern
         }
         @balance_data << data_hash
       end
-      flash[:notice] = "Something went wrong" unless @balance_data.present?
+      flash[:notice] = "Something went wrong" if @balance_data.empty? && current_user.steam_accounts.present?
       @balance_data
     end
   end
@@ -58,13 +58,14 @@ module HomeControllerConcern
         @active_trades = @deposits + @withdrawls
       end
     else
-      flash[:notice] = "Something went wrong" unless @active_trades.present?
+      flash[:notice] = "Something went wrong" unless current_user.steam_accounts.empty?
       @active_trades = []
     end
   end
 
   def fetch_item_listed_for_sale
     @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
+    flash[:notice] = "Something went wrong" if @item_listed_for_sale_hash.empty? && current_user.steam_accounts.present?
   end
 
   def fetch_waxpeer_item_listed_for_sale
@@ -75,7 +76,6 @@ module HomeControllerConcern
         item.merge('site' => 'Waxpeer')
       end
     else
-      flash[:notice] = "Something went wrong" unless @item_listed_for_sale.present?
       []
     end
   end
