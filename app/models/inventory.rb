@@ -26,4 +26,12 @@ class Inventory < ApplicationRecord
     csgo_service = CsgoempireService.new(user)
     csgo_service.fetch_my_inventory
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["item_id", "market_name"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
 end
