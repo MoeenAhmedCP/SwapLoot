@@ -26,21 +26,20 @@
   }
 
   $('.selling_filter_form').on('ajax:success', function(event){
-    // console.log('Ajax request successful:', data, status, xhr);
     var response = JSON.parse(event.detail[0]);
     message = response.message;
 
     if(message == 'Selling filter updated successfully.'){
-      $('#toast-success').removeClass('hidden').find('.success_message').text(message);
       if($(`.toggle-${response.selling_id}`)[0].checked){
         $(`.toggle-${response.selling_id}`).click();
       }
+      window.location.reload();
     }
     else{
-      $('#toast-danger').removeClass('hidden').find('.error_message').text(message);
+      window.location.reload();
     }
   }).on('ajax:success', function(event){
-    $('#toast-danger').removeClass('hidden');
+    window.location.reload();
   })
 
 </script>
