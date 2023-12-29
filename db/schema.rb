@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
+ActiveRecord::Schema[7.0].define(version: 2023_12_27_162503) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -73,6 +73,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
     t.string "item_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["deposit_id"], name: "index_bid_items_on_deposit_id"
+    t.index ["item_name"], name: "index_bid_items_on_item_name"
   end
 
   create_table "buying_filters", force: :cascade do |t|
@@ -107,6 +109,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "sold_at"
+    t.index ["item_id"], name: "index_inventories_on_item_id"
+    t.index ["market_name"], name: "index_inventories_on_market_name"
+    t.index ["market_price"], name: "index_inventories_on_market_price"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -127,6 +132,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
     t.json "waxpeer"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["liquidity"], name: "index_price_empires_on_liquidity"
   end
 
   create_table "sellable_inventories", force: :cascade do |t|
@@ -135,8 +141,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
     t.string "market_price"
     t.string "steam_id"
     t.boolean "listed_for_sale"
-    t.boolean "tradable"
-    t.datetime "sold_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -151,6 +155,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
     t.index ["steam_account_id"], name: "index_selling_filters_on_steam_account_id"
   end
 
+  create_table "sold_item_histories", force: :cascade do |t|
+    t.string "item_id"
+    t.string "item_name"
+    t.date "date"
+    t.decimal "bought_price"
+    t.decimal "sold_price"
+    t.bigint "steam_account_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["steam_account_id"], name: "index_sold_item_histories_on_steam_account_id"
+  end
+
   create_table "sold_items", force: :cascade do |t|
     t.string "item_id"
     t.string "item_name"
@@ -160,6 +176,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
     t.bigint "steam_account_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_sold_items_on_item_id"
+    t.index ["item_name"], name: "index_sold_items_on_item_name"
     t.index ["steam_account_id"], name: "index_sold_items_on_steam_account_id"
   end
 
@@ -174,11 +192,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
-    t.string "price_empire_api_key"
     t.string "discord_channel_id"
     t.string "discord_bot_token"
     t.string "discord_app_id"
+    t.string "sold_item_job_id"
+    t.index ["csgoempire_api_key"], name: "index_steam_accounts_on_csgoempire_api_key"
+    t.index ["market_csgo_api_key"], name: "index_steam_accounts_on_market_csgo_api_key"
+    t.index ["steam_id"], name: "index_steam_accounts_on_steam_id"
     t.index ["user_id"], name: "index_steam_accounts_on_user_id"
+    t.index ["waxpeer_api_key"], name: "index_steam_accounts_on_waxpeer_api_key"
   end
 
   create_table "trade_services", force: :cascade do |t|
@@ -190,7 +212,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "price_cutting_job_id"
-    t.boolean "price_cutting_status", default: false
     t.index ["steam_account_id"], name: "index_trade_services_on_steam_account_id"
   end
 
@@ -215,6 +236,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_15_122743) do
   add_foreign_key "buying_filters", "steam_accounts"
   add_foreign_key "errors", "users"
   add_foreign_key "selling_filters", "steam_accounts"
+  add_foreign_key "sold_item_histories", "steam_accounts"
   add_foreign_key "sold_items", "steam_accounts"
   add_foreign_key "steam_accounts", "users"
   add_foreign_key "trade_services", "steam_accounts"

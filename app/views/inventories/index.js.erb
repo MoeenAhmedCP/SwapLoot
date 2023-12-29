@@ -1,1 +1,3 @@
 $('#dataTable').html('<%= j(render partial: "inventory" , locals:{ inventories: @inventories }) %>');
+$("#refreshTable")[0].classList.remove('fa-spin')
+window.location.reload();

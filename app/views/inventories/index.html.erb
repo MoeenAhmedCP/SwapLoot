@@ -80,9 +80,11 @@
         }
 
       $('#refreshTable').click(function() {
+        this.classList.add("fa-spin")
             $.ajax({
                 url: '<%= inventories_path(format: :js) %>',
                 method: 'GET',
+                data: { refresh: true },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.error('Error refreshing table', textStatus, errorThrown);
                 }
