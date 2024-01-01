@@ -55,8 +55,9 @@
     const submitButton = document.getElementById("submit-button");
 
     forgotPasswordLink.addEventListener("click", function() {
-      emailField.classList.toggle("hidden");
-      submitButton.classList.toggle("hidden");
+      event.preventDefault();
+      emailField.classList.remove("hidden");
+      submitButton.classList.remove("hidden");
     });
   });
 </script>
