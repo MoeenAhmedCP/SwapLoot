@@ -2,6 +2,14 @@ class SellableInventory < ApplicationRecord
   after_create :trigger_selling_job
   scope :inventory, ->(steam_account) { where(steam_id: steam_account.steam_id) }
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["item_id", "market_name"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+
   private
 
   def trigger_selling_job

@@ -1,1 +1,9 @@
-<%= render(partial: 'item_sold_history') %>
+<%if params['sold_item_history_page'].present? || params['sold_item_history'].present? %>
+  <%= render(partial: 'item_sold_history') %>
+<%elsif params['page'].present? || params['sold_items'].present? %>
+  $('.dataItemsSold').html("<%= escape_javascript(render(partial: 'sold_items_data', locals: { items_sold: @items_sold || [] })) %>");
+  $('#dataTableItemsSold_wrapper').parent().closest('div').find('.apple_pagination').remove()
+  <% if @items_sold && @items_sold.count.positive? %>
+    $("<%= escape_javascript(render(partial: 'shared/pagination', locals: { data: @items_sold || [], table_page_name: 'page', remote: true })) %>").insertAfter($('#dataTableItemsSold_wrapper'));
+  <% end %>
+<%end%>

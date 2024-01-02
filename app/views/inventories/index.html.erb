@@ -9,15 +9,43 @@
         <h3 class="mt-[8px] ml-[75px] text-black dark:text-white">Total Worth: <%= "$#{@total_market_price}" %></h3>
       </div>
     </div>
-      <div class="absolute z-[1]">
-      <%= form_tag(inventories_path, method: :get, id: 'inventoryForm') do %>
-        <label>
-          <%= select_tag 'tradable', options_for_select([['All', nil], ['Tradable', true], ['Non-Tradable', false]], params[:tradable]), class: 'w-[100%] rounded-lg p-1', onchange: 'submitinvForm()' %>
-        </label>
-      <% end %>
+      <div class="flex justify-content-between">
+        <div class="">
+          <%= form_tag(inventories_path, method: :get, id: 'inventoryForm') do %>
+            <label>
+              <%= select_tag 'tradable', options_for_select([['All', nil], ['Tradable', true], ['Non-Tradable', false]], params[:tradable]), class: 'w-[100%] rounded-lg p-1', onchange: 'submitinvForm()' %>
+            </label>
+          <% end %>
+        </div>
+        <div style="margin-left: auto;">
+          <%= search_form_for @q_inventories, as: :inventory_search, url: inventories_path(format: :js), remote: true do |f| %>
+            <div class="dataTables_wrapper no-footer">
+              <div id="dataTableInventory_filter" class="dataTables_filter">
+                <label>
+                  <%= f.search_field :item_id_or_market_name_cont, id: "inventory_search", placeholder: "Search...", onkeyup: 'searchInventory()' %>
+                </label>
+              </div>
+            </div>
+            <%= f.submit "Submit", data: { disable_with: false }, class: "hidden"%>
+          <% end %>
+        </div>
       </div>
+
+
     
-         <%= render partial: 'inventory' , locals:{ inventories: @inventories }%>
+      <table id="inventoryTable" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+        <thead class="bg-blue text-white">
+            <tr>
+                <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
+                <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Market Name</th>
+                <th class="text-sm px-4 py-2 rounded-tr-lg">Market Price</th>
+            </tr>
+        </thead>
+        <tbody class="inventoryTableBody">
+            <%= render partial: 'inventory' , locals:{ inventories: @inventories }%> 
+        </tbody>   
+      </table>
+         
          <div class="apple_pagination flex justify-center justify-between">
           <div class="page_info">
             <%= page_entries_info @inventories %>
@@ -36,10 +64,35 @@
   </div>
 
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div style= "display: flex; ">
-      <h2 class="text-2xl text-blue dark:text-white font-[500] absolute">Sellable Inventory</h2>
+    <div class= "flex justify-content-between">
+      <h2 class="text-2xl text-blue dark:text-white font-[500]">Sellable Inventory</h2>
+      <div style="margin-left: auto;">
+          <%= search_form_for @q_sellable_inventory, as: :sellable_inventory_search, url: inventories_path(format: :js), remote: true do |f| %>
+            <div class="dataTables_wrapper no-footer">
+              <div id="dataTableInventory_filter" class="dataTables_filter">
+                <label>
+                  <%= f.search_field :item_id_or_market_name_cont, id: "sellable_inventory_search", placeholder: "Search...", onkeyup: 'searchSellableInventory()' %>
+                </label>
+              </div>
+            </div>
+            <%= f.submit "Submit", data: { disable_with: false }, class: "hidden"%>
+          <% end %>
+        </div>
     </div>
-      <%= render partial: 'sellable_inventory' , locals:{ sellable_inventory: @sellable_inventory }%>
+    <table id="SellableInventoryTable" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+
+        <thead class="bg-blue text-white">
+        <tr>
+            <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
+            <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Market Name</th>
+            <th class="text-sm px-4 py-2">Market Price</th>
+            <th class="text-sm px-4 py-2 rounded-tr-lg">Listed for sale</th>
+        </tr>
+        </thead>
+        <tbody class="sellableinventoryTableBody">
+          <%= render partial: 'sellable_inventory' , locals:{ sellable_inventory: @sellable_inventory }%>
+        </tbody>
+    </table>
       <div class="apple_pagination flex justify-center justify-between">
           <div class="page_info">
             <%= page_entries_info @sellable_inventory %>
@@ -51,7 +104,8 @@
                 inner_window: 3,
                 outer_window: 1,
                 renderer: WillPaginate::ActionView::LinkRenderer,
-                class: 'flex items-center space-x-2'
+                class: 'flex items-center space-x-2',
+                param_name: :sellable_inventory_page
             %>
           </div>
           </div>
@@ -98,4 +152,26 @@
     function submitForm() {
             document.getElementById("postForm").submit();
         }
+
+    function searchInventory(){
+      $('.inventory_search input[type=submit]').click();
+    }
+
+    function searchSellableInventory(){
+      $('.sellable_inventory_search input[type=submit]').click();
+    }
+
+    var dataTable = $('#inventoryTable').DataTable({
+            "order": [[2, 'desc']],
+            paging: false,
+            info: false,
+            searching: false,
+        });
+
+        var dataTable = $('#SellableInventoryTable').DataTable({
+            "order": [[2, 'desc']],
+            paging: false,
+            info: false,
+            searching: false
+        });
 </script>

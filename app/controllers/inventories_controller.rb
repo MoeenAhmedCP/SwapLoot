@@ -6,14 +6,21 @@ class InventoriesController < ApplicationController
     if params["refresh"].present?
       fetch_inventory
     end
+
     if params["tradable"] == "true"
-      @inventories = Inventory.tradable_steam_inventories(@active_steam_account).paginate(page: params[:page], per_page: per_page)
+      inventories = Inventory.tradable_steam_inventories(@active_steam_account)
     elsif params["tradable"] == "false"
-      @inventories = Inventory.non_tradable_steam_inventories(@active_steam_account).paginate(page: params[:page], per_page: per_page)
+      inventories = Inventory.non_tradable_steam_inventories(@active_steam_account)
     else
-      @inventories = Inventory.where(steam_id: steam_ids).paginate(page: params[:page], per_page: per_page)
+      inventories = Inventory.where(steam_id: steam_ids)
     end
-    @sellable_inventory = SellableInventory.where(steam_id: steam_ids).paginate(page: params[:page], per_page: per_page)
+
+    @q_inventories = inventories.ransack(params[:inventory_search])
+    @inventories = @q_inventories.result.paginate(page: params[:page], per_page: per_page)
+
+    @q_sellable_inventory = SellableInventory.where(steam_id: steam_ids).ransack(params[:sellable_inventory_search])
+    @sellable_inventory = @q_sellable_inventory.result.paginate(page: params[:sellable_inventory_page], per_page: per_page)
+
     @total_market_price = @inventories.sum(:market_price).round(3)
 
     missing_item_service
