@@ -317,6 +317,18 @@
     padding: 5px; 
   }
 
+  #dataTableInventory_filter input::placeholder{
+    font-size:14px;
+    color: rgb(156 163 175); 
+  }
+
+  #dataTableInventory_filter input{
+    width:300px !important;
+    border: 1px solid rgb(156 163 175); 
+    border-radius: 4px; 
+    padding: 5px; 
+  }
+
   #dataTableAllItemsSold_filter input::placeholder {
     font-size:14px;
     color: rgb(156 163 175); 
@@ -377,6 +389,19 @@
   }
 
  .dark #dataTableItemsSold_filter input {
+    /* Change search input border color */
+    border: 1px solid #ffff; /* Your desired search input border color */
+    border-radius: 4px; /* Adjust border radius as needed */
+    padding: 5px; /* Adjust padding as needed */
+    color:#ffff
+  }
+
+  .dark #dataTableInventory_filter input::placeholder {
+    /* Change placeholder color */
+    color: #ffff; /* Your desired placeholder color */
+  }
+
+ .dark #dataTableInventory_filter input {
     /* Change search input border color */
     border: 1px solid #ffff; /* Your desired search input border color */
     border-radius: 4px; /* Adjust border radius as needed */
