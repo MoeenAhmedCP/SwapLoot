@@ -25,7 +25,7 @@ Rails.application.configure do
 
     config.cache_store = :memory_store
     config.public_file_server.headers = {
-      "Cache-Control" => "public, max-age=#{2.days.to_i}"
+      "Cache-Control" => "public, max-age=#{2.days.to_i}",
     }
   else
     config.action_controller.perform_caching = false
@@ -40,6 +40,8 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = false
 
   config.action_mailer.perform_caching = false
+
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -59,25 +61,20 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  config.action_mailer.default :charset => "utf-8"
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    :enable_starttls_auto => true,
+    :address => "smtp.gmail.com",
+    :port => "587",
+    :domain => "gmail.com",
+    :authentication => :login,
+    :from => "swaploot78@gmail.com",
+    :user_name => "swaploot78@gmail.com",
+    :password => "cieduxkqbshnzprz"
+  }
 
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-
-  Rails.application.configure do
-  
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = {
-      address: 'info@swaploot.com',       # Replace with your SMTP server address
-      port: 587,                              # Replace with your SMTP server port
-      domain: 'swap-loot.com',              # Replace with your domain
-      user_name: 'swap-loot',             # Replace with your SMTP username
-      password: 'swapt-loot123',              # Replace with your SMTP password
-      authentication: 'plain',
-      enable_starttls_auto: true
-    }
-  
-    # Other configuration settings...
-  end
-
+  config.action_mailer.perform_deliveries = true
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
@@ -86,5 +83,8 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   # Uncomment if you wish to allow Action Cable access from any origin.
-  config.action_cable.disable_request_forgery_protection = true
+  # config.active_record.async_query_executor = :global_thread_pool
+
+  # Add Rack::LiveReload to the bottom of the middleware stack with the default options:
+  # config.middleware.insert_after ActionDispatch::Static, Rack::LiveReload
 end

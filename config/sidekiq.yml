@@ -2,3 +2,5 @@
 :queues:
   - default
   - csgo_buying_item
+  - save_transaction
+  - sold_item
