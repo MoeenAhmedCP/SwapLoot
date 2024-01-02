@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   resources :users
   resources :errors, only: %i[index show]
   resources :sold_items, only: [:index]
+  get '/fetch_sold_items', to: "sold_items#fetch_sold_items", as: 'fetch-sold-items'
   get '/show_api_keys/:id', to: "steam_accounts#show_api_keys", as: "show_api_key"
   get '/edit_api_keys/:id', to: "steam_accounts#edit_api_keys", as: "edit_api_key"
   get '/services', to: "services#index"

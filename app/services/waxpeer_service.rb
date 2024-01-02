@@ -40,8 +40,8 @@ class WaxpeerService < ApplicationService
   end
 
   def create_item(id, market_name, b_price, s_price, date)
-    item = SoldItem.find_by(item_id: id)
-    SoldItem.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: @active_steam_account) unless item.present?
+    item = SoldItemHistory.find_by(item_id: id)
+    SoldItemHistory.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: @active_steam_account) unless item.present?
   end
 
   def site_params(steam_account)

@@ -17,7 +17,6 @@ class SellableInventoryUpdationJob
 								sellable_inventory.market_price = item["market_value"].to_f / 100 * 0.614
 								sellable_inventory.steam_id = steam_account.steam_id
 								sellable_inventory.listed_for_sale = false
-								sellable_inventory.tradable = item["tradeable"]
 							end
 						rescue => e
 							puts "Sellable Inventory can not be created due to: #{e}"

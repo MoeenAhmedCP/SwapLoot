@@ -84,6 +84,9 @@ GEM
       msgpack (~> 1.2)
     builder (3.2.4)
     chartkick (5.0.4)
+    chronic (0.10.2)
+    chronic_duration (0.10.6)
+      numerizer (~> 0.1.1)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
     crass (1.0.6)
@@ -190,6 +193,7 @@ GEM
     nio4r (2.6.1)
     nokogiri (1.15.5-x86_64-darwin)
       racc (~> 1.4)
+    numerizer (0.1.1)
     opus-ruby (1.0.1)
       ffi
     orm_adapter (0.5.0)
@@ -263,6 +267,9 @@ GEM
       connection_pool (>= 2.2.5, < 3)
       rack (~> 2.0)
       redis (>= 4.5.0, < 5)
+    sidekiq-status (3.0.3)
+      chronic_duration
+      sidekiq (>= 6.0, < 8)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -298,6 +305,8 @@ GEM
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    whenever (1.0.0)
+      chronic (>= 0.6.3)
     will_paginate (3.3.1)
     will_paginate-bootstrap4 (0.2.2)
       will_paginate (~> 3.0, >= 3.0.0)
@@ -326,12 +335,14 @@ DEPENDENCIES
   redis (~> 4.0)
   sassc-rails
   sidekiq (~> 6.0)
+  sidekiq-status
   sprockets-rails
   stimulus-rails
   tailwindcss-rails (~> 2.0)
   turbo-rails
   tzinfo-data
   web-console
+  whenever
   will_paginate (~> 3.3)
   will_paginate-bootstrap4
 

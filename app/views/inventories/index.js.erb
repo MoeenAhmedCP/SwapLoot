@@ -1,1 +1,10 @@
-$('#dataTable').html('<%= j(render partial: "inventory" , locals:{ inventories: @inventories }) %>');
+<% if params[:inventory_search].present? %>
+  $('.inventoryTableBody').html("<%= escape_javascript(render(partial: 'inventory', locals: { inventories: @inventories})) %>");
+  $('#inventoryTable_wrapper').parent().closest('div').find('.apple_pagination').remove()
+  $("<%= escape_javascript(render(partial: 'shared/pagination', locals: { data: @inventories || [], table_page_name: 'page', remote: true })) %>").insertAfter($('#inventoryTable_wrapper'));
+<% end %>
+<% if params[:sellable_inventory_search].present? %>
+  $('.sellableinventoryTableBody').html("<%= escape_javascript(render(partial: 'sellable_inventory', locals: { sellable_inventory: @sellable_inventory })) %>");
+  $('#SellableInventoryTable_wrapper').parent().closest('div').find('.apple_pagination').remove()
+  $("<%= escape_javascript(render(partial: 'shared/pagination', locals: { data: @sellable_inventory || [], table_page_name: 'sellable_inventory_page', remote: true })) %>").insertAfter($('#SellableInventoryTable_wrapper'));
+<% end %>

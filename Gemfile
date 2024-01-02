@@ -58,6 +58,8 @@ gem 'rack-cors'
 # Use Sass to process CSS
 gem "sassc-rails"
 
+gem "whenever"
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
@@ -85,3 +87,5 @@ gem "activeadmin", "~> 3.1"
 gem "chartkick"
 
 gem "discordrb"
+gem 'sidekiq-status'
+gem 'ransack', github: 'activerecord-hackery/ransack'
