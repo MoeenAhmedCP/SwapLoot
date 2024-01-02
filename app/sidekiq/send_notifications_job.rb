@@ -5,6 +5,7 @@ class SendNotificationsJob
     p "<=========== Notification sending ===================>"
     current_user = User.find(user_id)
     @notification = current_user.notifications.create(title: "Item #{notification_type}", body: "#{item["data"]["item"]["market_name"]} #{notification_type} with ID: (#{item["data"]["item_id"]}) at price (#{(item["data"]["total_value"].to_f)/100}) coins", notification_type: notification_type)
+    ActionCable.server.broadcast("flash_messages_channel_#{current_user.id}", { message: "#{item["data"]["item"]["market_name"]} #{notification_type} with ID: (#{item["data"]["item_id"]}) at price (#{(item["data"]["total_value"].to_f)/100}) coins" })
     p "<=========== Discord Notification sending ===================>"
     notify_discord(current_user, @notification.body) if current_user.discord_bot_token.present? && current_user.discord_channel_id.present?
     if notification_type == "Sold"
@@ -28,6 +29,7 @@ class SendNotificationsJob
       channel.send_message(message)
     rescue StandardError => e
       @notification = current_user.notifications.create(title: "Discord Login", body: "User is unauthorized", notification_type: "Login")
+      ActionCable.server.broadcast("flash_messages_channel_#{current_user.id}", { message: "Unauthorized discord user" })
     end
   end
 
