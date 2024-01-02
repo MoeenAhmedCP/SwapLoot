@@ -9,10 +9,14 @@ module ApplicationCable
     private
 
     def find_verified_user
-      if request.params.present? && (verified_user = SteamAccount.find(request.params['steam_id']).user)
-        verified_user
-      else
-        reject_unauthorized_connection
+      if request.params.present?
+        if request.params['steam_id'].present? && verified_user = SteamAccount.find(request.params['steam_id']).user
+          verified_user
+        elsif request.session['warden.user.user.key'].present?
+          User.find(request.session['warden.user.user.key'].first.first)
+        else
+          reject_unauthorized_connection
+        end
       end
     end
   end

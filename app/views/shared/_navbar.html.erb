@@ -1,9 +1,8 @@
 <nav class="flex items-center bg-white dark:bg-grayExtraDark h-20  fixed w-[calc(100%_-_225px)] z-[9]">
   <div class="w-[100%] mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
 <%# <button onclick="toggleDarkMode()">Toggle Dark Mode</button> %>
- 
     <div data-controller="data" class="relative flex h-16 items-center justify-between">
-      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden" data-data-target="user" data-user-id="<%= current_user.id%>" >
         <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-grayDark dark:text-white hover:bg-gray-200 dark:hover:bg-grayDark hover:text-black dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-grayDark" aria-controls="mobile-menu" aria-expanded="false">
           <span class="absolute -inset-0.5"></span>
           <span class="sr-only">Open main menu</span>
