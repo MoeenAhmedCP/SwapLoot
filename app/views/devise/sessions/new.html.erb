@@ -35,11 +35,11 @@
           <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-4 md:space-y-6", id: "password-reset-form" }) do |f| %>
             <%= render "devise/shared/error_messages", resource: resource %>
             <div class="field hidden" id="email-field">
-              <%= f.label :email %><br />
-              <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+              <%= f.label :email, class: "block mb-2 text-sm font-medium text-gray-900" %>
+              <%= f.email_field :email,  autofocus: true, autocomplete: "email", id: "reset-password-email", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ", placeholder: "name@company.com" %>
             </div>
             <div class="actions hidden" id="submit-button">
-              <%= f.submit "Send me reset password instructions" %>
+              <%= f.submit "Send me reset password instructions", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
             </div>
           <% end %>
       </div>
@@ -49,14 +49,16 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const forgotPasswordLink = document.getElementById("forgot-password-link");
-    const emailField = document.getElementById("email-field");
-    const submitButton = document.getElementById("submit-button");
 
-    forgotPasswordLink.addEventListener("click", function() {
-      emailField.classList.toggle("hidden");
-      submitButton.classList.toggle("hidden");
-    });
+$(document).ready(function () {
+  const forgotPasswordLink = document.getElementById("forgot-password-link");
+  const emailField = document.getElementById("email-field");
+  const submitButton = document.getElementById("submit-button");
+
+  forgotPasswordLink.addEventListener("click", function (event) {
+    event.preventDefault();
+    emailField.classList.remove("hidden");
+    submitButton.classList.remove("hidden");
   });
+});
 </script>
