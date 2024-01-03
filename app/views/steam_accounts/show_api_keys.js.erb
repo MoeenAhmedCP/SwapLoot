@@ -1,7 +1,10 @@
+id = <%= @steam_account.id %>;
+document.querySelector(`#verifying-div-${id}`).classList.add('hidden');
 <% if @success %>
-  var id = <%= @steam_account.id %>;
   document.querySelector(`#keys-div-${id}`).classList.remove('hidden');
+  if (!document.querySelector(`#error-div-${id}`).classList.contains('hidden')){
+    document.querySelector(`#error-div-${id}`).classList.add('hidden');
+  }
 <% else %>
-  var id = <%= @steam_account.id %>;
   document.querySelector(`#error-div-${id}`).classList.remove('hidden');
 <% end %>
