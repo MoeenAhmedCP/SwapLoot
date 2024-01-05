@@ -16,10 +16,10 @@ class InventoriesController < ApplicationController
     end
 
     @q_inventories = inventories.ransack(params[:inventory_search])
-    @inventories = @q_inventories.result.paginate(page: params[:page], per_page: per_page)
+    @inventories = @q_inventories.result.order(market_price: :DESC).paginate(page: params[:page], per_page: per_page)
 
     @q_sellable_inventory = SellableInventory.where(steam_id: steam_ids).ransack(params[:sellable_inventory_search])
-    @sellable_inventory = @q_sellable_inventory.result.paginate(page: params[:sellable_inventory_page], per_page: per_page)
+    @sellable_inventory = @q_sellable_inventory.result.order(market_price: :DESC).paginate(page: params[:sellable_inventory_page], per_page: per_page)
 
     @total_market_price = @q_inventories.result.sum(:market_price).round(3)
 
