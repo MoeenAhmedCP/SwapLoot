@@ -6,9 +6,7 @@
                 <h2 class="text-2xl text-blue dark:text-white font-[500]">Inventory</h2>
           <i id="refreshTable" class="fa fa-refresh text-blue dark:text-white " aria-hidden="true"></i>
         </div>
-        <div id="inventory-worth">
-          <%= render partial: 'inventory_worth' , locals:{ total_market_price: @total_market_price }%>
-        </div>
+        <h3 class="mt-[8px] ml-[75px] text-black dark:text-white">Total Worth: <%= "$#{@total_market_price}" %></h3>
       </div>
     </div>
       <div class="flex justify-content-between">
