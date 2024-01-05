@@ -1,5 +1,6 @@
 <% if params[:inventory_search].present? %>
   $('.inventoryTableBody').html("<%= escape_javascript(render(partial: 'inventory', locals: { inventories: @inventories})) %>");
+  $('#inventory-worth').html("<%= escape_javascript(render partial: 'inventory_worth' , locals:{ total_market_price: @total_market_price }) %>");
   $('#inventoryTable_wrapper').parent().closest('div').find('.apple_pagination').remove()
   $("<%= escape_javascript(render(partial: 'shared/pagination', locals: { data: @inventories || [], table_page_name: 'page', remote: true })) %>").insertAfter($('#inventoryTable_wrapper'));
 <% end %>
