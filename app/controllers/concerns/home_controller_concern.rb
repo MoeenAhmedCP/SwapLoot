@@ -64,16 +64,24 @@ module HomeControllerConcern
   end
 
   def fetch_item_listed_for_sale
+    debugger
     @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
-    flash[:notice] = "Something went wrong" if @item_listed_for_sale_hash.empty? && current_user.steam_accounts.present?
+    # flash[:notice] = "Something went wrong" if @item_listed_for_sale_hash.empty? && current_user.steam_accounts.present?
   end
 
   def fetch_waxpeer_item_listed_for_sale
+    debugger
     waxpeer_service = WaxpeerService.new(current_user)
     item_listed_for_sale = waxpeer_service.fetch_item_listed_for_sale
     if item_listed_for_sale
+      debugger
       item_listed_for_sale_hash = item_listed_for_sale.map do |item|
-        item.merge('site' => 'Waxpeer')
+        debugger
+        if item["success"] == false
+          flash[:alert] = "Error: #{item["msg"]}, for waxpeer fetch listed items for sale"
+        else
+          item.merge('site' => 'Waxpeer')
+        end
       end
     else
       []
@@ -83,14 +91,24 @@ module HomeControllerConcern
   def fetch_csgoempire_item_listed_for_sale
     csgoempire_service = CsgoempireService.new(current_user)
     item_listed_for_sale = csgoempire_service.fetch_item_listed_for_sale
-    item_listed_for_sale_hash = item_listed_for_sale.map do |deposit|
-      {
-        'item_id' => deposit['item_id'],
-        'market_name' => deposit['item']['market_name'],
-        'price' => deposit['item']['market_value']* 0.614 * 1000,
-        'site' => 'CsgoEmpire',
-        'date' => Time.parse(deposit['item']['updated_at']).strftime('%d/%B/%Y')
-      }
+    debugger
+    if item_listed_for_sale["success"] == false
+      flash[:alert] =
+      if item_listed_for_sale["message"].present?
+       ? item_listed_for_sale["message"] : "Error: Invalid API key, for csgo empire fetch listed items for sale"
+    end
+    unless item_listed_for_sale["data"]["despoits"].empty?
+      item_listed_for_sale_hash = item_listed_for_sale["data"]["despoits"].map do |deposit|
+        {
+          'item_id' => deposit['item_id'],
+          'market_name' => deposit['item']['market_name'],
+          'price' => deposit['item']['market_value']* 0.614 * 1000,
+          'site' => 'CsgoEmpire',
+          'date' => Time.parse(deposit['item']['updated_at']).strftime('%d/%B/%Y')
+        }
+      end
+    else
+      []
     end
   end
 

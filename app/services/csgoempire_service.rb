@@ -57,24 +57,22 @@ class CsgoempireService < ApplicationService
       return [] if csgoempire_key_not_found?
       begin
         res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
-      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      rescue => e
         return []
       end
-      if res['success'] == true
-        response = res['data']['deposits']
-      else
+      if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
-        []
       end
+      response = res
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
         begin
           res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
-        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        rescue => e
           return []
         end
-        response += res['data']['deposits'] if res['success'] == true
+        response = res
       end
     end
     response
