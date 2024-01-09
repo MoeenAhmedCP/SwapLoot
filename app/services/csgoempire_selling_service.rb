@@ -81,7 +81,7 @@ class CsgoempireSellingService < ApplicationService
       if items_for_resale.any?
         cutting_price_and_list_again(items_for_resale)
       else
-        price_cutting_job_id = PriceCuttingJob.perform_in(2.minutes, @steam_account.id)
+        price_cutting_job_id = PriceCuttingJob.perform_in(@steam_account.selling_filter.undercutting_interval.minutes, @steam_account.id)
         @steam_account.trade_service.update(price_cutting_job_id: price_cutting_job_id)
       end
     end
@@ -139,7 +139,7 @@ class CsgoempireSellingService < ApplicationService
   # function to check if the items are ready to price cutting, (e.g. Intervel is completed)
   def item_ready_to_price_cutting?(updated_at, no_of_minutes)
     estimated_time = updated_at.to_datetime + no_of_minutes.minutes
-    estimated_time < Time.current
+    estimated_time <= Time.current
     # updated_time = updated_at.to_datetime
     # estimated_time = Time.current + no_of_minutes.minutes
     # updated_time <= estimated_time
