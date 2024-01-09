@@ -58,21 +58,28 @@ class CsgoempireService < ApplicationService
       begin
         res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
       rescue => e
-        return []
+        response = [{ success: "false" }]
       end
       if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
+        response = [{ success: "false" }]
+      else
+        response = res['data']['deposits']
       end
-      response = res
     else
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
         begin
           res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
         rescue => e
-          return []
+          response = [{ success: "false" }]
         end
-        response = res
+        if res['success'] == true
+          response += res['data']['deposits']
+        else
+          response = [{ success: "false" }]
+          break
+        end
       end
     end
     response
