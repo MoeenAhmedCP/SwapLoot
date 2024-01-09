@@ -5,10 +5,10 @@ class SoldItemsController < ApplicationController
     steam_account = !@active_steam_account.respond_to?(:each) ? current_user.active_steam_account : current_user.steam_accounts
 
     @q_sold_items = SoldItem.where(steam_account: steam_account).ransack(params[:sold_items])
-    @items_sold = @q_sold_items.result.paginate(page: params[:page], per_page: 15)
+    @items_sold = @q_sold_items.result.order(created_at: :DESC).paginate(page: params[:page], per_page: 15)
 
     @q_sold_items_history = SoldItemHistory.where(steam_account: steam_account).ransack(params[:sold_item_history])
-    @sold_items_history = @q_sold_items_history.result.paginate(page: params[:sold_item_history_page], per_page: 15)
+    @sold_items_history = @q_sold_items_history.result.order(created_at: :DESC).paginate(page: params[:sold_item_history_page], per_page: 15)
     respond_to do |format|
       format.js
       format.html
