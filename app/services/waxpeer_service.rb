@@ -51,12 +51,10 @@ class WaxpeerService < ApplicationService
   def fetch_item_listed_for_sale
     if @active_steam_account.present?
       return [] if waxpeer_api_key_not_found?
-
       res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: @params)
-
       if res['success'] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
-        []
+        response = [{ success: "false", msg: res['msg'] }]
       else
         response = res['items'].present? ? res['items'] : []
       end
@@ -64,8 +62,11 @@ class WaxpeerService < ApplicationService
       response = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
-
         res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: site_params(steam_account))
+        if res['success'] == false
+          response = [{ success: "false", msg: res['msg'] }]
+          break
+        end
         response += res['items'].present? ? res['items'] : []
       end
     end
