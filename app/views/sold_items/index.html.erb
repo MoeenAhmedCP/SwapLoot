@@ -1,7 +1,6 @@
 <div class="px-5 py-3">
 <div class="flex">
     <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">Items Sold</h2>
-    <i class="fa fa-refresh text-blue dark:text-white" aria-hidden="true"></i>
 </div>
 <%= search_form_for @q_sold_items, as: :sold_items, url: sold_items_path(format: :js), remote: true do |f| %>
   <div class="dataTables_wrapper no-footer">
