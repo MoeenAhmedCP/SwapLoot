@@ -1,7 +1,7 @@
 class SendNotificationsJob
   include Sidekiq::Job
     
-  def perform(user_id, item, notification_type)
+  def perform(user_id, item, notification_type, steam_account_id)
     p "<=========== Notification sending ===================>"
     current_user = User.find(user_id)
     @notification = current_user.notifications.create(title: "Item #{notification_type}", body: "#{item["data"]["item"]["market_name"]} #{notification_type} with ID: (#{item["data"]["item_id"]}) at price (#{(item["data"]["total_value"].to_f)/100}) coins", notification_type: notification_type)
@@ -18,6 +18,16 @@ class SendNotificationsJob
       sellable_item = SellableInventory.find_by(item_id: item_id)
       sellable_item.destroy if sellable_item.present?
     else
+      steam_account = SteamAccount.find(steam_account_id)
+      inventory_items = Inventory.where(steam_id: steam_account.steam_id)
+      @headers = { 'Authorization' => "Bearer #{steam_account.csgoempire_api_key}" }
+      response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
+      api_response_data = response["data"]
+      items_not_in_inventory = api_response_data.reject { |api_item| inventory_items.any? { |inventory_item| api_item['id'].to_s == inventory_item.item_id } }
+      matching_items = items_not_in_inventory.select { |api_item| api_item['market_name'] == item[0]["data"]["item"]["market_name"] }
+      matching_items.each do |item|
+        Inventory.create(item_id: item["id"], market_name: item[0]["data"]["item"]["market_name"] , market_price: (item[0]["data"]["item"]["market_value"] * 0.614) )
+      end
       # Inventory.create(item_id: item[0]["data"]["item_id"], market_name: item[0]["data"]["item"]["market_name"] , market_price: (item[0]["data"]["item"]["market_value"] * 0.614) )
     end
   end
