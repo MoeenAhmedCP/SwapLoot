@@ -134,11 +134,15 @@
         }
 
       $('#refreshTable').click(function() {
-        this.classList.add("fa-spin")
+        var refreshButton = this;
+        refreshButton.classList.add("fa-spin")
             $.ajax({
                 url: '<%= inventories_path(format: :js) %>',
                 method: 'GET',
                 data: { refresh: true },
+                success: function(data) {
+                 refreshButton.classList.remove("fa-spin");
+                },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.error('Error refreshing table', textStatus, errorThrown);
                 }
