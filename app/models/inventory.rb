@@ -1,4 +1,6 @@
 class Inventory < ApplicationRecord
+  validates :item_id, uniqueness: true
+
   scope :soft_deleted_sold, -> { where.not(sold_at: nil) }
   scope :steam_inventories, ->(active_steam_account) {
     where(steam_id: active_steam_account&.steam_id)
