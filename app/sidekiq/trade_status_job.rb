@@ -9,7 +9,7 @@ class TradeStatusJob
         user = steam_account&.user
         data['data']['item_data'].each do |item|
           if item['data']['status_message'] == 'Sent' && item["type"] == "deposit"
-            SendNotificationsJob.perform_async(user.id, item, "Sold")
+            SendNotificationsJob.perform_async(user.id, item, "Sold", steam_account.id)
             begin
               sold_price = (item['data']['total_value']).to_f / 100
               create_item(item['data']['item_id'], item['data']['item']['market_name'], sold_price, item['data']['item']['market_value'] * 0.614, item['data']['created_at'], steam_account)
@@ -17,7 +17,7 @@ class TradeStatusJob
             end
           end
           if item['data']['status_message'] == 'Completed' && item["type"] == "withdrawal"
-            SendNotificationsJob.perform_async(user.id, item, "Bought")
+            SendNotificationsJob.perform_async(user.id, item, "Bought", steam_account.id)
           end
         end
       end
