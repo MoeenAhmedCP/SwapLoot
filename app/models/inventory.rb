@@ -1,4 +1,6 @@
 class Inventory < ApplicationRecord
+  validates :item_id, uniqueness: true
+
   scope :soft_deleted_sold, -> { where.not(sold_at: nil) }
   scope :steam_inventories, ->(active_steam_account) {
     where(steam_id: active_steam_account&.steam_id)
@@ -25,5 +27,13 @@ class Inventory < ApplicationRecord
   def self.fetch_inventory_for_user(user)
     csgo_service = CsgoempireService.new(user)
     csgo_service.fetch_my_inventory
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["item_id", "market_name"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
   end
 end

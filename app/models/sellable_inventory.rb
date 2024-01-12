@@ -2,6 +2,14 @@ class SellableInventory < ApplicationRecord
   after_create :trigger_selling_job
   scope :inventory, ->(steam_account) { where(steam_id: steam_account.steam_id) }
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["item_id", "market_name"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+
   private
 
   def trigger_selling_job
@@ -12,8 +20,8 @@ class SellableInventory < ApplicationRecord
         selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
         trade_service.update(selling_job_id: selling_job_id)
       end
-      if trade_service.price_cutting_status == true && trade_service.price_cutting_job_id.present?
-        price_cutting_job_id = PriceCuttingJob.perform_async(steam_account.id)
+      if trade_service.price_cutting_job_id.present?
+        price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
         trade_service.update(price_cutting_job_id: price_cutting_job_id)
       end
     rescue StandardError => e
