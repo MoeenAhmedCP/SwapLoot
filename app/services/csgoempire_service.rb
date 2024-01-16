@@ -71,6 +71,7 @@ class CsgoempireService < ApplicationService
         next if steam_account&.csgoempire_api_key.blank?
         begin
           res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+          sleep(3)
         rescue => e
           response = [{ success: "false" }]
         end

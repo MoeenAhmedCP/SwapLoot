@@ -58,7 +58,6 @@ module HomeControllerConcern
         @active_trades = @deposits + @withdrawls
       end
     else
-      flash[:notice] = "No Active trades Found." unless current_user.steam_accounts.empty?
       @active_trades = []
     end
   end
