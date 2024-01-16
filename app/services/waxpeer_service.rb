@@ -8,7 +8,7 @@ class WaxpeerService < ApplicationService
       api: @active_steam_account&.waxpeer_api_key
     }
     reset_proxy
-    add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
+    add_proxy(@active_steam_account) if @active_steam_account&.proxy.present?
   end
 
   def save_sold_item(res)

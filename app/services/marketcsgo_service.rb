@@ -8,7 +8,7 @@ class MarketcsgoService < ApplicationService
       key: "#{@active_steam_account&.market_csgo_api_key}"
     }
     reset_proxy
-    add_proxy(@active_steam_account) if @active_steam_account.proxy.present?
+    add_proxy(@active_steam_account) if @active_steam_account&.proxy.present?
   end
 
   def site_params(steam_account)
