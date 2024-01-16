@@ -74,7 +74,7 @@ class CsgoempireService < ApplicationService
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
         begin
-          res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+          res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key, steam_account))
         rescue => e
           response = [{ success: "false" }]
         end
