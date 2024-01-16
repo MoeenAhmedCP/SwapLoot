@@ -41,7 +41,7 @@ module HomeControllerConcern
         }
         @balance_data << data_hash
       end
-      flash[:alert] = "Insufficent Balance" if @balance_data.empty? && current_user.steam_accounts.present?
+      flash[:alert] = "Something went wrong with fetch balance issue." if @balance_data.empty? && current_user.steam_accounts.present?
       @balance_data
     end
   end
