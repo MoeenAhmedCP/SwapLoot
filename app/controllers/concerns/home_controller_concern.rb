@@ -41,14 +41,14 @@ module HomeControllerConcern
         }
         @balance_data << data_hash
       end
-      flash[:notice] = "Something went wrong" if @balance_data.empty? && current_user.steam_accounts.present?
+      flash[:alert] = "Something went wrong with fetch balance issue." if @balance_data.empty? && current_user.steam_accounts.present?
       @balance_data
     end
   end
 
   def fetch_active_trade
     get_active_trade = CsgoempireService.new(current_user)
-    @active_trades = get_active_trade.fetch_active_trade
+    @active_trades = get_active_trade.fetch_items_data("active_trades")
     if @active_trades.present? 
       if  @active_trades['data'].present? 
         @deposits = @active_trades["data"]["deposits"]
@@ -58,7 +58,6 @@ module HomeControllerConcern
         @active_trades = @deposits + @withdrawls
       end
     else
-      flash[:notice] = "Something went wrong" unless current_user.steam_accounts.empty?
       @active_trades = []
     end
   end
@@ -83,9 +82,8 @@ module HomeControllerConcern
 
   def fetch_csgoempire_item_listed_for_sale
     csgoempire_service = CsgoempireService.new(current_user)
-    item_listed_for_sale = csgoempire_service.fetch_item_listed_for_sale
-    if item_listed_for_sale.present? && item_listed_for_sale.first[:success].present?
-      flash[:alert] = "Error: csgo empire fetch listed items for sale"
+    item_listed_for_sale = csgoempire_service.fetch_items_data("listed_items_for_sale")
+    if item_listed_for_sale.present? && item_listed_for_sale["data"]["deposits"].empty? && item_listed_for_sale["data"]["withdrawals"].empty?
       []
     else
       item_listed_for_sale_hash = item_listed_for_sale.map do |deposit|
