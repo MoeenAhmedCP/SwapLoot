@@ -55,7 +55,7 @@ class CsgoempireService < ApplicationService
     TradeStatusJob.perform_async(data)
   end
 
-  def fetch_item_listed_for_sale
+  def fetch_items_data(filter_value) # Options for filter_value: [items_listed_for_sale , active_trades]
     response = []
     if @active_steam_account.present?
       return [] if csgoempire_key_not_found?
@@ -68,7 +68,7 @@ class CsgoempireService < ApplicationService
         report_api_error(res, [self&.class&.name, __method__.to_s])
         response = [{ success: "false" }]
       else
-        response = res['data']['deposits']
+        response = filter_value == "items_listed_for_sale" ? res['data']['deposits'] : response
       end
     else
       @current_user.steam_accounts.each do |steam_account|
@@ -78,15 +78,41 @@ class CsgoempireService < ApplicationService
         rescue => e
           response = [{ success: "false" }]
         end
-        if res['success'] == true
-          response += res['data']['deposits']
+        if res["success"] == true
+          response << (filter_value == "items_listed_for_sale" ? res['data']['deposits'] : res)
         else
           response = [{ success: "false" }]
           break
         end
       end
     end
-    response
+    
+    if filter_value == "items_listed_for_sale"
+      response.present? ? response : []
+    else
+      if response.present?
+        merged_response = {
+          'data' => {
+            'deposits' => response.map do |resp|
+              data = resp['data']
+              deposits = data['deposits'] if data
+            end.flatten.compact,
+            'withdrawals' => response.map do |resp|
+              data = resp['data']
+              deposits = data['withdrawals'] if data
+            end.flatten.compact
+          }
+        }
+        if merged_response["data"]["depoists"].nil? && merged_response["data"]["withdrawals"].nil?
+          response = []
+        else
+          response = merged_response
+        end
+      else
+        response = []
+      end
+      response
+    end
   end
 
   def self.fetch_user_data(steam_account)
