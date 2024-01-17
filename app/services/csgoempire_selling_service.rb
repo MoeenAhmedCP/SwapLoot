@@ -93,8 +93,6 @@ class CsgoempireSellingService < ApplicationService
     if response['success'] == true
       sellable_item = SellableInventory.find_by(item_id: item[:item_id])
       sellable_item.update(listed_for_sale: false) if sellable_item.present?
-      listed_item = ListedItem.find_by(item_id: item[:item_id])
-      listed_item.destroy if listed_item.present?
     else
       report_api_error(response, [self&.class&.name, __method__.to_s])
     end
