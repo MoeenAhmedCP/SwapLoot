@@ -20,14 +20,14 @@ class HomeController < ApplicationController
   end
 
   def active_trades_reload
-    fetch_active_trade
+    csgoempire_items_data("active_trades")
     respond_to do |format|
       format.js
     end
   end
 
   def reload_item_listed_for_sale
-    fetch_item_listed_for_sale
+    csgoempire_items_data("listed_items_for_sale")
     respond_to do |format|
       format.js
     end

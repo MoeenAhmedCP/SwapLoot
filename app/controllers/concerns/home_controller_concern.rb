@@ -4,8 +4,9 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_active_trade, :fetch_item_listed_for_sale, only: [:index]
-    before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: [:refresh_balance]
+    before_action :csgoempire_items_data, only: %i[index]
+    before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: %i[refresh_balance]
+    # before_action :csgoempire_items_data, only: %i[fetch_active_trade fetch_csgo_empire_all_items_data]
   end
 
   private
@@ -47,23 +48,31 @@ module HomeControllerConcern
   end
 
   def fetch_active_trade
-    get_active_trade = CsgoempireService.new(current_user)
-    @active_trades = get_active_trade.fetch_items_data("active_trades")
-    if @active_trades.present? 
-      if  @active_trades['data'].present? 
-        @deposits = @active_trades["data"]["deposits"]
-        @deposits = @deposits.present? ? @deposits.map { |item| item.merge("sellarbuy" => "deposit") } : []
-        @withdrawls = @active_trades["data"]["withdrawals"]
-        @withdrawls = @withdrawls.present? ? @withdrawls.map { |item| item.merge("sellarbuy" => "withdrawl") } : []
-        @active_trades = @deposits + @withdrawls
-      end
-    else
-      @active_trades = []
+    @filtered_active_trades_for_csgoempire = @items_listed_for_sale["withdrawals"].map do |deposit|
+      {
+        'item_id' => deposit['item_id'],
+        'market_name' => deposit['item']['market_name'],
+        'price' => deposit['item']['market_value'] * 0.614 * 1000,
+        'site' => 'CsgoEmpire',
+        'date' => Time.parse(deposit['created_at']).strftime('%d/%B/%Y')
+      }
     end
+    return @filtered_active_trades_for_csgoempire
   end
 
-  def fetch_item_listed_for_sale
-    @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
+  def fetch_csgo_empire_all_items_data
+    @filtered_items_listed_for_sale_csgoempire = @items_listed_for_sale["deposits"].map do |deposit|
+      {
+        'item_id' => deposit['item_id'],
+        'market_name' => deposit['item']['market_name'],
+        'price' => deposit['item']['market_value'] * 0.614 * 1000,
+        'site' => 'CsgoEmpire',
+        'date' => Time.parse(deposit['item']['updated_at']).strftime('%d/%B/%Y')
+      }
+    end
+    @item_listed_for_sale_hash = @filtered_items_listed_for_sale_csgoempire
+    @item_listed_for_sale_hash += fetch_waxpeer_item_listed_for_sale
+    return @item_listed_for_sale_hash.flatten
   end
 
   def fetch_waxpeer_item_listed_for_sale
@@ -74,27 +83,25 @@ module HomeControllerConcern
       flash[:alert] = "Error: #{item[:msg]}, for waxpeer fetch listed items for sale"
       []
     else
-      item_listed_for_sale_hash = item_listed_for_sale.map do |item|
+      @item_listed_for_sale_hash = item_listed_for_sale.map do |item|
         item.merge('site' => 'Waxpeer')
       end
     end
   end
 
-  def fetch_csgoempire_item_listed_for_sale
+  def csgoempire_items_data(filter_value = nil)
     csgoempire_service = CsgoempireService.new(current_user)
-    item_listed_for_sale = csgoempire_service.fetch_items_data("listed_items_for_sale")
-    if item_listed_for_sale.present? && item_listed_for_sale["data"]["deposits"].empty? && item_listed_for_sale["data"]["withdrawals"].empty?
+    item_listed_for_sale = csgoempire_service.fetch_items_data
+    if item_listed_for_sale[0]["data"]["withdrawals"].empty? && item_listed_for_sale[0]["data"]["deposits"].empty?
       []
     else
-      item_listed_for_sale_hash = item_listed_for_sale.map do |deposit|
-        {
-          'item_id' => deposit['item_id'],
-          'market_name' => deposit['item']['market_name'],
-          'price' => deposit['item']['market_value']* 0.614 * 1000,
-          'site' => 'CsgoEmpire',
-          'date' => Time.parse(deposit['item']['updated_at']).strftime('%d/%B/%Y')
-        }
-      end
+      @items_listed_for_sale = item_listed_for_sale[0]["data"]
     end
+    unless filter_value
+      fetch_active_trade
+      fetch_csgo_empire_all_items_data
+    end
+    fetch_active_trade if filter_value == "active_trades"
+    fetch_csgo_empire_all_items_data if filter_value == "listed_items_for_sale"
   end
 end

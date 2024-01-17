@@ -51,64 +51,41 @@ class CsgoempireService < ApplicationService
     TradeStatusJob.perform_async(data)
   end
 
-  def fetch_items_data(filter_value) # Options for filter_value: [items_listed_for_sale , active_trades]
+  def fetch_items_data
     response = []
     if @active_steam_account.present?
       return [] if csgoempire_key_not_found?
       begin
-        res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
+        response = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
       rescue => e
         response = [{ success: "false" }]
       end
-      if res['success'] == false
-        report_api_error(res, [self&.class&.name, __method__.to_s])
+      if response['success'] == false
+        report_api_error(response, [self&.class&.name, __method__.to_s])
         response = [{ success: "false" }]
       else
-        response = filter_value == "items_listed_for_sale" ? res['data']['deposits'] : response
+        response
       end
+      response
     else
+      data = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
         begin
-          res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
+          response = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
           sleep(3)
         rescue => e
           response = [{ success: "false" }]
         end
-        if res["success"] == true
-          response << (filter_value == "items_listed_for_sale" ? res['data']['deposits'] : res)
+        if response["success"] == true
+          response
         else
           response = [{ success: "false" }]
           break
         end
+        data << response
       end
-    end
-    
-    if filter_value == "items_listed_for_sale"
-      response.present? ? response : []
-    else
-      if response.present?
-        merged_response = {
-          'data' => {
-            'deposits' => response.map do |resp|
-              data = resp['data']
-              deposits = data['deposits'] if data
-            end.flatten.compact,
-            'withdrawals' => response.map do |resp|
-              data = resp['data']
-              deposits = data['withdrawals'] if data
-            end.flatten.compact
-          }
-        }
-        if merged_response["data"]["depoists"].nil? && merged_response["data"]["withdrawals"].nil?
-          response = []
-        else
-          response = merged_response
-        end
-      else
-        response = []
-      end
-      response
+      data
     end
   end
 
