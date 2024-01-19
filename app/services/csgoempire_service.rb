@@ -64,7 +64,7 @@ class CsgoempireService < ApplicationService
         report_api_error(res, [self&.class&.name, __method__.to_s])
         response = [{ success: "false" }]
       else
-        response = filter_value == "items_listed_for_sale" ? res['data']['deposits'] : response
+        response = filter_value == "items_listed_for_sale" ? res['data']['deposits'] : res
       end
     else
       @current_user.steam_accounts.each do |steam_account|
@@ -82,34 +82,70 @@ class CsgoempireService < ApplicationService
           break
         end
       end
-    end
-    
-    if filter_value == "items_listed_for_sale"
-      response.present? ? response : []
-    else
-      if response.present?
-        merged_response = {
-          'data' => {
-            'deposits' => response.map do |resp|
-              data = resp['data']
-              deposits = data['deposits'] if data
-            end.flatten.compact,
-            'withdrawals' => response.map do |resp|
-              data = resp['data']
-              deposits = data['withdrawals'] if data
-            end.flatten.compact
-          }
-        }
-        if merged_response["data"]["depoists"].nil? && merged_response["data"]["withdrawals"].nil?
-          response = []
-        else
-          response = merged_response
-        end
+      if filter_value == "items_listed_for_sale"
+        response.present? ? response : []
       else
-        response = []
+        if response.present?
+          merged_response = {
+            'data' => {
+              'deposits' => response.map do |resp|
+                data = resp['data']
+                deposits = data['deposits'] if data
+              end.flatten.compact,
+              'withdrawals' => response.map do |resp|
+                data = resp['data']
+                deposits = data['withdrawals'] if data
+              end.flatten.compact
+            }
+          }
+          if merged_response["data"]["depoists"].nil? && merged_response["data"]["withdrawals"].nil?
+            response = []
+          else
+            response = merged_response
+          end
+        else
+          response = []
+        end
+        response
       end
-      response
     end
+    response
+  end
+
+
+  def items_bid_history
+    response = []
+    if @active_steam_account.present?
+      return [] if csgoempire_key_not_found?
+      begin
+        res = self.class.get(BASE_URL + '/trading/user/auctions', headers: @headers)
+      rescue => e
+        response = [{ success: "false" }]
+      end
+      if res['success'] == false
+        report_api_error(res, [self&.class&.name, __method__.to_s])
+        response = [{ success: "false" }]
+      else
+        response = res['active_auctions'] if res['active_auctions'].present?
+      end
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.csgoempire_api_key.blank?
+        begin
+          res = self.class.get(BASE_URL + '/trading/user/auctions', headers: headers(steam_account.csgoempire_api_key))
+        rescue => e
+          response = [{ success: "false" }]
+        end
+
+        if res["success"] == true
+          response << res['active_auctions'] if res['active_auctions'].present?
+        else
+          response = [{ success: "false" }]
+          break
+        end
+      end
+    end
+    response
   end
 
   def self.fetch_user_data(steam_account)

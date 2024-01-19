@@ -4,7 +4,7 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_active_trade, :fetch_item_listed_for_sale, only: [:index]
+    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale, only: [:index]
     before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: [:refresh_balance]
   end
 
@@ -46,20 +46,23 @@ module HomeControllerConcern
     end
   end
 
-  def fetch_active_trade
-    get_active_trade = CsgoempireService.new(current_user)
-    @active_trades = get_active_trade.fetch_items_data("active_trades")
-    if @active_trades.present? 
-      if  @active_trades['data'].present? 
-        @deposits = @active_trades["data"]["deposits"]
-        @deposits = @deposits.present? ? @deposits.map { |item| item.merge("sellarbuy" => "deposit") } : []
-        @withdrawls = @active_trades["data"]["withdrawals"]
-        @withdrawls = @withdrawls.present? ? @withdrawls.map { |item| item.merge("sellarbuy" => "withdrawl") } : []
-        @active_trades = @deposits + @withdrawls
+  def fetch_items_bid_history
+    csgoempire_service = CsgoempireService.new(current_user)
+    items_bid_history = csgoempire_service.items_bid_history
+    if items_bid_history.present?
+      @auction_items_hash = items_bid_history&.each do |auction_item|
+        {
+          'item_id' => auction_item[:id],
+          'market_name' => auction_item[:market_name],
+          'price' => (auction_item[:market_value])* 0.614 * 1000,
+          'site' => 'CsgoEmpire',
+          'date' => Time.parse(auction_item[:published_at]).strftime('%d/%B/%Y')
+        }
       end
     else
-      @active_trades = []
+      @auction_items_hash = []
     end
+    @auction_items_hash
   end
 
   def fetch_item_listed_for_sale
@@ -86,7 +89,7 @@ module HomeControllerConcern
     if item_listed_for_sale.present? && item_listed_for_sale["data"]["deposits"].empty? && item_listed_for_sale["data"]["withdrawals"].empty?
       []
     else
-      item_listed_for_sale_hash = item_listed_for_sale.map do |deposit|
+      item_listed_for_sale_hash = item_listed_for_sale["data"]["deposits"].map do |deposit|
         {
           'item_id' => deposit['item_id'],
           'market_name' => deposit['item']['market_name'],
