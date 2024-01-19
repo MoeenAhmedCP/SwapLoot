@@ -71,15 +71,18 @@ class CsgoempireService < ApplicationService
         next if steam_account&.csgoempire_api_key.blank?
         begin
           res = self.class.get(BASE_URL + '/trading/user/auctions', headers: headers(steam_account.csgoempire_api_key))
+          if res['success'] == true
+            if res['active_auctions'].present?
+              res['active_auctions'].each do |auctions|
+                response << auctions
+              end
+            end
+          else
+            response = [{ success: "false" }]
+            break
+          end
         rescue => e
           response = [{ success: "false" }]
-        end
-
-        if res["success"] == true
-          response << res['active_auctions'] if res['active_auctions'].present?
-        else
-          response = [{ success: "false" }]
-          break
         end
       end
     end
