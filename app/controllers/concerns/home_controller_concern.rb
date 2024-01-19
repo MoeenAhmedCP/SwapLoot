@@ -83,24 +83,4 @@ module HomeControllerConcern
       end
     end
   end
-
-  def fetch_csgoempire_item_listed_for_sale
-    csgoempire_service = CsgoempireService.new(current_user)
-    item_listed_for_sale = csgoempire_service.fetch_items_data("listed_items_for_sale")
-    if item_listed_for_sale.empty?
-      return []
-    elsif item_listed_for_sale.present? && item_listed_for_sale["data"]["deposits"].empty? && item_listed_for_sale["data"]["withdrawals"].empty?
-      return []
-    else
-      item_listed_for_sale_hash = item_listed_for_sale["data"]["deposits"].map do |deposit|
-        {
-          'item_id' => deposit['item_id'],
-          'market_name' => deposit['item']['market_name'],
-          'price' => deposit['item']['market_value']* 0.614 * 1000,
-          'site' => 'CsgoEmpire',
-          'date' => Time.parse(deposit['item']['updated_at']).strftime('%d/%B/%Y')
-        }
-      end
-    end
-  end
 end
