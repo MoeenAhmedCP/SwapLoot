@@ -56,7 +56,7 @@ class CsgoempireSellingService < ApplicationService
     remaining_items = @inventory&.reject { |inventory_item| matching_items.any? { |matching_item| matching_item["id"] == inventory_item.item_id && matching_item["name"] == inventory_item.market_name } }
     if remaining_items.any?
       filtered_items_for_deposit = []
-      remaining_items.map do |item|
+      remaining_items.each do |item|
         suggested_items = waxpeer_suggested_prices
         result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
         item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
@@ -66,7 +66,6 @@ class CsgoempireSellingService < ApplicationService
           filtered_items_for_deposit << JSON.parse(item.to_json).merge(:lowest_price => result_item["lowest_price"])
         end
       end
-      debugger
       remaining_items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "id"=> filtered_item["item_id"], "coin_value"=> calculate_pricing(filtered_item) } }
       deposit_items_for_sale(remaining_items_to_deposit) if remaining_items_to_deposit.any?
     end
