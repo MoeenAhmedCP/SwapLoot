@@ -126,7 +126,7 @@ class CsgoempireService < ApplicationService
         report_api_error(res, [self&.class&.name, __method__.to_s])
         response = [{ success: "false" }]
       else
-        response = res
+        response = res['active_auctions'] if res['active_auctions'].present?
       end
     else
       @current_user.steam_accounts.each do |steam_account|
@@ -138,7 +138,7 @@ class CsgoempireService < ApplicationService
         end
 
         if res["success"] == true
-          response << res
+          response << res['active_auctions'] if res['active_auctions'].present?
         else
           response = [{ success: "false" }]
           break

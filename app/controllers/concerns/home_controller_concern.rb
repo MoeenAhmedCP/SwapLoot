@@ -49,8 +49,8 @@ module HomeControllerConcern
   def fetch_items_bid_history
     csgoempire_service = CsgoempireService.new(current_user)
     items_bid_history = csgoempire_service.items_bid_history
-    if items_bid_history.present? 
-      @auction_items_hash = items_bid_history[:active_auctions]&.each do |auction_item|
+    if items_bid_history.present?
+      @auction_items_hash = items_bid_history&.each do |auction_item|
         {
           'item_id' => auction_item[:id],
           'market_name' => auction_item[:market_name],
