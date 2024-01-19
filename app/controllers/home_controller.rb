@@ -20,7 +20,7 @@ class HomeController < ApplicationController
   end
 
   def active_trades_reload
-    fetch_active_trade
+    fetch_items_bid_history
     respond_to do |format|
       format.js
     end

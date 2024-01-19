@@ -5,18 +5,16 @@
             <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
             <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Item Name</th>
             <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Current Price</th>
-            <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Type</th>
             <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tr-lg">Date</th>
         </tr>
     </thead>
     <tbody>
-    <% active_trades&.each do |active_trade| %>
+    <% @auction_items_hash&.each do |item| %>
     <tr>
-        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= active_trade["item_id"] %></td>
-        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= active_trade["item"]["market_name"] %></td>
-        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= "$#{active_trade["item"]["market_value"]}" %></td>
-        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= active_trade["sellarbuy"] %></td>
-        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= active_trade["item"]["updated_at"].present? ? Time.parse(active_trade["item"]["updated_at"]).strftime("%d/%B/%Y") : "" %></td>
+        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= item[:id] %></td>
+        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= item[:market_name] %></td>
+        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= "$#{item[:market_value]}" %></td>
+        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= item[:published_at].present? ? Time.parse(item[:published_at]).strftime("%d/%B/%Y") : "" %></td>
     </tr>
     <% end %>
     </tbody>

@@ -112,6 +112,42 @@ class CsgoempireService < ApplicationService
     response
   end
 
+
+  def items_bid_history
+    response = []
+    if @active_steam_account.present?
+      return [] if csgoempire_key_not_found?
+      begin
+        res = self.class.get(BASE_URL + '/trading/user/auctions', headers: @headers)
+      rescue => e
+        response = [{ success: "false" }]
+      end
+      if res['success'] == false
+        report_api_error(res, [self&.class&.name, __method__.to_s])
+        response = [{ success: "false" }]
+      else
+        response = res['active_auctions'] if res['active_auctions'].present?
+      end
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.csgoempire_api_key.blank?
+        begin
+          res = self.class.get(BASE_URL + '/trading/user/auctions', headers: headers(steam_account.csgoempire_api_key))
+        rescue => e
+          response = [{ success: "false" }]
+        end
+
+        if res["success"] == true
+          response << res['active_auctions'] if res['active_auctions'].present?
+        else
+          response = [{ success: "false" }]
+          break
+        end
+      end
+    end
+    response
+  end
+
   def self.fetch_user_data(steam_account)
     headers = { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" }
     begin
