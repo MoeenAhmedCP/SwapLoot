@@ -51,68 +51,6 @@ class CsgoempireService < ApplicationService
     TradeStatusJob.perform_async(data)
   end
 
-  def fetch_items_data(filter_value) # Options for filter_value: [items_listed_for_sale , active_trades]
-    response = []
-    if @active_steam_account.present?
-      return [] if csgoempire_key_not_found?
-      begin
-        res = self.class.get(BASE_URL + '/trading/user/trades', headers: @headers)
-      rescue => e
-        response = [{ success: "false" }]
-      end
-      if res['success'] == false
-        report_api_error(res, [self&.class&.name, __method__.to_s])
-        response = [{ success: "false" }]
-      else
-        response = filter_value == "items_listed_for_sale" ? res['data']['deposits'] : res
-      end
-    else
-      @current_user.steam_accounts.each do |steam_account|
-        next if steam_account&.csgoempire_api_key.blank?
-        begin
-          res = self.class.get(BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key))
-          sleep(3)
-        rescue => e
-          response = [{ success: "false" }]
-        end
-        if res["success"] == true
-          response << (filter_value == "items_listed_for_sale" ? res['data']['deposits'] : res)
-        else
-          response = [{ success: "false" }]
-          break
-        end
-      end
-      if filter_value == "items_listed_for_sale"
-        response.present? ? response : []
-      else
-        if response.present?
-          merged_response = {
-            'data' => {
-              'deposits' => response.map do |resp|
-                data = resp['data']
-                deposits = data['deposits'] if data
-              end.flatten.compact,
-              'withdrawals' => response.map do |resp|
-                data = resp['data']
-                deposits = data['withdrawals'] if data
-              end.flatten.compact
-            }
-          }
-          if merged_response["data"]["depoists"].nil? && merged_response["data"]["withdrawals"].nil?
-            response = []
-          else
-            response = merged_response
-          end
-        else
-          response = []
-        end
-        response
-      end
-    end
-    response
-  end
-
-
   def items_bid_history
     response = []
     if @active_steam_account.present?
@@ -230,11 +168,6 @@ class CsgoempireService < ApplicationService
     steam_account.update(sold_item_job_id: job_id)
   end
 
-  def create_item(id, market_name, b_price, s_price, date, steam_account)
-    item = SoldItem.find_by(item_id: id)
-    SoldItem.create(item_id: id, item_name: market_name, bought_price: b_price, sold_price: s_price, date: date, steam_account: steam_account) unless item.present?
-  end
-
   def fetch_deposit_transactions
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
@@ -255,52 +188,6 @@ class CsgoempireService < ApplicationService
         save_transaction(response, steam_account)
       end
     end
-  end
-
-  def process_transactions
-    begin
-      response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
-    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-      return []
-    end
-
-    if response['data']
-      last_page = response['last_page'].to_i
-      threads = []
-
-      (1..last_page).each do |page_number|
-        threads << Thread.new { process_page(page_number) }
-      end
-
-      # Wait for all threads to complete
-      threads.each(&:join)
-    end
-  end
-
-  def process_page(page_number)
-    begin
-      response_data = self.class.get("#{BASE_URL}/user/transactions?page=#{page_number}", headers: @headers)
-    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-      return []
-    end
-
-    return unless response_data['data'].present?
-
-    response_data['data'].each do |transaction_data|
-      process_transaction(transaction_data) if valid_transaction?(transaction_data)
-    end
-  end
-
-  def valid_transaction?(transaction_data)
-    transaction_data['key'] == 'deposit_invoices' &&
-      transaction_data['data']['status_name'] == 'Complete' &&
-      transaction_data['data']['metadata']['item'].present?
-  end
-
-  def process_transaction(transaction_data)
-    item_data = transaction_data['data']['metadata']['item']
-    inventory = Inventory.find_by(item_id: item_data['asset_id'])
-    create_item(item_data['asset_id'], item_data['market_name'], inventory.market_price, item_data['market_value'], item_data['updated_at'])
   end
 
   def csgoempire_key_not_found?

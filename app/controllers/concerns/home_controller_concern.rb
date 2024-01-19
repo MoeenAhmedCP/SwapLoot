@@ -66,7 +66,8 @@ module HomeControllerConcern
   end
 
   def fetch_item_listed_for_sale
-    @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
+    steam_account_ids = @active_steam_account.respond_to?(:each) ? @active_steam_account.map(&:id) : [@active_steam_account.id]
+    @item_listed_for_sale_hash = ListedItem.where(steam_account_id: steam_account_ids)
   end
 
   def fetch_waxpeer_item_listed_for_sale
@@ -79,24 +80,6 @@ module HomeControllerConcern
     else
       item_listed_for_sale_hash = item_listed_for_sale.map do |item|
         item.merge('site' => 'Waxpeer')
-      end
-    end
-  end
-
-  def fetch_csgoempire_item_listed_for_sale
-    csgoempire_service = CsgoempireService.new(current_user)
-    item_listed_for_sale = csgoempire_service.fetch_items_data("listed_items_for_sale")
-    if item_listed_for_sale.present? && item_listed_for_sale["data"]["deposits"].empty? && item_listed_for_sale["data"]["withdrawals"].empty?
-      []
-    else
-      item_listed_for_sale_hash = item_listed_for_sale["data"]["deposits"].map do |deposit|
-        {
-          'item_id' => deposit['item_id'],
-          'market_name' => deposit['item']['market_name'],
-          'price' => deposit['item']['market_value']* 0.614 * 1000,
-          'site' => 'CsgoEmpire',
-          'date' => Time.parse(deposit['item']['updated_at']).strftime('%d/%B/%Y')
-        }
       end
     end
   end
