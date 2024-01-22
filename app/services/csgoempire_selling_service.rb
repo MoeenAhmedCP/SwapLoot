@@ -213,13 +213,11 @@ class CsgoempireSellingService < ApplicationService
     inventory.each do |inventory_item|
       item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
       if item_found_from_price_empire
-        waxpeer_price = item_found_from_price_empire["waxpeer"]["price"]
         buff_price = item_found_from_price_empire["buff"]["price"]
-        greater_price = buff_price
         matching_item = {
           'id' => inventory_item.item_id,
           'name' => inventory_item.market_name,
-          'average' => ((greater_price/100.to_f / 0.614 - 0.01) * 100).round, #final
+          'average' => ((buff_price/100.to_f / 0.614 - 0.01) * 100).round, #final
           'coin_value_bought' => inventory_item.market_price.to_f / 100,
           'coin_to_dollar' => inventory_item.market_price.to_f / 100 * 0.614
         }
