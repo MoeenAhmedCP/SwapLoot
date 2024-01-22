@@ -215,7 +215,7 @@ class CsgoempireSellingService < ApplicationService
       if item_found_from_price_empire
         waxpeer_price = item_found_from_price_empire["waxpeer"]["price"]
         buff_price = item_found_from_price_empire["buff"]["price"]
-        greater_price = [waxpeer_price, buff_price].max
+        greater_price = buff_price
         matching_item = {
           'id' => inventory_item.item_id,
           'name' => inventory_item.market_name,
