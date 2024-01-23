@@ -105,7 +105,7 @@ class WaxpeerService < ApplicationService
   def remove_item(item_id)
     return [] if waxpeer_api_key_not_found?
 
-    res = self.class.get("#{BASE_URL}/remove-items", query: @params.merge(id: item_id))
+    res = self.class.get("#{WAXPEER_BASE_URL}/remove-items", query: @params.merge(id: item_id))
 
     if res['success'] == true
       res['removed'].count&.positive?
