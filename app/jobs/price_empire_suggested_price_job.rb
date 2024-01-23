@@ -15,7 +15,6 @@ class PriceEmpireSuggestedPriceJob
                 end
             rescue
                 puts "Price Empire Job Failed..."
-                PriceEmpireSuggestedPriceJob.perform_in(60.minutes)
             end
         end
     end

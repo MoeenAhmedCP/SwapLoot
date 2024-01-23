@@ -3,8 +3,8 @@
     <div class="flex item-center">
       <div class= "flex items-center justify-between w-[100%] mb-5">
         <div class="flex items-center justify-center">
-                <h2 class="text-2xl text-blue dark:text-white font-[500]">Inventory</h2>
-          <i id="refreshTable" class="fa fa-refresh text-blue dark:text-white " aria-hidden="true"></i>
+          <h2 class="text-2xl text-blue dark:text-white font-[500]">Inventory</h2>
+          <i id="refreshTable" class="fa fa-refresh cursor-pointer text-blue dark:text-white " aria-hidden="true"></i>
         </div>
         <h3 class="mt-[8px] ml-[75px] text-black dark:text-white">Total Worth: <%= "$#{@total_market_price}" %></h3>
       </div>
@@ -134,11 +134,15 @@
         }
 
       $('#refreshTable').click(function() {
-        this.classList.add("fa-spin")
+        var refreshButton = this;
+        refreshButton.classList.add("fa-spin")
             $.ajax({
                 url: '<%= inventories_path(format: :js) %>',
                 method: 'GET',
                 data: { refresh: true },
+                success: function(data) {
+                 refreshButton.classList.remove("fa-spin");
+                },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.error('Error refreshing table', textStatus, errorThrown);
                 }

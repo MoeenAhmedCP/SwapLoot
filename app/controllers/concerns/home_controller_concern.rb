@@ -4,7 +4,7 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_active_trade, :fetch_item_listed_for_sale, only: [:index]
+    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale, only: [:index]
     before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: [:refresh_balance]
   end
 
@@ -41,30 +41,33 @@ module HomeControllerConcern
         }
         @balance_data << data_hash
       end
-      flash[:notice] = "Something went wrong" if @balance_data.empty? && current_user.steam_accounts.present?
+      flash[:alert] = "Something went wrong with fetch balance issue." if @balance_data.empty? && current_user.steam_accounts.present?
       @balance_data
     end
   end
 
-  def fetch_active_trade
-    get_active_trade = CsgoempireService.new(current_user)
-    @active_trades = get_active_trade.fetch_active_trade
-    if @active_trades.present? 
-      if  @active_trades['data'].present? 
-        @deposits = @active_trades["data"]["deposits"]
-        @deposits = @deposits.present? ? @deposits.map { |item| item.merge("sellarbuy" => "deposit") } : []
-        @withdrawls = @active_trades["data"]["withdrawals"]
-        @withdrawls = @withdrawls.present? ? @withdrawls.map { |item| item.merge("sellarbuy" => "withdrawl") } : []
-        @active_trades = @deposits + @withdrawls
+  def fetch_items_bid_history
+    csgoempire_service = CsgoempireService.new(current_user)
+    items_bid_history = csgoempire_service.items_bid_history
+    if items_bid_history.present?
+      @auction_items_hash = items_bid_history&.map do |auction_item|
+        {
+          'item_id' => auction_item['id'],
+          'market_name' => auction_item['market_name'],
+          'price' => ((auction_item['auction_highest_bid'].to_f / 100) * 0.614).round(2),
+          'site' => 'CsgoEmpire',
+          'date' => Time.parse(auction_item['published_at']).strftime('%d/%B/%Y')
+        }
       end
     else
-      flash[:notice] = "Something went wrong" unless current_user.steam_accounts.empty?
-      @active_trades = []
+      @auction_items_hash = []
     end
+    @auction_items_hash
   end
 
   def fetch_item_listed_for_sale
-    @item_listed_for_sale_hash = fetch_csgoempire_item_listed_for_sale + fetch_waxpeer_item_listed_for_sale
+    steam_account_ids = @active_steam_account.respond_to?(:each) ? @active_steam_account.map(&:id) : [@active_steam_account.id]
+    @item_listed_for_sale_hash = ListedItem.where(steam_account_id: steam_account_ids)
   end
 
   def fetch_waxpeer_item_listed_for_sale
@@ -77,25 +80,6 @@ module HomeControllerConcern
     else
       item_listed_for_sale_hash = item_listed_for_sale.map do |item|
         item.merge('site' => 'Waxpeer')
-      end
-    end
-  end
-
-  def fetch_csgoempire_item_listed_for_sale
-    csgoempire_service = CsgoempireService.new(current_user)
-    item_listed_for_sale = csgoempire_service.fetch_item_listed_for_sale
-    if item_listed_for_sale.present? && item_listed_for_sale.first[:success].present?
-      flash[:alert] = "Error: csgo empire fetch listed items for sale"
-      []
-    else
-      item_listed_for_sale_hash = item_listed_for_sale.map do |deposit|
-        {
-          'item_id' => deposit['item_id'],
-          'market_name' => deposit['item']['market_name'],
-          'price' => deposit['item']['market_value']* 0.614 * 1000,
-          'site' => 'CsgoEmpire',
-          'date' => Time.parse(deposit['item']['updated_at']).strftime('%d/%B/%Y')
-        }
       end
     end
   end
