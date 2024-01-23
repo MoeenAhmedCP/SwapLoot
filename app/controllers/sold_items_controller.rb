@@ -22,7 +22,7 @@ class SoldItemsController < ApplicationController
 
       csgo_service = CsgoempireService.new(current_user)
       csgo_service.fetch_deposit_transactions
-      @sold_items_history = SoldItemHistory.paginate(page: params[:sold_item_history_page], per_page: 15)
+      @sold_items_history = SoldItemHistory.where(steam_account: steam_account).paginate(page: params[:sold_item_history_page], per_page: 15)
       respond_to do |format|
         format.js
       end

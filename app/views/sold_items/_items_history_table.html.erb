@@ -1,6 +1,8 @@
 <div class="flex">
-  <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">Item Sold History</h2>
-  <i class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true" onclick="fetchAllItemData()"></i>
+  <h2 class="text-2xl text-blue dark:text-white font-[500]">Item Sold History</h2>
+  <div>
+    <i class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true" onclick="fetchAllItemData()"></i>
+  </div>
 </div>
 <%= search_form_for @q_sold_items_history, as: :sold_item_history, url: sold_items_path(format: :js), remote: true do |f| %>
   <div class="dataTables_wrapper no-footer">
@@ -26,7 +28,6 @@
       </tr>
     </thead>
     <tbody class="dataAllItemsSold">
-      <%# <%= render partial: 'shared/loader_modal' %> 
       <%= render partial: 'items_history_data', locals: { sold_items_history: @sold_items_history || [] } %>
     </tbody>
   </table>
@@ -37,6 +38,7 @@
 
 <script>
   function fetchAllItemData(){
+    $('.fa-refresh').addClass('fa-spin');
     checkEmptyTable();
 
     $.ajax({
@@ -46,6 +48,7 @@
       },
       type: 'GET',
       success: function(response){
+      $('.fa-refresh')[0].classList.remove('fa-spin');
         table_rows = $('.dataAllItemsSold').children();
         if(table_rows.length != 0){
           hideLoader();
@@ -53,6 +56,7 @@
         }
         else{
           showLoader();
+          $('#loadingModal')[0].remove();
         }
       },
       error: function(){}
