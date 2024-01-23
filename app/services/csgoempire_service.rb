@@ -74,7 +74,7 @@ class CsgoempireService < ApplicationService
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.csgoempire_api_key.blank?
         begin
-          res = self.class.get(BASE_URL + '/trading/user/auctions', headers: headers(steam_account.csgoempire_api_key))
+          res = self.class.get(BASE_URL + '/trading/user/auctions', headers: headers(steam_account.csgoempire_api_key, steam_account))
           if res['success'] == true
             if res['active_auctions'].present?
               res['active_auctions'].each do |auctions|
