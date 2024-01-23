@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_27_162503) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_22_120653) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -81,7 +81,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_27_162503) do
     t.bigint "steam_account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "min_percentage", default: 20
+    t.integer "min_percentage", default: 7
     t.integer "max_price", default: 100
     t.integer "min_price", default: 50
     t.index ["steam_account_id"], name: "index_buying_filters_on_steam_account_id"
@@ -109,9 +109,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_27_162503) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "sold_at"
-    t.index ["item_id"], name: "index_inventories_on_item_id"
+    t.index ["item_id"], name: "index_inventories_on_item_id", unique: true
     t.index ["market_name"], name: "index_inventories_on_market_name"
     t.index ["market_price"], name: "index_inventories_on_market_price"
+  end
+
+  create_table "listed_items", force: :cascade do |t|
+    t.string "item_id"
+    t.string "item_name"
+    t.string "price"
+    t.string "site"
+    t.bigint "steam_account_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["steam_account_id"], name: "index_listed_items_on_steam_account_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -135,6 +146,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_27_162503) do
     t.index ["liquidity"], name: "index_price_empires_on_liquidity"
   end
 
+  create_table "proxies", force: :cascade do |t|
+    t.string "ip"
+    t.integer "port"
+    t.string "username"
+    t.string "password"
+    t.bigint "steam_account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["steam_account_id"], name: "index_proxies_on_steam_account_id"
+  end
+
   create_table "sellable_inventories", force: :cascade do |t|
     t.string "item_id"
     t.string "market_name"
@@ -146,7 +168,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_27_162503) do
   end
 
   create_table "selling_filters", force: :cascade do |t|
-    t.integer "min_profit_percentage", default: 2
+    t.integer "min_profit_percentage", default: 15
     t.integer "undercutting_price_percentage", default: 10
     t.integer "undercutting_interval", default: 3
     t.bigint "steam_account_id", null: false
@@ -192,9 +214,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_27_162503) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
-    t.string "discord_channel_id"
-    t.string "discord_bot_token"
-    t.string "discord_app_id"
     t.string "sold_item_job_id"
     t.index ["csgoempire_api_key"], name: "index_steam_accounts_on_csgoempire_api_key"
     t.index ["market_csgo_api_key"], name: "index_steam_accounts_on_market_csgo_api_key"
@@ -235,6 +254,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_27_162503) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "buying_filters", "steam_accounts"
   add_foreign_key "errors", "users"
+  add_foreign_key "listed_items", "steam_accounts"
+  add_foreign_key "proxies", "steam_accounts"
   add_foreign_key "selling_filters", "steam_accounts"
   add_foreign_key "sold_item_histories", "steam_accounts"
   add_foreign_key "sold_items", "steam_accounts"

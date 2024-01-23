@@ -148,51 +148,6 @@ class CsgoempireService < ApplicationService
     Inventory.insert_all(items_to_insert) unless items_to_insert.empty?
   end
 
-  def fetch_active_trade
-    if @active_steam_account.present?
-      return if csgoempire_key_not_found?
-      begin
-        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: @headers)
-      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-        return []
-      end
-      if response['success'] == false
-        report_api_error(response&.keys&.at(1), [self&.class&.name, __method__.to_s])
-        return []
-      else
-        response
-      end
-    else
-      response = []
-      @current_user.steam_accounts.each do |steam_account|
-        next if steam_account&.csgoempire_api_key.blank?
-        begin
-          res = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/trades', headers: headers(steam_account.csgoempire_api_key, steam_account))
-        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-          return []
-        end
-        response << res
-      end
-      if response.present?
-        merged_response = {
-          'success' => response.all? { |resp| resp['success'] },
-          'data' => {
-            'deposits' => response.map do |resp|
-              data = resp['data']
-              deposits = data['deposits'] if data
-            end.flatten.compact,
-            'withdrawals' => response.map do |resp|
-              data = resp['data']
-              deposits = data['withdrawals'] if data
-            end.flatten.compact
-          }
-        }
-        response = merged_response
-      end
-    end
-    response
-  end
-
   def remove_item(deposit_id)
     begin
       response = self.class.get("#{BASE_URL}/trading/deposit/#{deposit_id}/cancel", headers: @headers)
