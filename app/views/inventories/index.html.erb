@@ -22,7 +22,7 @@
             <div class="dataTables_wrapper no-footer">
               <div id="dataTableInventory_filter" class="dataTables_filter">
                 <label>
-                  <%= f.search_field :item_id_or_market_name_cont, id: "inventory_search", placeholder: "Search...", onkeyup: 'searchInventory()' %>
+                  <%= f.search_field :item_id_or_market_name_cont, id: "inventory_search", placeholder: "Search...", oninput: 'searchInventory()' %>
                 </label>
               </div>
             </div>
@@ -71,7 +71,7 @@
             <div class="dataTables_wrapper no-footer">
               <div id="dataTableInventory_filter" class="dataTables_filter">
                 <label>
-                  <%= f.search_field :item_id_or_market_name_cont, id: "sellable_inventory_search", placeholder: "Search...", onkeyup: 'searchSellableInventory()' %>
+                  <%= f.search_field :item_id_or_market_name_cont, id: "sellable_inventory_search", placeholder: "Search...", oninput: 'searchSellableInventory()' %>
                 </label>
               </div>
             </div>

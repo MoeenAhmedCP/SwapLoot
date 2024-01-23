@@ -6,7 +6,7 @@
   <div class="dataTables_wrapper no-footer">
     <div id = "dataTableAllItemsSold_filter" class="dataTables_filter">
       <label>
-        <%= f.search_field :item_id_or_item_name_cont, id: "items_sold_search", placeholder: "Search...", onkeyup: 'searchItemSoldHistory()' %>
+        <%= f.search_field :item_id_or_item_name_cont, id: "items_sold_search", placeholder: "Search...", oninput: 'searchItemSoldHistory()' %>
       </label>
     </div>
   </div>
