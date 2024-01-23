@@ -10,6 +10,7 @@ class SteamAccount < ApplicationRecord
   validates :steam_id, :unique_name, :steam_web_api_key, uniqueness: true
 
   before_save :check_api_keys
+  after_save :check_validity
 
   def check_api_keys
     if csgoempire_api_key.present?
@@ -31,6 +32,12 @@ class SteamAccount < ApplicationRecord
       if marketcsgo_response['error'] == 'Bad KEY'
         self.market_csgo_api_key = nil
       end
+    end
+  end
+
+  def check_validity
+    if csgoempire_api_key.present? || waxpeer_api_key.present?
+      self.update_column(:valid_account, true)
     end
   end
 end
