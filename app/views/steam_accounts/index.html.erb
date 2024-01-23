@@ -52,6 +52,9 @@
                                       </button>
                                     <% end %>
                                 </div>
+                                <div>
+                                    <%= link_to "Proxy", steam_account.proxy.present? ? edit_proxy_path(steam_account.proxy) : new_proxy_path(steam_account_id: steam_account.id), class: "inline-block bg-gray-200 text-gray-700 font-bold px-2 py-1 rounded-md shadow-md hover:bg-gray-300 hover:text-gray-800", remote: true %>
+                                </div>
                             </div>
                         </td>
                     </tr>
