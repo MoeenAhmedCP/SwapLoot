@@ -27,7 +27,6 @@ Rails.application.routes.draw do
   get '/show_api_keys', to: "steam_accounts#show_api_keys", as: "show_api_key"
   get '/edit_api_keys', to: "steam_accounts#edit_api_keys", as: "edit_api_key"
   get '/services', to: "services#index"
-  post '/trigger_service', to: "services#trigger_service"
   post '/home/update_active_account', to: 'home#update_active_account'
   get '/refresh_balance', to: 'home#refresh_balance', as: 'refresh_balance'
   get '/home/active_trades_reload', to: 'home#active_trades_reload'

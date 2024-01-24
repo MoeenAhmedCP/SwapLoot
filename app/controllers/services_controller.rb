@@ -1,10 +1,7 @@
 class ServicesController < ApplicationController
   before_action :set_steam_account, only: %i[index]
 
-  def index
-  end
-
-  def trigger_service; end
+  def index; end
 
   private
 
