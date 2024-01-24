@@ -5,6 +5,7 @@ class CsgoempireSellingService < ApplicationService
   #initialize steam account fro service
   def initialize(steam_account)
     @steam_account = steam_account
+    add_proxy
   end
 
   def headers
@@ -13,8 +14,19 @@ class CsgoempireSellingService < ApplicationService
       'Content-Type' => 'application/json'
     }
   end
-  
-  #fuction for get inventory data from api
+
+  def add_proxy
+    reset_proxy
+    proxy = @steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+  end
+
+  def add_proxy
+    reset_proxy
+    proxy = @steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+  end
+
   def fetch_inventory
     response = fetch_database_inventory
     online_trades_response = fetch_active_trades
