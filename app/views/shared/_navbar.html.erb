@@ -15,12 +15,12 @@
         </button>
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-        <% if request.url.include?("/users/") || request.url.include?("/steam_accounts") %>
-          <div class="text-gray-500 text-2xl dark:text-white font-semibold text-center text-md">Associated Steam Accounts</div>
+        <% if request.url.include?("/users/") || request.url.include?("/steam_accounts") || request.url.include?("/services") %>
+          <div class="text-blue text-2xl dark:text-white font-semibold text-center text-md"><%= request.url.include?("/services") ? "Services Panel" : "Associated Steam Accounts" %></div>
         <% else %>
         <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
           <% if @steam_accounts.present? %>
-            <%= select_tag('steam_id', options_for_select([['All', 'all']] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: !@active_steam_account.respond_to?(:each) ? @active_steam_account.steam_id : 'all' ), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-grayDark dark:text-grayDark font-[300]", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', onchange: 'submitForm()') %>
+            <%= select_tag('steam_id', options_for_select([['All', 'all']] + @steam_accounts.map { |steam_account| ["#{steam_account.unique_name} ID: (#{steam_account.steam_id})", steam_account.steam_id] }, selected: !@active_steam_account.respond_to?(:each) ? @active_steam_account.steam_id : 'all' ), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-grayDark dark:text-grayDark font-[300]", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;') %>
           <% else %>
             <%= select_tag('steam_id', options_for_select([['No accounts available', nil]]), id: 'steamAccountSelect', class: "w-[110%] border-none rounded-lg p-2 text-gray dark:text-grayDark font-[300] disabled", style: 'box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;', disabled: true) %>
           <% end %>
@@ -55,6 +55,13 @@
   </div>
 </nav>
 
+<!-- Loader Component -->
+<div id="loader" class="fixed top-0 left-0 w-screen h-screen bg-slate-800 bg-opacity-75 flex items-center justify-center hidden z-50">
+  <div class="loader ease-linear border-t-4 border-blue-500 rounded-full border-t-blue-500 h-12 w-12"></div>
+</div>
+
+
+
 <script>
   function toggleDarkMode() {
     const body = document.body;
@@ -77,15 +84,9 @@
       userDropdown.classList.toggle("hidden");
     });
   });
-</script>
 
-<%# <script>
-  $(document).ready(function () {
-    const userMenuButton = document.getElementById("user-menu-button");
-    const userDropdown = document.getElementById("user-dropdown");
-
-    userMenuButton.addEventListener("click", () => {
-      userDropdown.classList.toggle("hidden");
-    });
+  document.getElementById('steamAccountSelect').addEventListener('change', function () {
+    document.getElementById('postForm').submit();
+    document.getElementById('loader').classList.remove('hidden');
   });
-</script> %>
+</script>
