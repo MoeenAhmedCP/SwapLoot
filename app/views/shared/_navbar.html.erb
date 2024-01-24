@@ -15,8 +15,8 @@
         </button>
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-        <% if request.url.include?("/users/") %>
-        <div class="text-gray-500 dark:text-white font-semibold text-center py-5 text-md">Associated Steam Accounts</div>
+        <% if request.url.include?("/users/") || request.url.include?("/steam_accounts") %>
+          <div class="text-gray-500 text-2xl dark:text-white font-semibold text-center text-md">Associated Steam Accounts</div>
         <% else %>
         <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
           <% if @steam_accounts.present? %>
