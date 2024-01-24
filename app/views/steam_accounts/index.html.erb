@@ -52,9 +52,6 @@
                                       </button>
                                     <% end %>
                                 </div>
-                                <div>
-                                    <%= link_to "Proxy", steam_account.proxy.present? ? edit_proxy_path(steam_account.proxy) : new_proxy_path(steam_account_id: steam_account.id), class: "inline-block bg-gray-200 text-gray-700 font-bold px-2 py-1 rounded-md shadow-md hover:bg-gray-300 hover:text-gray-800", remote: true %>
-                                </div>
                             </div>
                         </td>
                     </tr>
@@ -177,6 +174,43 @@
     </div>
 </div>
 
+<div class="container p-4 ">
+        <div style="display: flex;">
+            <h2 class="text-lg text-blue dark:text-white font-[600] absolute">Steam Accounts Proxies</h2>
+        </div>
+        <table id="proxiesTable" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+            <thead class="bg-blue text-white">
+                <tr>
+                    <th class="border-r border-r-[#acadaf9c] text-sm px-2 py-2 rounded-tl-lg">Name</th>
+                    <th class="border-r border-r-[#acadaf9c] text-sm px-2 py-2">Steam ID</th>
+                    <th class="border-r border-r-[#acadaf9c] text-sm px-2 py-2">IP</th>
+                    <th class="border-r border-r-[#acadaf9c] text-sm px-2 py-2">Port</th>
+                    <th class="border-r border-r-[#acadaf9c] text-sm px-2 py-2">username</th>
+                    <th class="text-sm px-2 py-2 rounded-tr-lg">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% @steam_accounts.each do |steam_account| %>
+                    <tr>
+                        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= steam_account.unique_name %></td>
+                        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= steam_account.steam_id %></td>
+                        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= steam_account.proxy&.ip %></td>
+                        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= steam_account.proxy&.port %></td>
+                        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= steam_account.proxy&.username %></td>
+                        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= link_to "Add Proxy", steam_account.proxy.present? ? edit_proxy_path(steam_account.proxy) : new_proxy_path(steam_account_id: steam_account.id), class: "inline-block text-indigo-500 underline underline-offset-2 hover:bg-gray-300 hover:text-gray-800", remote: true %></td>
+                    </tr>
+                <% end %>
+            </tbody>
+        </table>
+        <div class="apple_pagination flex justify-center justify-between">
+            <div class="page_info">
+                <%=page_entries_info @steam_accounts %>
+            </div>
+            <div>
+                <%=will_paginate @steam_accounts, previous_label: 'Previous', next_label: 'Next', inner_window: 3, outer_window: 1, renderer: WillPaginate::ActionView::LinkRenderer, class: 'flex items-center space-x-2' %>
+            </div>
+        </div>
+</div>
 
 <script>
     $(document).ready(function() {
@@ -266,9 +300,20 @@
                 searchPlaceholder: "Search...",
             },
         });
+        var dataTable = $('#proxiesTable').DataTable({
+            "order": [
+                [2, 'desc']
+            ],
+            paging: false,
+            info: false,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search...",
+            },
+        });
         const searchInputs = document.querySelectorAll('input[type="search"]');
         searchInputs.forEach(function(input) {
-            input.style.marginBottom = '10px'
+            input.style.marginBottom = '10px';
         });
 
         var elements = document.querySelectorAll('.dataTables_length');

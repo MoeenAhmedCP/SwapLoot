@@ -7,7 +7,7 @@ class MissingItemsService < ApplicationService
     @active_steam_account = @user.active_steam_account
     @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
     reset_proxy
-    add_proxy if @active_steam_account&.proxy.present?
+    add_proxy(@active_steam_account) if @active_steam_account&.proxy.present?
   end
 
   def headers(api_key, steam_account)
