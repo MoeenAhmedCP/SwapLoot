@@ -225,7 +225,7 @@ class CsgoempireSellingService < ApplicationService
     inventory.each do |inventory_item|
       item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
       if item_found_from_price_empire
-        buff_price = item_found_from_price_empire["buff"]["price"]
+        buff_price = item_found_from_price_empire["buff"]["avg30"]
         matching_item = {
           'id' => inventory_item.item_id,
           'name' => inventory_item.market_name,
@@ -248,9 +248,12 @@ class CsgoempireSellingService < ApplicationService
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
       item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
       lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
+      price_empire_item = PriceEmpire.find_by(item_name: item[:market_name])
+      price_empire_item_buff_price = price_empire_item.buff["price"] if price_empire_item.present?
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
-      if result_item && lowest_price > minimum_desired_price
-        matching_items << item.attributes.merge(lowest_price: result_item["lowest_price"])
+      cheapest_price = price_empire_item_buff_price.present? ? [price_empire_item_buff_price, lowest_price].min : lowest_price
+      if result_item && cheapest_price > minimum_desired_price
+        matching_items << item.attributes.merge(lowest_price: cheapest_price)
       end
     end
     matching_items.map do |filtered_item|
