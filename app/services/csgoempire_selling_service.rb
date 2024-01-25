@@ -65,7 +65,7 @@ class CsgoempireSellingService < ApplicationService
     end
     if fetch_items_from_pirce_empire.present?
       items_to_deposit = matching_items.map do |item|
-        if item["average"] > (item["coin_value_bought"] + (item["coin_value_bought"] * @steam_account.selling_filter.min_profit_percentage / 100 ).round(2)) * 100
+        if item["average"] > (item["coin_value_bought"] + ((item["coin_value_bought"] * @steam_account.selling_filter.min_profit_percentage) / 100 ).round(2))
           { "id" => item["id"], "coin_value" => item["average"] }
         else
           next
@@ -229,9 +229,9 @@ class CsgoempireSellingService < ApplicationService
         matching_item = {
           'id' => inventory_item.item_id,
           'name' => inventory_item.market_name,
-          'average' => ((buff_price/100.to_f / 0.614 - 0.01) * 100).round, #final
-          'coin_value_bought' => inventory_item.market_price.to_f / 100,
-          'coin_to_dollar' => inventory_item.market_price.to_f / 100 * 0.614
+          'average' => ((buff_price/100.to_f / 0.614 - 0.01) * 100).round, #final coin x 100
+          'coin_to_dollar' => (inventory_item.market_price.to_f) * 100, # /0.614 dollar value bought
+          'coin_value_bought' => (inventory_item.market_price.to_f / 0.614) * 100 #dollar to coin
         }
         matching_items << matching_item
       else
