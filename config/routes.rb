@@ -36,4 +36,5 @@ Rails.application.routes.draw do
   get '/home/fetch_all_steam_accounts', to: 'home#fetch_all_steam_accounts'
   put '/mark_all_as_read', to: 'notifications#mark_all_as_read'
   post '/read_ma_file/:id', to: 'steam_accounts#read_ma_file', as: "read_ma_file"
+  delete '/delete_ma_file/:id', to: 'steam_accounts#delete_ma_file', as: "delete_ma_file"
 end

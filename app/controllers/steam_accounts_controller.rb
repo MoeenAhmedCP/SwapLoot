@@ -1,5 +1,6 @@
 class SteamAccountsController < ApplicationController
-  before_action :set_steam_account, only: %i[edit update destroy show_api_keys edit_api_keys read_ma_file]
+  require 'httparty'
+  before_action :set_steam_account, only: %i[edit update destroy show_api_keys edit_api_keys read_ma_file delete_ma_file]
   after_action :set_steam_account_filters, only: %i[create]
   
   def index
@@ -74,8 +75,20 @@ class SteamAccountsController < ApplicationController
         params[:steam_account][:steam_account_name] = account_name
         params[:steam_account][:steam_shared_secret] = shared_secret
         params[:steam_account][:steam_identity_secret] = identity_secret
+
         if @steam_account.update(steam_account_params)
-          flash[:notice] = 'Steam account was successfully updated.'
+          base_url = ENV['NODE_TOGGLE_SERVICE_URL']
+
+          url = "#{base_url}/startsteamservice"
+          params = { id: @steam_account.id }
+
+          response = HTTParty.post(url, query: params)
+          if response['success'] == 'true'
+            flash[:notice] = 'Steam account was successfully Logged In.'
+          else
+            remove_ma_file_data
+            flash[:error] = 'Steam Login failed please login again'
+          end
         else
           flash[:error] = 'Steam account not updated.'
         end
@@ -83,7 +96,19 @@ class SteamAccountsController < ApplicationController
     end
   end
 
+  def delete_ma_file
+    if @steam_account.ma_file.present?
+      remove_ma_file_data
+    end
+    redirect_to steam_accounts_path
+  end
+
   private
+
+  def remove_ma_file_data
+    @steam_account.ma_file.purge
+    @steam_account.update(steam_account_name: nil, steam_password: nil, steam_identity_secret: nil, steam_shared_secret: nil)
+  end
 
   def check_password?
     current_user.valid_password?(params[:current_password])

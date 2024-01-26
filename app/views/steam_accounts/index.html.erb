@@ -57,8 +57,8 @@
                                                 <%= button_tag 'Upload', type: 'button', class: "bg-blue" ,id: 'submit-btn', onclick: "submitForm(#{steam_account.id})" %>
                                             </div>
                                         <% end %>
-                                        <%=form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
-                                            <button id="delete-steam-account-button-<%= steam_account.id %>" class='delete-file-button' type="button" onclick="openModal(<%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
+                                        <%=form_tag(delete_ma_file_path(id: steam_account.id), method: :delete, id: "delete-ma-file-form-#{steam_account.id}") do %>
+                                            <button id="delete-ma-file-button-<%= steam_account.id %>" class='delete-file-button' type="button" onclick="openModal('mafile', <%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Ma file">
                                                 Delete Current File
                                             </button>
                                         <% end %>
@@ -75,7 +75,7 @@
                                     </div>
                                     <div>
                                         <%=form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
-                                        <button id="delete-steam-account-button-<%= steam_account.id %>" class='text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
+                                        <button id="delete-steam-account-button-<%= steam_account.id %>" class='text-red-500 hover:text-red-700' type="button" onclick="openModal('steamAccount', <%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                         <% end %>
@@ -279,7 +279,7 @@
             contentType: false,
             success: function(response) {
                 console.log(response);
-                window.location.href = window.location.href;s
+                window.location.href = window.location.href;
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -289,10 +289,6 @@
 
     function closeUploadModal() {
         $('.uploadModal').css('display', 'none');
-    }
-
-    function closePasswordModal() {
-        $('.passwordModal').css('display', 'none');
     }
 
     $(document).ready(function() {
@@ -345,18 +341,22 @@
         }
     });
 
-    function openModal(steamAccountId) {
+    function openModal(type, steamAccountId) {
         var modal = document.getElementById("small-modal");
 
         document.getElementById("delete").onclick = function() {
-            submitDeleteForm(steamAccountId);
+            submitDeleteForm(type, steamAccountId);
         };
 
         modal.style.display = "flex";
     }
 
-    function submitDeleteForm(steamAccountId) {
-        var formId = "delete-steam-account-form-" + steamAccountId;
+    function submitDeleteForm(type, steamAccountId) {
+        if (type === 'steamAccount'){
+            var formId = "delete-steam-account-form-" + steamAccountId;
+        } else {
+            var formId = "delete-ma-file-form-" + steamAccountId;
+        }
         var form = document.getElementById(formId);
 
         if (form) {
