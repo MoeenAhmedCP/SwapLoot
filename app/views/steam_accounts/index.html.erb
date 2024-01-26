@@ -40,7 +40,7 @@
                                 <%=steam_account.market_csgo_api_key&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %>
                             </td>
                         <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm">
-                                <i id="upload-file-<%= steam_account.id %>" class="" onclick="openUploadFileModal(<%= steam_account.id %>)">Upload File</i>
+                                <a id="upload-file-<%= steam_account.id %>" class="" onclick="openUploadFileModal(<%= steam_account.id %>)">Upload File</a>
                                 <div id="uploadModal-<%= steam_account.id %>" class="uploadModal modal hidden">
                                     <div class="modal-content">
                                         <span class="close" onclick="closeUploadModal()">&times;</span>
@@ -550,6 +550,10 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+  }
+
+  a:hover{
+    color: blue;
   }
  
 </style>
