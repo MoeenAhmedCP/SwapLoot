@@ -13,6 +13,7 @@
                     <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">Waxpeer API Key</th>
                     <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">CSGOEmpire API Key</th>
                     <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">Market.CSGO API Key</th>
+                    <th class="px-4 py-2 border-[#acadaf9c] border-r text-sm">Ma File</th>
                     <th class="px-4 py-2 rounded-tr-lg border-r text-sm">Action</th>
                 </tr>
             </thead>
@@ -37,6 +38,16 @@
                         <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm">
                             <%=steam_account.market_csgo_api_key&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %>
                         </td>
+                        <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm">
+                            <%= form_for steam_account, url: steam_account_path(id: steam_account), method: :patch, local: true, html: { class: 'file-form' } do |form| %>
+                                <div class="mb-4 dark:text-black">
+                                    <%= form.file_field :ma_file, class: 'file-input' %>
+                                    <% if steam_account.ma_file.attached? %>
+                                        <p>Current File: <%= steam_account.ma_file.filename %></p>
+                                    <% end %>
+                                </div>
+                            <% end %>
+                        </td>
                         <td class="text-center px-4 py-2 ">
                             <div class="flex item-center justify-center gap-3">
                                 <div>
@@ -55,7 +66,6 @@
                             </div>
                         </td>
                     </tr>
-
                     <!-- Modal for Steam Web API Key -->
                     <div id="steamWebApiKeyModal-<%= steam_account.id %>" class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center">
                         <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
@@ -174,6 +184,16 @@
     </div>
 </div>
 
+<div id="passwordModal" class="modal hidden">
+<div class="modal-content">
+    <span class="close">&times;</span>
+    <label for="password">Enter Steam Account Password:</label>
+    <input type="password" id="password" name="password">
+    <button id="submitPassword">Submit</button>
+</div>
+</div>
+
+
 <div class="container p-4 ">
         <div style="display: flex;">
             <h2 class="text-lg text-blue dark:text-white font-[600] absolute">Steam Accounts Proxies</h2>
@@ -214,6 +234,50 @@
 
 <script>
     $(document).ready(function() {
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const fileForm = document.querySelector('.file-form');
+            const fileInput = document.querySelector('.file-input');
+            const passwordModal = document.getElementById('passwordModal');
+            const submitPasswordBtn = document.getElementById('submitPassword');
+
+            // Event listener for file input change
+            fileInput.addEventListener('change', function() {
+                // Display the password modal when a file is attached
+                passwordModal.style.display = 'block';
+            });
+
+            // Event listener for modal close button
+            document.querySelector('.close').addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+            });
+
+            // Event listener for password submission
+            submitPasswordBtn.addEventListener('click', function() {
+                const password = document.getElementById('password').value;
+
+                // Create a FormData object to append both file and password
+                const formData = new FormData(fileForm);
+                formData.append('password', password);
+
+                // Perform AJAX request to submit file and password
+                fetch(fileForm.action, {
+                method: 'PATCH',
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                })
+                .then(response => response.json())
+                .then(data => {
+                // Handle response as needed
+                console.log(data);
+                passwordModal.style.display = 'none';
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+
         const allRows = document.querySelectorAll(".show-api-keys-submit");
         allRows.forEach((el) => {
             el.addEventListener("click", validateUser)
