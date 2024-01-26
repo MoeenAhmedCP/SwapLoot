@@ -40,26 +40,30 @@
                                 <%=steam_account.market_csgo_api_key&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %>
                             </td>
                         <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm">
-                                <%= form_for steam_account, url: read_ma_file_path(id: steam_account), method: :post, local: true, html: { class: 'file-form', id: "file-upload-form-#{steam_account.id}", multipart: true } do |form| %>
-                                    <div class="mb-4 dark:text-black">
-                                        <%= form.file_field :ma_file, class: 'file-input' %>
-                                    </div>
-                                    <div style="display:flex;">
-                                        <div>
-                                        <% if steam_account.ma_file.attached? %>
-                                            <p>Current File: <%= steam_account.ma_file.filename %></p>
-                                        <% end %>
+                                <i id="upload-file-<%= steam_account.id %>" class="" onclick="openUploadFileModal(<%= steam_account.id %>)">Upload File</i>
+                                <div id="uploadModal" class="uploadModal modal hidden">
+                                    <div class="modal-content">
+                                        <span class="close" onclick="closeUploadModal()">&times;</span>
+                                        <div style="margin-bottom: 20px; margin-top: 10px;">
+                                            <% if steam_account.ma_file.attached? %>
+                                                <p>Current File: <%= steam_account.ma_file.filename %></p> 
+                                            <% end %>
                                         </div>
-                                        <div>
+                                        <%= form_for steam_account, url: read_ma_file_path(id: steam_account), method: :post, local: true, html: { class: 'file-form', id: "file-upload-form-#{steam_account.id}", multipart: true } do |form| %>
+                                            <div style="display:flex; flex-direction: column;">
+                                                <div class="mb-4 dark:text-black">
+                                                    <%= form.file_field :ma_file, class: 'file-input' %>
+                                                </div>
+                                                <%= button_tag 'Upload', type: 'button', class: "bg-blue" ,id: 'submit-btn', onclick: "submitForm(#{steam_account.id})" %>
+                                            </div>
+                                        <% end %>
                                         <%=form_tag(steam_account_path(id: steam_account.id), method: :delete, id: "delete-steam-account-form-#{steam_account.id}") do %>
-                                        <button id="delete-steam-account-button-<%= steam_account.id %>" class='text-red-500 hover:text-red-700' type="button" onclick="openModal(<%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
+                                            <button id="delete-steam-account-button-<%= steam_account.id %>" class='delete-file-button' type="button" onclick="openModal(<%= steam_account.id %>)" data-toggle="tooltip" data-placement="top" title="Delete Steam Account">
+                                                Delete Current File
+                                            </button>
                                         <% end %>
-                                        </div>
                                     </div>
-                                    <%= button_tag 'Update', type: 'button', class: "bg-blue" ,id: 'submit-btn', onclick: "submitForm(#{steam_account.id})" %>
-                                <% end %>
+                                </div>
                             </td>
                             <td class="text-center px-4 py-2 ">
                                 <div class="flex item-center justify-center gap-3">
@@ -247,12 +251,16 @@
 
 <script>
 
+    function openUploadFileModal(id){
+        console.log("aslkdkm");
+        var uploadModalId = document.getElementById("uploadModal")
+        uploadModalId.style.display = 'block';
+    }
 
     function submitForm(id) {
         var passwordModalId = document.getElementById("passwordModal");
         passwordModal.style.display = 'block';
         document.getElementById("submitPassword").onclick = function() {
-            console.log("asdsad")
             submitFile(id);
         };
     }
@@ -279,7 +287,11 @@
         });
     }
 
-    function closePasswordModal(id) {
+    function closeUploadModal() {
+        $('.uploadModal').css('display', 'none');
+    }
+
+    function closePasswordModal() {
         $('.passwordModal').css('display', 'none');
     }
 
@@ -451,7 +463,7 @@
 </script>
 <style>
   /* Style for the modal container */
-  .passwordModal {
+  .passwordModal , .uploadModal{
     display: none;
     position: fixed;
     top: 50%;
@@ -487,12 +499,31 @@
   }
 
   /* Style for the submit button */
-  #submitPassword , #submit-btn{
+  #submitPassword {
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+  }
+
+  #submit-btn{
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .delete-file-button{
+    margin-top: 5px;
+    color: white;
+    background-color: red;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
   }
 
   /* Style for the submit button on hover */
