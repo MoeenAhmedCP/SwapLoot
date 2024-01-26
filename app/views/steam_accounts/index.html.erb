@@ -38,14 +38,15 @@
                         <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm">
                             <%=steam_account.market_csgo_api_key&.gsub(/(.{3})(.*)(.{2})/) { $1 + '*' * 5 + $3 } %>
                         </td>
-                        <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm">
-                            <%= form_for steam_account, url: steam_account_path(id: steam_account), method: :patch, local: true, html: { class: 'file-form' } do |form| %>
+                       <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm">
+                            <%= form_for steam_account, url: read_ma_file_path(id: steam_account), method: :post, local: true, html: { class: 'file-form', id: 'file-upload-form', multipart: true } do |form| %>
                                 <div class="mb-4 dark:text-black">
-                                    <%= form.file_field :ma_file, class: 'file-input' %>
-                                    <% if steam_account.ma_file.attached? %>
-                                        <p>Current File: <%= steam_account.ma_file.filename %></p>
-                                    <% end %>
+                                <%= form.file_field :ma_file, class: 'file-input' %>
+                                <% if steam_account.ma_file.attached? %>
+                                    <p>Current File: <%= steam_account.ma_file.filename %></p>
+                                <% end %>
                                 </div>
+                                <%= button_tag 'Update', type: 'button', class: "bg-blue" ,id: 'submit-btn', onclick: 'submitForm()' %>
                             <% end %>
                         </td>
                         <td class="text-center px-4 py-2 ">
@@ -185,12 +186,12 @@
 </div>
 
 <div id="passwordModal" class="modal hidden">
-<div class="modal-content">
-    <span class="close">&times;</span>
-    <label for="password">Enter Steam Account Password:</label>
-    <input type="password" id="password" name="password">
-    <button id="submitPassword">Submit</button>
-</div>
+    <div class="modal-content">
+        <span class="close" onclick="closePasswordModal()">&times;</span>
+        <label for="password">Enter Steam Account Password:</label>
+        <input type="password" id="password" name="password">
+        <button id="submitPassword" onclick="submitFile()" class="bg-blue">Submit</button>
+    </div>
 </div>
 
 
@@ -233,50 +234,40 @@
 </div>
 
 <script>
-    $(document).ready(function() {
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const fileForm = document.querySelector('.file-form');
-            const fileInput = document.querySelector('.file-input');
-            const passwordModal = document.getElementById('passwordModal');
-            const submitPasswordBtn = document.getElementById('submitPassword');
 
-            // Event listener for file input change
-            fileInput.addEventListener('change', function() {
-                // Display the password modal when a file is attached
-                passwordModal.style.display = 'block';
-            });
-
-            // Event listener for modal close button
-            document.querySelector('.close').addEventListener('click', function() {
-                passwordModal.style.display = 'none';
-            });
-
-            // Event listener for password submission
-            submitPasswordBtn.addEventListener('click', function() {
-                const password = document.getElementById('password').value;
-
-                // Create a FormData object to append both file and password
-                const formData = new FormData(fileForm);
-                formData.append('password', password);
-
-                // Perform AJAX request to submit file and password
-                fetch(fileForm.action, {
-                method: 'PATCH',
-                body: formData,
-                headers: {
-                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-                },
-                })
-                .then(response => response.json())
-                .then(data => {
-                // Handle response as needed
-                console.log(data);
-                passwordModal.style.display = 'none';
-                })
-                .catch(error => console.error('Error:', error));
-            });
+    function submitForm() {
+        var passwordModalId = document.getElementById("passwordModal");
+        passwordModal.style.display = 'block';
+    }
+    
+    function submitFile() {
+        var passwordModalButtonId = document.getElementById("submitPassword");
+        var passwordModalInputId = document.getElementById("password");
+        var passwordValue = passwordModalInputId.value;
+        var  formData = new FormData($('#file-upload-form')[0]);
+        formData.append("steam_account[steam_password]", passwordValue);
+        $.ajax({
+            type: 'POST',
+            url: $('#file-upload-form').attr('action'),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log(response);
+                window.location.href = window.location.href;s
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
         });
+    }
+
+    function closePasswordModal() {
+        $('#passwordModal').css('display', 'none');
+    }
+
+    $(document).ready(function() {
 
         const allRows = document.querySelectorAll(".show-api-keys-submit");
         allRows.forEach((el) => {
@@ -385,10 +376,7 @@
             elements[i].parentNode.removeChild(elements[i]);
         }
     });
-</script>
 
-
-<script>
     // Function to open key modal
     function openKeyModal(steamAccountId) {
         var modal = document.getElementById("steamWebApiKeyModal-" + steamAccountId);
@@ -400,8 +388,6 @@
         var modal = document.getElementById("steamWebApiKeyModal-" + steamAccountId);
         modal.style.display = "none";
     }
-
-
 
     // Event listeners for each eye-slash icon
     <% @steam_accounts.each do |steam_account | %>
@@ -447,3 +433,64 @@
             }
         }); <% end %>
 </script>
+<style>
+  /* Style for the modal container */
+  #passwordModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fefefe;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+  }
+
+  /* Style for the modal content */
+  .modal-content {
+    text-align: center;
+  }
+
+  /* Style for the close button */
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  /* Style for the label and input */
+  label, input {
+    display: block;
+    margin: 10px 0;
+    width: 100%;
+  }
+
+  /* Style for the submit button */
+  #submitPassword , #submit-btn{
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  /* Style for the submit button on hover */
+  #submitPassword:hover {
+    background-color: #45a049;
+  }
+
+  [type="file"]::file-selector-button {
+    background: #2563eb;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+ 
+</style>

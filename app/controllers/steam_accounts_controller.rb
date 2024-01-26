@@ -1,7 +1,6 @@
 class SteamAccountsController < ApplicationController
-  before_action :set_steam_account, only: %i[edit update destroy show_api_keys edit_api_keys]
+  before_action :set_steam_account, only: %i[edit update destroy show_api_keys edit_api_keys read_ma_file]
   after_action :set_steam_account_filters, only: %i[create]
-  before_action :read_ma_file, only: %i[update]
   
   def index
     @steam_accounts = SteamAccount.where(user_id: current_user.id).includes(:proxy).paginate(page: params[:page], per_page: 10)
@@ -61,25 +60,30 @@ class SteamAccountsController < ApplicationController
     end
   end
 
-  private
-
   def read_ma_file
-    return if param[:ma_file].present?
+    return unless params[:steam_account][:ma_file].present?
 
-    file_content = File.read(params[:file].path)
+    file_content = File.read(params[:steam_account][:ma_file].path)
     data = JSON.parse(file_content)
     if data.present?
       account_name = data['account_name']
-      password = params[:steam_password]
+      password = params[:steam_account][:steam_password]
       identity_secret = data['identity_secret']
       shared_secret = data['shared_secret']
       if account_name.present? && password.present? && identity_secret.present? && shared_secret.present?
         params[:steam_account][:steam_account_name] = account_name
         params[:steam_account][:steam_shared_secret] = shared_secret
         params[:steam_account][:steam_identity_secret] = identity_secret
+        if @steam_account.update(steam_account_params)
+          flash[:notice] = 'Steam account was successfully updated.'
+        else
+          flash[:error] = 'Steam account not updated.'
+        end
       end
     end
   end
+
+  private
 
   def check_password?
     current_user.valid_password?(params[:current_password])
