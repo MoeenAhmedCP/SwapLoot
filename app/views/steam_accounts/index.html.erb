@@ -252,7 +252,6 @@
 <script>
 
     function openUploadFileModal(id){
-        console.log("aslkdkm");
         var uploadModalId = document.getElementById(`uploadModal-${id}`)
         uploadModalId.style.display = 'block';
     }
@@ -264,6 +263,14 @@
             submitFile(id);
         };
     }
+
+    $(document).ajaxStart(function() {
+        $('#loader').show();
+    });
+
+    $(document).ajaxStop(function() {
+        $('#loader').hide();
+    });
     
     function submitFile(id) {
         var passwordModalButtonId = document.getElementById("submitPassword");
@@ -437,9 +444,6 @@
             }
         }); <% end %>
 
-
-
-
         // Function to open key modal
         function openKeyModalEdit(steamAccountId) {
             var modal = document.getElementById("steamWebApiKeyModalEdit-" + steamAccountId);
@@ -555,5 +559,22 @@
   a:hover{
     color: blue;
   }
- 
+
+    .loader{
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        text-align: center;
+        animation: rotate 1s infinite linear;
+    }
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
 </style>
