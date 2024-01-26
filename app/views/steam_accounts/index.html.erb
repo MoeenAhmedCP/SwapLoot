@@ -41,7 +41,7 @@
                             </td>
                         <td class="text-center px-4 py-2 min-w-10 break-all border-r border-r-[#acadaf9c] text-sm">
                                 <i id="upload-file-<%= steam_account.id %>" class="" onclick="openUploadFileModal(<%= steam_account.id %>)">Upload File</i>
-                                <div id="uploadModal" class="uploadModal modal hidden">
+                                <div id="uploadModal-<%= steam_account.id %>" class="uploadModal modal hidden">
                                     <div class="modal-content">
                                         <span class="close" onclick="closeUploadModal()">&times;</span>
                                         <div style="margin-bottom: 20px; margin-top: 10px;">
@@ -253,7 +253,7 @@
 
     function openUploadFileModal(id){
         console.log("aslkdkm");
-        var uploadModalId = document.getElementById("uploadModal")
+        var uploadModalId = document.getElementById(`uploadModal-${id}`)
         uploadModalId.style.display = 'block';
     }
 
