@@ -291,6 +291,10 @@
         $('.uploadModal').css('display', 'none');
     }
 
+    function closePasswordModal() {
+        $('#passwordModal').css('display', 'none');
+    }
+
     $(document).ready(function() {
 
         const allRows = document.querySelectorAll(".show-api-keys-submit");
@@ -472,9 +476,17 @@
     background-color: #fefefe;
     padding: 20px;
     border-radius: 10px;
-    width: 50%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1;
+  }
+  
+  .passwordModal{
+    width: 30%;
+    border: 1px solid grey;
+  }
+
+  .uploadModal{
+    width: 50%;
   }
 
   /* Style for the modal content */
