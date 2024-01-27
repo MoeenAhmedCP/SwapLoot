@@ -15,7 +15,17 @@ class SteamAccountsController < ApplicationController
     @steam_account = current_user.steam_accounts.build(steam_account_params)
     if @steam_account.save
       if response_message.empty?
-        flash[:notice] = "Steam Account Successfully created."
+        base_url = ENV['NODE_TOGGLE_SERVICE_URL']
+
+        url = "#{base_url}/toggleStatusService"
+        params = { id: @steam_account.id }
+
+        response = HTTParty.post(url, query: params)
+        if response['success'] == true
+          flash[:notice] = "Steam Account Successfully created."
+        else
+          flash[:alert] = response['message']
+        end
       else
         flash[:alert] = response_message
       end
@@ -87,10 +97,10 @@ class SteamAccountsController < ApplicationController
             flash[:notice] = 'Steam account was successfully Logged In.'
           else
             remove_ma_file_data
-            flash[:error] = 'Steam Login failed please login again'
+            flash[:alert] = 'Steam Login failed please login again'
           end
         else
-          flash[:error] = 'Steam account not updated.'
+          flash[:alert] = 'Steam account not updated.'
         end
       end
     end
