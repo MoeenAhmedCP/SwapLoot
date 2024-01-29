@@ -21,8 +21,8 @@ class SteamAccountsController < ApplicationController
         params = { id: @steam_account.id }
 
         response = HTTParty.post(url, query: params)
-        if response['success'] == true
-          flash[:notice] = "Steam Account Successfully created."
+        if response['success'] == 'true'
+          flash[:notice] = 'Steam Account Successfully created.'
         else
           flash[:alert] = response['message']
         end
