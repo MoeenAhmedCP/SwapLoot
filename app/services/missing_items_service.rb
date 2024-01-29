@@ -42,6 +42,7 @@ class MissingItemsService < ApplicationService
           end
         end
       end
+      response = response.flatten
     end
     response
   end
