@@ -1097,12 +1097,6 @@
   cursor: pointer;
 }
 
-/* Style for the label and input */
-label, input {
-  display: block;
-  margin: 10px 0;
-  width: 100%;
-}
 
 /* Style for the submit button */
 #submitPassword {
@@ -1130,11 +1124,6 @@ label, input {
   border-radius: 5px;
   cursor: pointer;
   width: 100%;
-}
-
-/* Style for the submit button on hover */
-#submitPassword:hover {
-  background-color: #45a049;
 }
 
 [type="file"]::file-selector-button {

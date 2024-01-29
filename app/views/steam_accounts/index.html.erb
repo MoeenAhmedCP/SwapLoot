@@ -45,8 +45,6 @@
                             <%else%>
                                 <a id="upload-file-<%= steam_account.id %>" class="text-black underline underline-offset-2 py-2 px-1 rounded cursor-pointer" onclick="openUploadFileModal(<%= steam_account.id %>)">Upload</a>
                             <%end%>
-                                
-                                
                                 <div id="uploadModal-<%= steam_account.id %>" class="uploadModal modal hidden">
                                     <div class="modal-content">
                                         <span class="close" onclick="closeUploadModal()">&times;</span>
@@ -191,14 +189,14 @@
             </div>
         </div>
     </div>
-    <div id="passwordModal" class="passwordModal modal hidden">
-        <div class="modal-content">
-            <span class="close" onclick="closePasswordModal()">&times;</span>
-            <label for="password">Enter Steam Account Password:</label>
-            <input type="password" id="password" name="password">
-            <button id="submitPassword" class="bg-blue">Submit</button>
-        </div>
+<div id="passwordModal" class="passwordModal modal hidden">
+    <div class="modal-content p-4">
+        <span class="close absolute top-2 right-2 text-2xl cursor-pointer" onclick="closePasswordModal()">&times;</span>
+        <label for="password" class="text-gray-700 text-lg">Enter Steam Account Password:</label>
+        <input type="password" id="password" name="password" class="border border-gray-300 px-3 py-2 w-full rounded-md focus:outline-none focus:border-blue-500">
+        <button id="submitPassword" class="bg-blue text-white px-4 py-2 rounded-md mt-4">Submit</button>
     </div>
+</div>
 
     <div id="small-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
