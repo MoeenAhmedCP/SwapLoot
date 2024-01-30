@@ -1,1 +1,2 @@
 $('#dataItemListedforsale').html('<%= j(render partial: "reload_item_listed" , locals:{ item_listed_for_sale_hash: @item_listed_for_sale_hash }) %>');
+$('#refreshitemListed')[0].classList.remove('fa-spin');

@@ -1,1 +1,2 @@
 $('#dataactivetrade').html('<%= j(render partial: "active_trade" , locals:{ auction_items_hash: @auction_items_hash }) %>');
+$('#refreshactiveTrade')[0].classList.remove('fa-spin');
