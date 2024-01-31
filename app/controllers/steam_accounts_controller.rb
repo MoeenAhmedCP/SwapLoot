@@ -48,7 +48,10 @@ class SteamAccountsController < ApplicationController
   end
 
   def destroy
-    redirect_to steam_accounts_path, notice: 'Steam account was successfully deleted.' if @steam_account.destroy
+    if @steam_account.destroy
+      logout_steam
+      redirect_to steam_accounts_path, notice: 'Steam account was successfully deleted.'
+    end
   end
 
   def show_api_keys
@@ -108,9 +111,19 @@ class SteamAccountsController < ApplicationController
 
   def delete_ma_file
     if @steam_account.ma_file.present?
+      logout_steam
       remove_ma_file_data
     end
     redirect_to steam_accounts_path
+  end
+
+  def logout_steam
+    base_url = ENV['NODE_TOGGLE_SERVICE_URL']
+
+    url = "#{base_url}/logOutSteam"
+    params = { id: @steam_account.id }
+
+    HTTParty.post(url, query: params)
   end
 
   private
