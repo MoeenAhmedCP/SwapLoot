@@ -25,7 +25,7 @@ class TradeStatusJob
                 listed_item.destroy if listed_item.present?
                 ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: 'Item listed for sale', item_id: item['data']['item_id'], steam_account_id: steam_account.id })
                 sold_price = (item['data']['total_value']).to_f / 100
-                create_item(item['data']['item_id'], item['data']['item']['market_name'], sold_price, item['data']['item']['market_value'] * 0.614, item['data']['created_at'], steam_account)
+                create_item(item['data']['item_id'], item['data']['item']['market_name'], item['data']['item']['market_value'] * 0.614, sold_price, item['data']['created_at'], steam_account)
               rescue StandardError => e
               end
             end
