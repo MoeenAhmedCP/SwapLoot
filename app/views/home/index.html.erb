@@ -1,7 +1,7 @@
 <div class="p-6">
     <div class="flex">
         <h1 class="text-2xl text-blue dark:text-white font-[500]">Balance</h1>
-        <i class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true" id="refresh-balance"></i>
+        <div><i class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true" id="refresh-balance"></i></div>
     </div>
 
     <div class="balance-container" id="balance-container">
@@ -54,7 +54,7 @@
 
     <div class="flex">
       <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">Active Trades</h2>
-      <i id="refreshactiveTrade" class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true"></i>
+      <div><i id="refreshactiveTrade" class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true"></i></div>
     </div>
     <div class="mb-20 " id="dataactivetrade">
         <%= render partial: 'active_trade' ,locals: { active_trades: @active_trades } %>
@@ -64,7 +64,7 @@
 
     <div class="flex">
         <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">Item Listed for Sale</h2>
-        <i class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true" id="refreshitemListed"></i>
+        <div><i class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true" id="refreshitemListed"></i></div>
     </div>
     <div class="mb-20 " id="dataItemListedforsale">
         <%= render partial: 'reload_item_listed' , locals:{ item_listed_for_sale_hash: @item_listed_for_sale_hash }%> 
@@ -83,10 +83,12 @@
     };
 
     $('#refresh-balance').on('click', function () {
+        this.classList.add("fa-spin")
         refreshBalance();
     });
 
     $('#refreshitemListed').on('click', function () {
+        this.classList.add('fa-spin');
         $.ajax({
             url: '<%= home_reload_item_listed_for_sale_path(format: :js) %>',
             method: 'GET',
@@ -97,6 +99,7 @@
     });
 
     $('#refreshactiveTrade').on('click', function () {
+        this.classList.add('fa-spin');
         $.ajax({
             url: '<%= home_active_trades_reload_path(format: :js) %>',
             method: 'GET',
