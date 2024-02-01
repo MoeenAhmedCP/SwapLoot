@@ -148,22 +148,34 @@ class CsgoempireSellingService < ApplicationService
   def cutting_price_and_list_again(items)
     filtered_items_for_deposit = []
     items.map do |item|
-      suggested_items = waxpeer_suggested_prices
-      result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-      item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
-      lowest_price = result_item['lowest_price']
-      price_empire_item = PriceEmpire.find_by(item_name: item[:market_name])
-      price_empire_item_buff_price = (price_empire_item.buff["price"] * 10) if price_empire_item.present?
+      item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price.to_f
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
-      cheapest_price = price_empire_item_buff_price.present? ? [price_empire_item_buff_price, lowest_price].min : lowest_price
-      if result_item && cheapest_price > minimum_desired_price
-        filtered_items_for_deposit << item.merge(lowest_price: cheapest_price)
+      minimum_desired_price = (minimum_desired_price / 0.614).round(2)
+      current_listed_price = item[:market_value]
+      price_empire_item = PriceEmpire.find_by(item_name: item[:market_name])
+      if price_empire_item.present?
+        price_empire_item_buff_price = ((price_empire_item.buff["price"] / 100.to_f) / 0.614).round(2)
+        lowest_price = price_empire_item_buff_price ? price_empire_item_buff_price : nil
+      end
+
+      unless lowest_price || price_empire_item.present?
+        suggested_items = waxpeer_suggested_prices
+        result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
+        lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
+      end
+
+      if lowest_price > minimum_desired_price && lowest_price < current_listed_price
+        filtered_items_for_deposit << item.merge(lowest_price: (lowest_price - 0.01) * 100)
       end
     end
+
+    # Cancel deposits for already listed items
     filtered_items_for_deposit.each do |item_to_deposit|
       cancel_item_deposit(item_to_deposit)
     end
-    items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "id"=> filtered_item[:item_id], "coin_value"=> calculate_pricing(filtered_item) } }
+
+    # Re-list for sale items after price cutting
+    items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "id"=> filtered_item[:item_id], "coin_value"=> filtered_item[:lowest_price]  } }
     deposit_items_for_resale(items_to_deposit)
   end
 
