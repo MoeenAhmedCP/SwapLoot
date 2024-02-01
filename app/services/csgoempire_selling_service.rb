@@ -5,6 +5,7 @@ class CsgoempireSellingService < ApplicationService
   #initialize steam account fro service
   def initialize(steam_account)
     @steam_account = steam_account
+    add_proxy
   end
 
   def headers
@@ -13,8 +14,19 @@ class CsgoempireSellingService < ApplicationService
       'Content-Type' => 'application/json'
     }
   end
-  
-  #fuction for get inventory data from api
+
+  def add_proxy
+    reset_proxy
+    proxy = @steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+  end
+
+  def add_proxy
+    reset_proxy
+    proxy = @steam_account.proxy
+    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+  end
+
   def fetch_inventory
     response = fetch_database_inventory
     online_trades_response = fetch_active_trades
@@ -53,7 +65,7 @@ class CsgoempireSellingService < ApplicationService
     end
     if fetch_items_from_pirce_empire.present?
       items_to_deposit = matching_items.map do |item|
-        if item["average"] > (item["coin_value_bought"] + (item["coin_value_bought"] * @steam_account.selling_filter.min_profit_percentage / 100 ).round(2)) * 100
+        if item["average"] > (item["coin_value_bought"] + ((item["coin_value_bought"] * @steam_account.selling_filter.min_profit_percentage) / 100 ).round(2))
           { "id" => item["id"], "coin_value" => item["average"] }
         else
           next
@@ -136,19 +148,34 @@ class CsgoempireSellingService < ApplicationService
   def cutting_price_and_list_again(items)
     filtered_items_for_deposit = []
     items.map do |item|
-      suggested_items = waxpeer_suggested_prices
-      result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-      item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
-      lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
+      item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price.to_f
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
-      if result_item && lowest_price > minimum_desired_price
-        filtered_items_for_deposit << item.merge(:lowest_price=> result_item["lowest_price"])
+      minimum_desired_price = (minimum_desired_price / 0.614).round(2)
+      current_listed_price = item[:market_value]
+      price_empire_item = PriceEmpire.find_by(item_name: item[:market_name])
+      if price_empire_item.present?
+        price_empire_item_buff_price = ((price_empire_item.buff["price"] / 100.to_f) / 0.614).round(2)
+        lowest_price = price_empire_item_buff_price ? price_empire_item_buff_price : nil
+      end
+
+      unless lowest_price || price_empire_item.present?
+        suggested_items = waxpeer_suggested_prices
+        result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
+        lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
+      end
+
+      if lowest_price > minimum_desired_price && lowest_price < current_listed_price
+        filtered_items_for_deposit << item.merge(lowest_price: (lowest_price - 0.01) * 100)
       end
     end
+
+    # Cancel deposits for already listed items
     filtered_items_for_deposit.each do |item_to_deposit|
       cancel_item_deposit(item_to_deposit)
     end
-    items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "id"=> filtered_item[:item_id], "coin_value"=> calculate_pricing(filtered_item) } }
+
+    # Re-list for sale items after price cutting
+    items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "id"=> filtered_item[:item_id], "coin_value"=> filtered_item[:lowest_price]  } }
     deposit_items_for_resale(items_to_deposit)
   end
 
@@ -213,13 +240,13 @@ class CsgoempireSellingService < ApplicationService
     inventory.each do |inventory_item|
       item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
       if item_found_from_price_empire
-        buff_price = item_found_from_price_empire["buff"]["price"]
+        buff_price = item_found_from_price_empire["buff"]["avg30"]
         matching_item = {
           'id' => inventory_item.item_id,
           'name' => inventory_item.market_name,
-          'average' => ((buff_price/100.to_f / 0.614 - 0.01) * 100).round, #final
-          'coin_value_bought' => inventory_item.market_price.to_f / 100,
-          'coin_to_dollar' => inventory_item.market_price.to_f / 100 * 0.614
+          'average' => ((buff_price/100.to_f / 0.614 - 0.01) * 100).round, #final coin x 100
+          'coin_to_dollar' => (inventory_item.market_price.to_f) * 100, # /0.614 dollar value bought
+          'coin_value_bought' => (inventory_item.market_price.to_f / 0.614) * 100 #dollar to coin
         }
         matching_items << matching_item
       else

@@ -39,3 +39,13 @@ en:
     update:
       success: 'Buying filter updated successfully.'
       failure: 'Failed to update buying filter.'
+  proxy:
+    create:
+      success: 'Proxy added successfully.'
+      failure: 'Failed to add proxy. Errors: %{errors}'
+    update:
+      success: 'Proxy changed successfully.'
+      failure: 'Failed to change proxy. Errors: %{errors}'
+    destroy:
+      success: 'Proxy removed successfully.'
+      failure: 'Failed to remove proxy.'

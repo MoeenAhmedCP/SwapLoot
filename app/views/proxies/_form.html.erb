@@ -1,0 +1,58 @@
+<%= form_for proxy, html: { class: 'contents proxy-form' } do |form| %>
+  <div class="my-5">
+    <%= form.label :ip %>
+    <%= form.text_field :ip, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full", required: true %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :port %>
+    <%= form.number_field :port, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full", required: true %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :username %>
+    <%= form.text_field :username, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :password %>
+    <%= form.text_field :password, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="flex justify-between items-center mb-3">
+    <div class="flex items-center">
+      <%= form.submit class: "bg-blue dark:bg-blue rounded-lg text-white dark:text-white font-semibold py-2 px-4 shadow" %>
+    </div>
+    
+    <% if proxy.persisted? %>
+      <%= button_tag "Delete", type: 'button', class: "rounded-lg py-2 px-5 bg-red-600 text-white inline-block font-medium cursor-pointer", onclick: "deleteProxy(#{proxy.id})" %>
+    <% else %>
+      <%= form.hidden_field 'steam_account_id', value: params[:steam_account_id]%>
+    <% end %>
+  </div>
+<% end %>
+
+<script>
+  function deleteProxy(form_id){
+    $.ajax({
+      url: `/proxies/${form_id}.js`,
+      type: 'DELETE',
+      headers: {
+        'X-CSRF-Token': "<%= form_authenticity_token %>"
+      },
+      success: function(response){
+        hide_modal();
+        response = JSON.parse(response)
+        $('#toast-success').removeClass('hidden').find('.success_message').text(response.message);
+        window.location.reload();
+      },
+      error: function(){
+        $('#toast-success').removeClass('hidden').find('.success_message').text('Something Went Wrong');
+      }
+    });
+  }
+
+  function hide_modal(){
+    $("#editProxyModal").addClass('hidden');
+  }
+</script>

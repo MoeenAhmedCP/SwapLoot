@@ -3,9 +3,8 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable, and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
-         
-  has_one_attached :ma_file, dependent: :destroy
-  has_many :steam_accounts, dependent: :destroy
+
+  has_many :steam_accounts, -> { where(valid_account: true) }, dependent: :destroy
   has_many :notifications, dependent: :destroy
   has_many :user_errors, class_name: 'Error', dependent: :destroy
   has_one :active_steam_account, -> { joins(:user).merge(SteamAccount.active_accounts).limit(1) }, class_name: 'SteamAccount'

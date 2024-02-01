@@ -24,7 +24,7 @@
 <script>
     $(document).ready(function() {
         $('#activeTradePartial').DataTable({
-            paging: true,
+            paging: <%= @auction_items_hash.present? ? true : false %>,
             label: false,
             pageLength: 10,
                 language: {
