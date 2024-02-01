@@ -8,7 +8,6 @@ class SellableInventoryUpdationService < ApplicationService
 	# function is to update sellable inventory from waxpeer API to update/BULK Insert database after 15 minutes
 	def update_sellable_inventory
 		headers = { 'Authorization' => "Bearer #{@steam_account.csgoempire_api_key}" }
-		debugger
 		begin
 			inventory_response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers)
 			if inventory_response['success'] == false
