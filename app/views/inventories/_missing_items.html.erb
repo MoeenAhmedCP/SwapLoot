@@ -21,7 +21,7 @@
 <script>
     var dataTable = $('#missingItemTable').DataTable({
         "order": [[2, 'desc']],
-        paging: true,
+        paging: <%= missing_items.present? ? true : false %>,
         pageLength: 10,
         language: {
         search: "_INPUT_",

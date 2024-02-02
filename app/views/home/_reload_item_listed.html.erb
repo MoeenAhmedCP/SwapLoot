@@ -25,7 +25,7 @@
     <script>
     $(document).ready(function() {
         $('#dataItemListed').DataTable({
-            paging: true,
+            paging: <%= item_listed_for_sale_hash.present? ? true : false %>,
             label: false,
             pageLength: 10,
                 language: {

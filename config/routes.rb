@@ -23,16 +23,18 @@ Rails.application.routes.draw do
   resources :users
   resources :errors, only: %i[index show]
   resources :sold_items, only: [:index]
+  resources :proxies
   get '/fetch_sold_items', to: "sold_items#fetch_sold_items", as: 'fetch-sold-items'
   get '/show_api_keys', to: "steam_accounts#show_api_keys", as: "show_api_key"
   get '/edit_api_keys', to: "steam_accounts#edit_api_keys", as: "edit_api_key"
+  resources :proxies, only: %i[new create edit update destroy]
   get '/services', to: "services#index"
-  post '/trigger_service', to: "services#trigger_service"
-  post '/selling_service', to: "services#selling_service"
   post '/home/update_active_account', to: 'home#update_active_account'
   get '/refresh_balance', to: 'home#refresh_balance', as: 'refresh_balance'
   get '/home/active_trades_reload', to: 'home#active_trades_reload'
   get '/home/reload_item_listed_for_sale', to: 'home#reload_item_listed_for_sale'
   get '/home/fetch_all_steam_accounts', to: 'home#fetch_all_steam_accounts'
   put '/mark_all_as_read', to: 'notifications#mark_all_as_read'
+  post '/read_ma_file/:id', to: 'steam_accounts#read_ma_file', as: "read_ma_file"
+  delete '/delete_ma_file/:id', to: 'steam_accounts#delete_ma_file', as: "delete_ma_file"
 end

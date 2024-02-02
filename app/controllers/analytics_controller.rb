@@ -21,8 +21,9 @@ class AnalyticsController < ApplicationController
       end
     else
       profit = SoldItem.profits_by_year(params[:year])
+      profit = profit.transform_keys(&:to_i).transform_values(&:to_f)
       Date::MONTHNAMES.compact.each.with_index do |month, index|
-        @profit_by_month[month] = profit[(index + 1).to_f].to_i
+        @profit_by_month[month] = profit[(index + 1)].to_i
       end
 
       sold_quantity = SoldItem.quantity_by_year(params[:year]).group("DATE_TRUNC('month', date)").count.transform_keys { |k| k.strftime('%B') }

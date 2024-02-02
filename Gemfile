@@ -88,4 +88,5 @@ gem "chartkick"
 
 gem "discordrb"
 gem 'sidekiq-status'
+gem 'net-ping'
 gem 'ransack', github: 'activerecord-hackery/ransack'

@@ -14,6 +14,10 @@ class ApplicationService
     reporter&.report(error, handled: false, context: context)
   end
 
+  def reset_proxy
+    self.class.http_proxy nil, nil, nil, nil
+  end
+
   private
 
   def response_message(response)

@@ -1,15 +1,11 @@
 class ServicesController < ApplicationController
-  before_action :set_steam_account, only: %i[selling_service]
+  before_action :set_steam_account, only: %i[index]
 
-  def index
-    @steam_accounts = current_user.steam_accounts
-  end
-
-  def trigger_service; end
+  def index; end
 
   private
 
   def set_steam_account
-    @steam_account = SteamAccount.find_by(steam_id: params[:steam_id])
+    @steam_accounts = current_user.steam_accounts.where(valid_account: true)
   end
 end
