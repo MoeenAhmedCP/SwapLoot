@@ -360,13 +360,16 @@
 
     function openModal(type, steamAccountId) {
         var modal = document.getElementById("small-modal");
-
-        document.getElementById("delete").onclick = function() {
-            document.getElementById('loader').classList.remove('hidden');
-            submitDeleteForm(type, steamAccountId);
-        };
-
-        modal.style.display = "flex";
+        var deleteButton = document.getElementById("delete");
+        if (deleteButton) {
+            deleteButton.onclick = function() {
+                document.getElementById('loader').classList.remove('hidden');
+                submitDeleteForm(type, steamAccountId);
+            };
+        }
+        if (modal) {
+            modal.style.display = "flex";
+        }
     }
 
     function submitDeleteForm(type, steamAccountId) {
