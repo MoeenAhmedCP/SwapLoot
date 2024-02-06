@@ -12,14 +12,13 @@ class SteamAccountsController < ApplicationController
   end
 
   def create
-    @steam_account = current_user.steam_accounts.build(steam_account_params)
+    @steam_account = SteamAccount.new(steam_account_params)
+    @steam_account.user_id = current_user.id
     if @steam_account.save
-      if response_message.empty?
+      if response_message.empty? && @steam_account.valid_account
         base_url = ENV['NODE_TOGGLE_SERVICE_URL']
-
         url = "#{base_url}/toggleStatusService"
         params = { id: @steam_account.id }
-
         response = HTTParty.post(url, query: params)
         if response['success'] == 'true'
           flash[:notice] = 'Steam Account Successfully created.'
@@ -89,7 +88,7 @@ class SteamAccountsController < ApplicationController
         params[:steam_account][:steam_shared_secret] = shared_secret
         params[:steam_account][:steam_identity_secret] = identity_secret
 
-        if @steam_account.update(steam_account_params)
+        if @steam_account.update(steam_account_params) && @steam_account.valid_account
           base_url = ENV['NODE_TOGGLE_SERVICE_URL']
 
           url = "#{base_url}/startsteamservice"
@@ -118,12 +117,12 @@ class SteamAccountsController < ApplicationController
   end
 
   def logout_steam
-    base_url = ENV['NODE_TOGGLE_SERVICE_URL']
-
-    url = "#{base_url}/logOutSteam"
-    params = { id: @steam_account.id }
-
-    HTTParty.post(url, query: params)
+    if @steam_account.valid_account
+      base_url = ENV['NODE_TOGGLE_SERVICE_URL']
+      url = "#{base_url}/logOutSteam"
+      params = { id: @steam_account.id }
+      HTTParty.post(url, query: params)
+    end
   end
 
   private
@@ -170,10 +169,10 @@ class SteamAccountsController < ApplicationController
 
   def response_message
     message = []
-    message << "Steam Account is created but " if @steam_account.csgoempire_api_key.nil? || @steam_account.waxpeer_api_key.nil? || @steam_account.market_csgo_api_key.nil?
-    message << 'CSGOEmpire API Key is invalid.' if @steam_account.csgoempire_api_key.nil?
-    message << 'WAXPEER API Key is invalid.' if @steam_account.waxpeer_api_key.nil?
-    message << 'Market.CSGO API Key is invalid.' if @steam_account.market_csgo_api_key.nil?
+    message << "Steam Account is created but " if @steam_account.csgoempire_api_key.empty? || @steam_account.waxpeer_api_key.empty? || @steam_account.market_csgo_api_key.empty?
+    message << 'CSGOEmpire API Key is invalid.' if @steam_account.csgoempire_api_key.empty?
+    message << 'WAXPEER API Key is invalid.' if @steam_account.waxpeer_api_key.empty?
+    message << 'Market.CSGO API Key is invalid.' if @steam_account.market_csgo_api_key.empty?
     message.join(' ')
   end
 end
