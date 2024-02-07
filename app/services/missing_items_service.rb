@@ -23,6 +23,7 @@ class MissingItemsService < ApplicationService
       response = self.class.get(url, headers: @headers)
       if response['success'] == false
         report_api_error(response, [self&.class&.name, __method__.to_s])
+        return []
       else
         if response['data']
           api_inventory_item = response['data'].pluck('id')
@@ -34,6 +35,7 @@ class MissingItemsService < ApplicationService
         response_data = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account&.csgoempire_api_key, steam_account))
         if response_data['success'] == false
           report_api_error(response_data, [self&.class&.name, __method__.to_s])
+          return []
         else
           if response_data['data']
             api_inventory_item = response_data['data'].pluck('id')
