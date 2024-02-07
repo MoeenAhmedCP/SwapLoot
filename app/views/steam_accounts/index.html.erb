@@ -245,7 +245,7 @@
                             <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= steam_account.proxy&.ip %></td>
                             <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= steam_account.proxy&.port %></td>
                             <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= steam_account.proxy&.username %></td>
-                            <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= link_to "Add Proxy", steam_account.proxy.present? ? edit_proxy_path(steam_account.proxy) : new_proxy_path(steam_account_id: steam_account.id), class: "inline-block text-indigo-500 underline underline-offset-2 hover:bg-gray-300 hover:text-gray-800", remote: true %></td>
+                            <td class="border-r border-r-[#acadaf9c] text-sm text-center px-2 py-2"><%= link_to steam_account.proxy.present? ? "Update Proxy" : "Add Proxy", steam_account.proxy.present? ? edit_proxy_path(steam_account.proxy) : new_proxy_path(steam_account_id: steam_account.id), class: "inline-block text-indigo-500 underline underline-offset-2 hover:bg-gray-300 hover:text-gray-800", remote: true %></td>
                         </tr>
                     <% end %>
                 </tbody>
