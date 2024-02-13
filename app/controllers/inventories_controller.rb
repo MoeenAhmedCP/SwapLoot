@@ -6,8 +6,8 @@ class InventoriesController < ApplicationController
     if params["refresh"].present?
       fetch_inventory
     end
-
-    inventories = Inventory.where(sold_at: nil)
+    
+    inventories = Inventory.where(sold_at: nil, steam_id: steam_ids)
     inventories = inventories.tradable_steam_inventories(@active_steam_account) if params["tradable"] == "true"
     inventories = inventories.non_tradable_steam_inventories(@active_steam_account) if params["tradable"] == "false"
     inventories = inventories.where(steam_id: steam_ids) if steam_ids.present?
