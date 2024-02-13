@@ -1,47 +1,56 @@
+<% unless current_user.steam_accounts.present? %>
+   <div class="flex items-center justify-center gap-5" id="balance-container"><h1 class="text-xl text-blue dark:text-white font-[500]">No steam account present</h1></div>
+<% end %>
 <% if current_user.active_steam_account %>
    <div class="flex items-center justify-center gap-5" id="balance-container">
-      <div class="relative flex flex-col mt-6 text-grayDark bg-green-50 shadow-md bg-clip-border rounded-xl w-96">
-         <div class="p-6">
-            <div class="flex item-center gap-3">
-               <i class="mt-3 fa fa-lg fa-wallet text-green-500"></i>  
-               <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-green-500">
-                  CSGO Empire Balance
-               </h5>
+      <% if current_user.active_steam_account.csgoempire_api_key.present? %>
+         <div class="relative flex flex-col mt-6 text-grayDark bg-green-50 shadow-md bg-clip-border rounded-xl w-96">
+            <div class="p-6">
+               <div class="flex item-center gap-3">
+                  <i class="mt-3 fa fa-lg fa-wallet text-green-500"></i>  
+                  <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-green-500">
+                     CSGO Empire Balance
+                  </h5>
+               </div>
+               <hr class="h-px w-full divider">
             </div>
-            <hr class="h-px w-full divider">
-         </div>
-         <div class="p-6 pt-0 text-2xl font-bold text-center">
-            <%= !@csgo_empire_balance.present? ? "0 Coins" : "#{@csgo_empire_balance} coins" %>
-         </div>
-      </div>
-      <div class="relative flex flex-col mt-6 text-grayDark bg-blueLight shadow-md bg-clip-border rounded-xl w-96">
-         <div class="p-6">
-            <div class="flex item-center gap-3">
-               <i class="mt-3 fa fa-lg fa-wallet text-blue"></i>  
-               <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue">
-                  Market dot CSGO Balance:
-               </h5>
+            <div class="p-6 pt-0 text-2xl font-bold text-center">
+               <%= !@csgo_empire_balance.present? ? "0 Coins" : "#{@csgo_empire_balance} coins" %>
             </div>
-            <hr class="h-px w-full divider">
          </div>
-         <div class="p-6 pt-0 text-2xl font-bold text-center">
-            <%= !@csgo_market_balance.present? ? "$0" : "$#{@csgo_market_balance}" %>
-         </div>
-      </div>
-      <div class="relative flex flex-col mt-6 text-grayDark bg-yellow-50 shadow-md bg-clip-border rounded-xl w-96">
-         <div class="p-6">
-            <div class="flex item-center gap-3">
-               <i class="mt-3 fa fa-lg fa-wallet text-yellow-500"></i>  
-               <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-yellow-500">
-                  Waxpeer Balance:
-               </h5>
+      <% end %>
+      <% if current_user.active_steam_account.market_csgo_api_key.present? %>
+         <div class="relative flex flex-col mt-6 text-grayDark bg-blueLight shadow-md bg-clip-border rounded-xl w-96">
+            <div class="p-6">
+               <div class="flex item-center gap-3">
+                  <i class="mt-3 fa fa-lg fa-wallet text-blue"></i>  
+                  <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue">
+                     Market dot CSGO Balance:
+                  </h5>
+               </div>
+               <hr class="h-px w-full divider">
             </div>
-            <hr class="h-px w-full divider">
+            <div class="p-6 pt-0 text-2xl font-bold text-center">
+               <%= !@csgo_market_balance.present? ? "$0" : "$#{@csgo_market_balance}" %>
+            </div>
          </div>
-         <div class="p-6 pt-0 text-2xl font-bold text-center">
-            <%= !@waxpeer_balance.present? ? "$0" : "$#{@waxpeer_balance}" %>
+      <% end %>
+      <% if current_user.active_steam_account.waxpeer_api_key.present? %>
+         <div class="relative flex flex-col mt-6 text-grayDark bg-yellow-50 shadow-md bg-clip-border rounded-xl w-96">
+            <div class="p-6">
+               <div class="flex item-center gap-3">
+                  <i class="mt-3 fa fa-lg fa-wallet text-yellow-500"></i>  
+                  <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-yellow-500">
+                     Waxpeer Balance:
+                  </h5>
+               </div>
+               <hr class="h-px w-full divider">
+            </div>
+            <div class="p-6 pt-0 text-2xl font-bold text-center">
+               <%= !@waxpeer_balance.present? ? "$0" : "$#{@waxpeer_balance}" %>
+            </div>
          </div>
-      </div>
+      <% end %>
    </div>
 <% else %>
    <div class="overflow-x-auto">
@@ -49,49 +58,54 @@
          <% @balance_data.each do |account| %>
             <div class="flex-none w-100%">
                <div class="flex items-center justify-center gap-5" id="balance-container">
-                  <div class="relative flex flex-col mt-6 text-grayDark bg-green-50 shadow-md bg-clip-border rounded-xl w-96">
-                     <div class="p-6">
-                        <div class="flex item-center gap-3">
-                           <i class="mt-3 fa fa-lg fa-wallet text-green-500"></i>  
-                           <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-green-500">
-                              CSGO Empire (<%= account[:account_name] %>):
-                           </h5>
+                  <% if account[:csgo_empire_balance].present? %>
+                     <div class="relative flex flex-col mt-6 text-grayDark bg-green-50 shadow-md bg-clip-border rounded-xl w-96">
+                        <div class="p-6">
+                           <div class="flex item-center gap-3">
+                              <i class="mt-3 fa fa-lg fa-wallet text-green-500"></i>  
+                              <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-green-500">
+                                 CSGO Empire (<%= account[:account_name] %>):
+                              </h5>
+                           </div>
+                           <hr class="h-px w-full divider">
                         </div>
-                        <hr class="h-px w-full divider">
-                     </div>
-                     <div class="p-6 pt-0 text-2xl font-bold text-center">
-                        <%= !account[:csgo_empire_balance].present? ? "0 Coins" : "#{account[:csgo_empire_balance]}" %>
-                     </div>
-                  </div>
-                  <div class="relative flex flex-col mt-6 text-grayDark bg-blueLight shadow-md bg-clip-border rounded-xl w-96">
-                     <div class="p-6">
-                        <div class="flex item-center gap-3">
-                           <i class="mt-3 fa fa-lg fa-wallet text-blue"></i>  
-                           <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue">
-                              Market dot CSGO (<%= account[:account_name] %>):
-                           </h5>
+                        <div class="p-6 pt-0 text-2xl font-bold text-center">
+                           <%= !account[:csgo_empire_balance].present? ? "0 Coins" : "#{account[:csgo_empire_balance]}" %>
                         </div>
-                        <hr class="h-px w-full divider">
                      </div>
-                     <div class="p-6 pt-0 text-2xl font-bold text-center">
-                        <%= !account[:csgo_market_balance].present? ? "$0" : "$#{account[:csgo_market_balance]}" %>
-                     </div>
-                  </div>
-
-                  <div class="relative flex flex-col mt-6 text-grayDark bg-yellow-50 shadow-md bg-clip-border rounded-xl w-96">
-                     <div class="p-6">
-                        <div class="flex item-center gap-3">
-                           <i class="mt-3 fa fa-lg fa-wallet text-yellow-500"></i>  
-                           <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-yellow-500">
-                              Waxpeer (<%= account[:account_name] %>):
-                           </h5>
+                  <% end %>
+                  <% if account[:csgo_market_balance].present? %>
+                     <div class="relative flex flex-col mt-6 text-grayDark bg-blueLight shadow-md bg-clip-border rounded-xl w-96">
+                        <div class="p-6">
+                           <div class="flex item-center gap-3">
+                              <i class="mt-3 fa fa-lg fa-wallet text-blue"></i>  
+                              <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue">
+                                 Market dot CSGO (<%= account[:account_name] %>):
+                              </h5>
+                           </div>
+                           <hr class="h-px w-full divider">
                         </div>
-                        <hr class="h-px w-full divider">
+                        <div class="p-6 pt-0 text-2xl font-bold text-center">
+                           <%= !account[:csgo_market_balance].present? ? "$0" : "$#{account[:csgo_market_balance]}" %>
+                        </div>
                      </div>
-                     <div class="p-6 pt-0 text-2xl font-bold text-center">
-                        <%= !account[:waxpeer_balance].present? ? "$0" : "$#{account[:waxpeer_balance]}" %>
+                  <% end %>
+                  <% if account[:waxpeer_balance].present? %>
+                     <div class="relative flex flex-col mt-6 text-grayDark bg-yellow-50 shadow-md bg-clip-border rounded-xl w-96">
+                        <div class="p-6">
+                           <div class="flex item-center gap-3">
+                              <i class="mt-3 fa fa-lg fa-wallet text-yellow-500"></i>  
+                              <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-yellow-500">
+                                 Waxpeer (<%= account[:account_name] %>):
+                              </h5>
+                           </div>
+                           <hr class="h-px w-full divider">
+                        </div>
+                        <div class="p-6 pt-0 text-2xl font-bold text-center">
+                           <%= !account[:waxpeer_balance].present? ? "$0" : "$#{account[:waxpeer_balance]}" %>
+                        </div>
                      </div>
-                  </div>
+                  <% end %>
                </div>
             </div>
             <div class="w-50"></div>

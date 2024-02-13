@@ -15,8 +15,18 @@
         </button>
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-        <% if request.url.include?("/users/") || request.url.include?("/steam_accounts") || request.url.include?("/services") %>
-          <div class="text-blue text-2xl dark:text-white font-semibold text-center text-md"><%= request.url.include?("/services") ? "Services Panel" : "Associated Steam Accounts" %></div>
+        <% if request.url.include?("/users/") %>
+          <div class="text-blue text-2xl dark:text-white font-semibold text-center text-md">Account Info</div>
+        <% elsif request.url.include?("/steam_accounts/") && request.url.include?("/edit")  %>
+          <div class="text-blue text-2xl dark:text-white font-semibold text-center text-md">Update Steam Account</div>
+        <% elsif request.url.include?("/steam_accounts") %>
+          <div class="text-blue text-2xl dark:text-white font-semibold text-center text-md">Associated Steam Accounts Info</div>
+        <% elsif request.url.include?("/errors") %>
+          <div class="text-blue text-2xl dark:text-white font-semibold text-center text-md">Errors Panel</div>
+        <% elsif request.url.include?("/notifications") %>
+          <div class="text-blue text-2xl dark:text-white font-semibold text-center text-md">Notifications Panel</div>
+        <% elsif request.url.include?("/services") %>
+          <div class="text-blue text-2xl dark:text-white font-semibold text-center text-md">Services Panel</div>
         <% else %>
         <%= form_tag(home_update_active_account_path, method: :post, id: 'postForm') do %>
           <% if @steam_accounts.present? %>
