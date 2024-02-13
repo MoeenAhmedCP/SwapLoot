@@ -6,7 +6,7 @@ class NotificationsController < ApplicationController
   
     def mark_all_as_read
         current_user.notifications.update_all(is_read: true)
-        flash[:notice] = "All notification marked read"
+        flash[:notice] = "All notifications are marked as read."
         redirect_to notifications_path
     end
   end

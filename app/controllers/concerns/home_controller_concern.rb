@@ -34,11 +34,11 @@ module HomeControllerConcern
         mark_balance = @csgo_market_balance.find { |hash| hash[:account_id] == account }
         wax_balance = @waxpeer_balance.find { |hash| hash[:account_id] == account }
         data_hash = {
-          account_name: steam_account.unique_name.capitalize,
-          csgo_empire_balance: e_balance&.dig(:balance).nil? ? "" : "#{e_balance[:balance]} coins",
-          csgo_market_balance: mark_balance&.dig(:balance).nil? ? "" : "#{mark_balance[:balance]}",
-          waxpeer_balance: wax_balance&.dig(:balance).nil? ? "" : "#{wax_balance[:balance]}"
+          account_name: steam_account.unique_name.capitalize
         }
+        data_hash.merge!(csgo_empire_balance: "#{e_balance[:balance]} coins") unless e_balance&.dig(:balance).nil?
+        data_hash.merge!(csgo_market_balance: "#{mark_balance[:balance]}") unless mark_balance&.dig(:balance).nil?
+        data_hash.merge!(waxpeer_balance: "#{wax_balance[:balance]}") unless wax_balance&.dig(:balance).nil?
         @balance_data << data_hash
       end
       flash[:alert] = "Something went wrong with fetch balance issue." if @balance_data.empty? && current_user.steam_accounts.present?
