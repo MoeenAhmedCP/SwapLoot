@@ -15,18 +15,18 @@ class SteamAccountsController < ApplicationController
     @steam_account = SteamAccount.new(steam_account_params)
     @steam_account.user_id = current_user.id
     if @steam_account.save
-      if response_message.empty? && @steam_account.valid_account
+      if @steam_account.valid_account
         base_url = ENV['NODE_TOGGLE_SERVICE_URL']
         url = "#{base_url}/toggleStatusService"
         params = { id: @steam_account.id }
         response = HTTParty.post(url, query: params)
         if response['success'] == 'true'
-          flash[:notice] = 'Steam Account Successfully created.'
+          response_message.present? ? flash[:alert] = "Steam Account Successfully created but " + response_message : flash[:notice] = 'Steam Account Successfully created.'
         else
           flash[:alert] = response['message']
         end
       else
-        flash[:alert] = response_message
+        flash[:alert] = "Steam Account successfully created but " + response_message if response_message.present?
       end
       redirect_to steam_accounts_path
     else
@@ -47,8 +47,8 @@ class SteamAccountsController < ApplicationController
   end
 
   def destroy
+    logout_steam
     if @steam_account.destroy
-      logout_steam
       redirect_to steam_accounts_path, notice: 'Steam account was successfully deleted.'
     end
   end
@@ -169,10 +169,9 @@ class SteamAccountsController < ApplicationController
 
   def response_message
     message = []
-    message << "Steam Account is created but " if @steam_account.csgoempire_api_key.empty? || @steam_account.waxpeer_api_key.empty? || @steam_account.market_csgo_api_key.empty?
-    message << 'CSGOEmpire API Key is invalid.' if @steam_account.csgoempire_api_key.empty?
-    message << 'WAXPEER API Key is invalid.' if @steam_account.waxpeer_api_key.empty?
-    message << 'Market.CSGO API Key is invalid.' if @steam_account.market_csgo_api_key.empty?
+    message << 'CSGOEmpire API Key is invalid.' if !@steam_account.csgoempire_api_key.present? && steam_account_params['csgoempire_api_key'].present?
+    message << 'WAXPEER API Key is invalid.' if !@steam_account.waxpeer_api_key.present? && steam_account_params['waxpeer_api_key'].present?
+    message << 'Market.CSGO API Key is invalid.' if !@steam_account.market_csgo_api_key.present? && steam_account_params['market_csgo_api_key'].present?
     message.join(' ')
   end
 end
