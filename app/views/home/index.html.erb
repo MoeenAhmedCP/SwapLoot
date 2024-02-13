@@ -6,6 +6,9 @@
 
     <div class="balance-container" id="balance-container">
         <div class="flex items-center justify-center gap-5" id="balance-container">
+        <% if current_user.steam_accounts.present? %>
+            <div><h1 class="text-2xl text-blue dark:text-white font-[500]">Loading...</h1></div>
+        <% end %>
         </div>
     </div>
     <hr class="h-px w-full my-5 mt-20 mb-20 divider">

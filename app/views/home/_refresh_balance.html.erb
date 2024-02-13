@@ -1,3 +1,6 @@
+<% unless current_user.steam_accounts.present? %>
+   <div class="flex items-center justify-center gap-5" id="balance-container"><h1 class="text-xl text-blue dark:text-white font-[500]">No steam account present</h1></div>
+<% end %>
 <% if current_user.active_steam_account %>
    <div class="flex items-center justify-center gap-5" id="balance-container">
       <% if current_user.active_steam_account.csgoempire_api_key.present? %>
