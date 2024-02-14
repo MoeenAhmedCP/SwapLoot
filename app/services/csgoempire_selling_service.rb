@@ -17,14 +17,10 @@ class CsgoempireSellingService < ApplicationService
 
   def add_proxy
     reset_proxy
-    proxy = @steam_account.proxy
-    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
-  end
-
-  def add_proxy
-    reset_proxy
-    proxy = @steam_account.proxy
-    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+    if @steam_account.proxy.present?
+      proxy = @steam_account.proxy 
+      self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+    end
   end
 
   def fetch_inventory
@@ -74,7 +70,8 @@ class CsgoempireSellingService < ApplicationService
     else
       items_to_deposit = matching_items
     end
-    deposit_items_for_sale(items_to_deposit)
+    items_to_deposit = items_to_deposit.compact
+    deposit_items_for_sale(items_to_deposit) if items_to_deposit.any?
 
     # Items list from waxpeer that were not found on PriceEmpire
     @inventory = fetch_database_inventory
