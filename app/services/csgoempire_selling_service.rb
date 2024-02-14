@@ -17,14 +17,10 @@ class CsgoempireSellingService < ApplicationService
 
   def add_proxy
     reset_proxy
-    proxy = @steam_account.proxy
-    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
-  end
-
-  def add_proxy
-    reset_proxy
-    proxy = @steam_account.proxy
-    self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+    if @steam_account.proxy.present?
+      proxy = @steam_account.proxy 
+      self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+    end
   end
 
   def fetch_inventory
