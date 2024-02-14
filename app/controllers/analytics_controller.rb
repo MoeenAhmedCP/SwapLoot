@@ -10,7 +10,7 @@ class AnalyticsController < ApplicationController
       profit.each do |key, value|
         profit_hash[key.to_i] = value.to_f
       end
-      
+
       Date::MONTHNAMES.compact.each.with_index do |month, index|
         @profit_by_month[month] = profit_hash[(index + 1)]
       end

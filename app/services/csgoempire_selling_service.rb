@@ -70,7 +70,8 @@ class CsgoempireSellingService < ApplicationService
     else
       items_to_deposit = matching_items
     end
-    deposit_items_for_sale(items_to_deposit)
+    items_to_deposit = items_to_deposit.compact
+    deposit_items_for_sale(items_to_deposit) if items_to_deposit.any?
 
     # Items list from waxpeer that were not found on PriceEmpire
     @inventory = fetch_database_inventory
