@@ -6,8 +6,13 @@ class AnalyticsController < ApplicationController
     params[:year] ||= Date.current.year
     if current_user.active_steam_account.present?
       profit = current_user.active_steam_account.sold_items.profits_by_year(params[:year])
+      profit_hash = {}
+      profit.each do |key, value|
+        profit_hash[key.to_i] = value.to_f
+      end
+      
       Date::MONTHNAMES.compact.each.with_index do |month, index|
-        @profit_by_month[month] = profit[(index + 1).to_f].to_i
+        @profit_by_month[month] = profit_hash[(index + 1)]
       end
 
       sold_quantity = current_user.active_steam_account.sold_items.quantity_by_year(params[:year]).group("DATE_TRUNC('month', date)").count.transform_keys { |k| k.strftime('%B') }
