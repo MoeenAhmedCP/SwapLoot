@@ -50,7 +50,7 @@ module HomeControllerConcern
     csgoempire_service = CsgoempireService.new(current_user)
     items_bid_history = csgoempire_service.items_bid_history
     if items_bid_history.present?
-      if items_bid_history.is_a?(Array) && items_bid_history.first.is_a?(Hash) && items_bid_history.first[:success] == false
+      if items_bid_history[:success].present?
         @auction_items_hash = []
       else
         @auction_items_hash = items_bid_history&.map do |auction_item|
