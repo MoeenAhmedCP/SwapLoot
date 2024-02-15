@@ -17,10 +17,10 @@ class BuyingFiltersController < ApplicationController
       HTTParty.post(url, query: params)
     end
     respond_to do |format|
-      if message.include?("success")
-        flash[:notice] = "Buying filter updated successfully."
+      if message.include?('success')
+        flash[:notice] = 'Buying filter updated successfully.'
       else
-        flash[:alert] = "Something went wrong"
+        flash[:alert] = 'Something went wrong'
       end
       format.js { render json: { message: message, buying_id: @buying_filter.id }.to_json }
     end
