@@ -50,14 +50,18 @@ module HomeControllerConcern
     csgoempire_service = CsgoempireService.new(current_user)
     items_bid_history = csgoempire_service.items_bid_history
     if items_bid_history.present?
-      @auction_items_hash = items_bid_history&.map do |auction_item|
-        {
-          'item_id' => auction_item['id'],
-          'market_name' => auction_item['market_name'],
-          'price' => ((auction_item['auction_highest_bid'].to_f / 100) * 0.614).round(2),
-          'site' => 'CsgoEmpire',
-          'date' => Time.parse(auction_item['published_at']).strftime('%d/%B/%Y')
-        }
+      if items_bid_history.start_with?('<html>')
+        @auction_items_hash = []
+      else
+        @auction_items_hash = items_bid_history&.map do |auction_item|
+          {
+            'item_id' => auction_item['id'],
+            'market_name' => auction_item['market_name'],
+            'price' => ((auction_item['auction_highest_bid'].to_f / 100) * 0.614).round(2),
+            'site' => 'CsgoEmpire',
+            'date' => Time.parse(auction_item['published_at']).strftime('%d/%B/%Y')
+          }
+        end
       end
     else
       @auction_items_hash = []
