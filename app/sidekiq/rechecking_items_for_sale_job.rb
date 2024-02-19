@@ -1,5 +1,6 @@
 class RecheckingItemsForSaleJob
 	include Sidekiq::Job
+	sidekiq_options retry: false
 	
 	def perform
 		puts "Rechecking Items for sale Job started..."

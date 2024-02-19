@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_23_151223) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_19_184931) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -109,6 +109,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_23_151223) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "sold_at"
+    t.integer "market_type"
     t.index ["item_id"], name: "index_inventories_on_item_id", unique: true
     t.index ["market_name"], name: "index_inventories_on_market_name"
     t.index ["market_price"], name: "index_inventories_on_market_price"
@@ -123,6 +124,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_23_151223) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["steam_account_id"], name: "index_listed_items_on_steam_account_id"
+  end
+
+  create_table "missing_items", force: :cascade do |t|
+    t.string "item_id"
+    t.string "market_name"
+    t.string "market_value"
+    t.string "steam_account_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -216,6 +226,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_23_151223) do
     t.bigint "user_id"
     t.string "sold_item_job_id"
     t.boolean "valid_account", default: false
+    t.string "steam_account_name"
+    t.string "steam_password"
+    t.string "steam_identity_secret"
+    t.string "steam_shared_secret"
     t.index ["csgoempire_api_key"], name: "index_steam_accounts_on_csgoempire_api_key"
     t.index ["market_csgo_api_key"], name: "index_steam_accounts_on_market_csgo_api_key"
     t.index ["steam_id"], name: "index_steam_accounts_on_steam_id"

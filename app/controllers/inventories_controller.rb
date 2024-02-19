@@ -16,7 +16,7 @@ class InventoriesController < ApplicationController
     @q_sellable_inventory = SellableInventory.where(steam_id: steam_ids).ransack(params[:sellable_inventory_search])
     @sellable_inventory = @q_sellable_inventory.result.order(market_price: :DESC).paginate(page: params[:sellable_inventory_page], per_page: per_page)
     @total_market_price = @q_inventories.result.sum(:market_price).round(3)
-    missing_item_service
+    @missing_items = current_user.active_steam_account.present? ? current_user.active_steam_account.missing_items : MissingItem.all
     respond_to do |format|
       format.html
       format.js
@@ -24,14 +24,6 @@ class InventoriesController < ApplicationController
   end
 
   private
-
-  def missing_item_service
-    begin
-      @missing_items = MissingItemsService.new(current_user).missing_items
-    rescue StandardError => e
-      flash[:notice] = "Something went wrong: #{e.message}"
-    end
-  end
 
   def fetch_inventory
     Inventory.fetch_inventory_for_user(current_user)
