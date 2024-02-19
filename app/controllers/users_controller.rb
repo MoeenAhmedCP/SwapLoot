@@ -50,6 +50,7 @@ class UsersController < ApplicationController
 
     steam_accounts = current_user.steam_accounts
     steam_accounts.each do |steam_account|
+      add_proxy(steam_account)
       headers = { 'Authorization' => "Bearer #{steam_account.csgoempire_api_key}" }
       response = self.class.get(BASE_URL_CSGOEMPIRE + '/metadata/socket', headers: headers)
 
@@ -66,5 +67,17 @@ class UsersController < ApplicationController
     end
 
     user_accounts_data
+  end
+
+  def add_proxy(steam_account)
+    reset_proxy
+    if steam_account.proxy.present?
+      proxy = steam_account.proxy 
+      self.class.http_proxy proxy.ip, proxy.port, proxy.username, proxy.password
+    end
+  end
+
+  def reset_proxy
+    self.class.http_proxy nil, nil, nil, nil
   end
 end
