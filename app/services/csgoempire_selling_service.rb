@@ -203,7 +203,9 @@ class CsgoempireSellingService < ApplicationService
   def deposit_items_for_sale(items)
     items.each do |item|
       hash = {"items" => [item]}
+      puts "================== CREATE DEPOSIT START =========================="
       response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
+      puts "================== CREATE DEPOSIT END =========================="
       if response.code == SUCCESS_CODE
         SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
         result = JSON.parse(response.body)
