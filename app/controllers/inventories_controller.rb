@@ -8,8 +8,8 @@ class InventoriesController < ApplicationController
     end
     
     inventories = Inventory.where(sold_at: nil, steam_id: steam_ids)
-    inventories = inventories.tradable_steam_inventories(@active_steam_account) if params['tradable'] == 'true'
-    inventories = inventories.non_tradable_steam_inventories(@active_steam_account) if params['tradable'] == 'false'
+    inventories = inventories.tradable_steam_inventories(@active_steam_account) if params["tradable"] == "true"
+    inventories = inventories.non_tradable_steam_inventories(@active_steam_account) if params["tradable"] == "false"
     inventories = inventories.where(steam_id: steam_ids) if steam_ids.present?
     @q_inventories = inventories.ransack(params[:inventory_search])
     @inventories = @q_inventories.result.order(market_price: :DESC).paginate(page: params[:page], per_page: per_page)
