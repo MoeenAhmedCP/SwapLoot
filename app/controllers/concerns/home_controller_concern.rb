@@ -41,7 +41,7 @@ module HomeControllerConcern
         data_hash.merge!(waxpeer_balance: "#{wax_balance[:balance]}") unless wax_balance&.dig(:balance).nil?
         @balance_data << data_hash
       end
-      flash[:alert] = "Something went wrong with fetch balance issue." if @balance_data.empty? && current_user.steam_accounts.present?
+      flash[:alert] = 'Something went wrong with fetch balance issue' if @balance_data.empty? && current_user.steam_accounts.present?
       @balance_data
     end
   end
@@ -50,14 +50,18 @@ module HomeControllerConcern
     csgoempire_service = CsgoempireService.new(current_user)
     items_bid_history = csgoempire_service.items_bid_history
     if items_bid_history.present?
-      @auction_items_hash = items_bid_history&.map do |auction_item|
-        {
-          'item_id' => auction_item['id'],
-          'market_name' => auction_item['market_name'],
-          'price' => ((auction_item['auction_highest_bid'].to_f / 100) * 0.614).round(2),
-          'site' => 'CsgoEmpire',
-          'date' => Time.parse(auction_item['published_at']).strftime('%d/%B/%Y')
-        }
+      if items_bid_history.first[:success].present?
+        @auction_items_hash = []
+      else
+        @auction_items_hash = items_bid_history&.map do |auction_item|
+          {
+            'item_id' => auction_item['id'],
+            'market_name' => auction_item['market_name'],
+            'price' => ((auction_item['auction_highest_bid'].to_f / 100) * 0.614).round(2),
+            'site' => 'CsgoEmpire',
+            'date' => Time.parse(auction_item['published_at']).strftime('%d/%B/%Y')
+          }
+        end
       end
     else
       @auction_items_hash = []
