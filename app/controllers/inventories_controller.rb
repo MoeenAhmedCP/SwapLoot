@@ -16,7 +16,7 @@ class InventoriesController < ApplicationController
     @q_sellable_inventory = SellableInventory.where(steam_id: steam_ids).ransack(params[:sellable_inventory_search])
     @sellable_inventory = @q_sellable_inventory.result.order(market_price: :DESC).paginate(page: params[:sellable_inventory_page], per_page: per_page)
     @total_market_price = @q_inventories.result.sum(:market_price).round(3)
-    @missing_items = current_user.active_steam_account.present? ? current_user.active_steam_account.missing_items : MissingItem.all
+    @missing_items = current_user.active_steam_account.present? ? current_user.active_steam_account.missing_items : MissingItem.where(steam_account_id: current_user.steam_accounts.pluck(:id))
     respond_to do |format|
       format.html
       format.js

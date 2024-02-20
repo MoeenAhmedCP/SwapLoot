@@ -28,24 +28,7 @@ class MissingItemsService < ApplicationService
           save_missing_items(response, @active_steam_account)
         end
       end
-    else
-      @user.steam_accounts.each do |steam_account|
-        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account&.csgoempire_api_key, steam_account))
-        if response['success'] == false
-          report_api_error(response, [self&.class&.name, __method__.to_s])
-          return []
-        else
-          if response['data']
-            api_inventory_item = response['data'].pluck('id')
-            res = Inventory.where.not(item_id: api_inventory_item).where(steam_id: steam_account.steam_id, sold_at: nil)
-            save_missing_items(response, steam_account)
-            response << res if res.present?
-          end
-        end
-      end
-      response = response.flatten
     end
-    response
   end
 
   def save_missing_items(response, steam_account)

@@ -221,7 +221,7 @@ class CsgoempireSellingService < ApplicationService
       end
 
       # Handle rate limiting
-      sleep(1) # Sleep for 0.5 seconds between each batch
+      sleep(3) # Sleep for 3 seconds between each batch
     end
   end
 
