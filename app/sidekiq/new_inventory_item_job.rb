@@ -1,5 +1,6 @@
 class NewInventoryItemJob
   include Sidekiq::Job
+  sidekiq_options retry: false
   include HTTParty
 
   def perform(item, steam_account_id)

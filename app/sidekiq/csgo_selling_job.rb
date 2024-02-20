@@ -1,5 +1,6 @@
 class CsgoSellingJob
     include Sidekiq::Job
+    sidekiq_options retry: false
     
     def perform(*steam_account_id)
         p "<=========== Selling Job started ===================>"

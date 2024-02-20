@@ -1,5 +1,6 @@
 class TradeStatusJob
   include Sidekiq::Job
+  sidekiq_options retry: false
   
   def perform(data)
     p "<============= Trade Status Job started... ================>"

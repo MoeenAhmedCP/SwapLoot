@@ -113,6 +113,7 @@ class CsgoempireService < ApplicationService
       return if csgoempire_key_not_found?
       begin
         response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
+        MissingItemsService.new(@current_user).missing_items(response)
         save_inventory(response, @active_steam_account) if response['success'] == true
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
         return []
@@ -122,6 +123,7 @@ class CsgoempireService < ApplicationService
         next if steam_account&.csgoempire_api_key.blank?
         begin
           response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account.csgoempire_api_key, steam_account))
+          MissingItemsService.new(@current_user).missing_items(response)
           save_inventory(response, steam_account) if response['success'] == true
         rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
           return []

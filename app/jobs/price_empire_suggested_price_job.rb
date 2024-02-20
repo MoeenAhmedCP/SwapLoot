@@ -1,5 +1,6 @@
 class PriceEmpireSuggestedPriceJob
 	include Sidekiq::Job
+    sidekiq_options retry: false
     
     def perform
         p "<---------------- Price Empire Suggested price Job Started ---------->"

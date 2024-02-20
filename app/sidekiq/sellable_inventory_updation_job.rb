@@ -1,5 +1,6 @@
 class SellableInventoryUpdationJob
 	include Sidekiq::Job
+	sidekiq_options retry: false
 	
 	def perform
 		p "<============= Sellable Inventory Updation Database Job started... ================>"
