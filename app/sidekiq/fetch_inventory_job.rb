@@ -1,5 +1,6 @@
 class FetchInventoryJob
 	include Sidekiq::Job
+	sidekiq_options retry: false
 	
 	def perform
 		p "<============= Fetch Inventory Job started... ================>"

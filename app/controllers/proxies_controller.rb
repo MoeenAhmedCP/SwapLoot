@@ -20,9 +20,11 @@ class ProxiesController < ApplicationController
   end
 
   def update
-    @proxy = @proxy.update(proxy_params)
-    message = I18n.t("proxy.update.#{@proxy.update(proxy_params) ? 'success' : 'failure'}", errors: @proxy.errors.full_messages.join(', '))
-    redirect_to request.referer, notice: message
+    if @proxy.update(proxy_params)
+      redirect_to request.referer, notice: "Proxy updated"
+    else
+      redirect_to request.referer, alert: "Proxy not updated"
+    end
   end
 
   def destroy

@@ -201,33 +201,33 @@ class CsgoempireSellingService < ApplicationService
 
   # function to list items for sale at the first item on price empire suggested prices (Waxpeer/Buff)
   def deposit_items_for_sale(items)
-    items.each do |item|
-      hash = {"items" => [item]}
-      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
+    batch_process_sale_item(items)
+    # sell_csgoempire
+  end
+
+  def batch_process_sale_item(items)
+    items.each_slice(20) do |batch|
+      batch_hash = {"items" => batch}
+      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(batch_hash))
+
       if response.code == SUCCESS_CODE
-        SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
+        batch.each do |item|
+          SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
+        end
         result = JSON.parse(response.body)
       else
         report_api_error(response, [self&.class&.name, __method__.to_s])
         result = API_FAILED
       end
+
+      # Handle rate limiting
+      sleep(1) # Sleep for 0.5 seconds between each batch
     end
-    # sell_csgoempire
   end
 
   # Function to List Items again for resale after price cutting algorithm
   def deposit_items_for_resale(items)
-    items.each do |item|
-      hash = {"items": [item]}
-      response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(hash))
-      if response.code == SUCCESS_CODE
-        SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
-        result = JSON.parse(response.body)
-      else
-        report_api_error(response, [self&.class&.name, __method__.to_s])
-        result = API_FAILED
-      end
-    end
+    batch_process_sale_item(items)
     price_cutting_down_for_listed_items
   end
 

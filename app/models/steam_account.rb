@@ -9,6 +9,7 @@ class SteamAccount < ApplicationRecord
   has_many :sold_items, dependent: :destroy
   has_many :sold_item_histories, dependent: :destroy
   has_many :listed_items, dependent: :destroy
+  has_many :missing_items, dependent: :destroy
   has_one_attached :ma_file, dependent: :destroy
   validates :steam_id, :unique_name, :steam_web_api_key, uniqueness: true
 

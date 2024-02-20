@@ -1,5 +1,6 @@
 class RemoveItemListedForSaleJob
     include Sidekiq::Job
+    sidekiq_options retry: false
     
     def perform(steam_account_id)
         p "<=========== Removing Items Listed for Sale Job started ===================>"
