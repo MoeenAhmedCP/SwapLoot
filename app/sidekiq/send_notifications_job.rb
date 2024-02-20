@@ -1,5 +1,6 @@
 class SendNotificationsJob
   include Sidekiq::Job
+  sidekiq_options retry: false
   include HTTParty
     
   def perform(user_id, item, notification_type, steam_account_id)

@@ -1,5 +1,6 @@
 class SoldItemJob
   include Sidekiq::Job
+  sidekiq_options retry: false
   queue_as :sold_item
 
   def perform(steam_account_id, page_number, headers)
