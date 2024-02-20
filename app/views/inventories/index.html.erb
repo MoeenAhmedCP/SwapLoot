@@ -133,22 +133,34 @@
             elements[i].parentNode.removeChild(elements[i]);
         }
 
-      $('#refreshTable').click(function() {
+    $('#refreshTable').click(function () {
         var refreshButton = this;
-        refreshButton.classList.add("fa-spin")
-            $.ajax({
-                url: '<%= inventories_path(format: :js) %>',
-                method: 'GET',
-                data: { refresh: true },
-                success: function(data) {
-                 refreshButton.classList.remove("fa-spin");
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error refreshing table', textStatus, errorThrown);
-                }
-            });
+        var lastRequestTimestamp = localStorage.getItem('lastRequestTimestamp');
+
+        if (lastRequestTimestamp) {
+            var currentTime = new Date().getTime();
+            var elapsedMinutes = (currentTime - parseInt(lastRequestTimestamp)) / (1000 * 60);
+            if (elapsedMinutes < 3) {
+                window.alert('Warning: You are not allowed to do this twice within 3 minutes. Please try again after 3 minutes.');
+                return;
+            }
+        }
+        refreshButton.classList.add("fa-spin");
+        $.ajax({
+            url: '<%= inventories_path(format: :js) %>',
+            method: 'GET',
+            data: { refresh: true },
+            success: function (data) {
+                refreshButton.classList.remove("fa-spin");
+                localStorage.setItem('lastRequestTimestamp', new Date().getTime());
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('Error refreshing table', textStatus, errorThrown);
+            }
         });
+      });
     });
+
     function submitinvForm() {
       document.getElementById("inventoryForm").submit();
     }

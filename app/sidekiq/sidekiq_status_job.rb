@@ -1,5 +1,6 @@
 class SidekiqStatusJob
 	include Sidekiq::Job
+	sidekiq_options retry: false
 	
 	def perform
 		puts "========================================================="

@@ -1,5 +1,6 @@
 class PermanentDeleteJob
 	include Sidekiq::Job
+  sidekiq_options retry: false
 
   def perform
     p "<---------------- Permanent Delete Job Started --------------->"

@@ -1,5 +1,6 @@
 class UpdateAuctionItemJob
 	include Sidekiq::Job
+	sidekiq_options retry: false
     
 	def perform
 		p "<============= Update Auction Items Job started... ================>"
