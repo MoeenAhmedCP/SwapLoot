@@ -1,5 +1,10 @@
 class Inventory < ApplicationRecord
   validates :item_id, uniqueness: true
+  enum market_type: {
+    csgo_empire: 0,
+    waxpeer: 1,
+    marketdotcsgo: 2
+  }
 
   scope :soft_deleted_sold, -> { where.not(sold_at: nil) }
   scope :steam_inventories, ->(active_steam_account) {
