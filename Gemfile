@@ -67,6 +67,18 @@ gem 'dotenv-rails'
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  # Adds RSpec support for Rails applications
+  gem "rspec-rails", "~> 6.1"
+  # Integration testing library for web applications
+  gem "capybara", "~> 3.40"
+  # WebDriver bindings for Ruby, enabling browser automation
+  gem "selenium-webdriver", "~> 4.18"
+  # library for setting up Ruby objects as test data
+  gem "factory_bot_rails", "~> 6.4"
+  # library for generating fake data, useful for testing and seeding databases
+  gem "faker", "~> 3.2"
+  # Library for stubbing and setting expectations on HTTP requests in Ruby
+  gem "webmock", "~> 3.22"
 end
 
 group :development do
