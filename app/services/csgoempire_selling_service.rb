@@ -206,7 +206,7 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def batch_process_sale_item(items)
-    items.each_slice(20) do |batch|
+    items.each_slice(100) do |batch|
       batch_hash = {"items" => batch}
       response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(batch_hash))
 
@@ -231,7 +231,7 @@ class CsgoempireSellingService < ApplicationService
     price_cutting_down_for_listed_items
   end
 
- # function to fetch matching items between Price Empire API data and Inventory Data
+  # function to fetch matching items between Price Empire API data and Inventory Data
   def find_matching_items(response_items, inventory)
     matching_items = []
     inventory.each do |inventory_item|
