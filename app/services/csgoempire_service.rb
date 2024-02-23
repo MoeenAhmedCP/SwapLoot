@@ -176,27 +176,34 @@ class CsgoempireService < ApplicationService
     steam_account.update(sold_item_job_id: job_id)
   end
 
-  # def fetch_deposit_transactions
-  #   if @active_steam_account.present?
-  #     return if csgoempire_key_not_found?
-  #     begin
-  #       response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
-  #     rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-  #       return []
-  #     end
-  #     save_transaction(response, @active_steam_account)
-  #   else
-  #     @current_user.steam_accounts.each do |steam_account|
-  #       next if steam_account&.csgoempire_api_key.blank?
-  #       begin
-  #         response = self.class.get("#{BASE_URL}/user/transactions", headers: headers(steam_account.csgoempire_api_key, steam_account))
-  #       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-  #         return []
-  #       end
-  #       save_transaction(response, steam_account)
-  #     end
-  #   end
-  # end
+  def fetch_deposit_transactions
+    if @active_steam_account.present?
+      return if csgoempire_key_not_found?
+      begin
+        response = self.class.get("#{BASE_URL}/user/transactions", headers: @headers)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
+      meta_response = CsgoempireService.fetch_user_data(@active_steam_account)
+      if meta_response['user'].present?
+        user_register_date = meta_response['user']['registration_timestamp']
+        given_time = DateTime.parse(user_register_date)
+        current_time = DateTime.now
+        months_difference = (current_time.year * 12 + current_time.month) - (given_time.year * 12 + given_time.month)
+        save_transaction(response, @active_steam_account) if months_difference <= 4
+      end
+    # else
+    #   @current_user.steam_accounts.each do |steam_account|
+    #     next if steam_account&.csgoempire_api_key.blank?
+    #     begin
+    #       response = self.class.get("#{BASE_URL}/user/transactions", headers: headers(steam_account.csgoempire_api_key, steam_account))
+    #     rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+    #       return []
+    #     end
+    #     save_transaction(response, steam_account)
+    #   end
+    end
+  end
 
   def csgoempire_key_not_found?
     @active_steam_account&.csgoempire_api_key.blank?
