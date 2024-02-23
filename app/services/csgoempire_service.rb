@@ -136,8 +136,13 @@ class CsgoempireService < ApplicationService
     items_to_insert = []
     res['data']&.each do |item|
       inventory = Inventory.find_by(item_id: item['id'])
+      price_empire_item = PriceEmpire.find_by(item_name: item['market_name'])
       unless inventory.present?
-        item_price = item['market_value'] < 0 ? 0 : ((item['market_value'].to_f / 100) * 0.614).round(2)
+        if price_empire_item.present?
+          item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : (((price_empire_item['buff_avg7']['price'] * 0.95).to_f / 100) * 0.614).round(2)
+        else
+          item_price = item['market_value'] < 0 ? 0 : ((item['market_value'].to_f / 100) * 0.614).round(2)
+        end
         items_to_insert << {
           item_id: item['id'],
           steam_id: steam_account&.steam_id,
