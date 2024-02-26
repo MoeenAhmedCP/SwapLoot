@@ -66,6 +66,20 @@ class MarketcsgoService < ApplicationService
     end
   end
 
+  def self.fetch_inventory(steam_account)
+    return if steam_account.market_csgo_api_key.blank?
+
+    response = []
+    begin
+      response = HTTParty.get(MARKET_CSGO_BASE_URL + '/my-inventory', query: { key: "#{steam_account&.market_csgo_api_key}" })
+      # MissingItemsService.new(@current_user).missing_items(response)
+      # save_inventory(response, @active_steam_account) if response['success'] == true
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
+    response
+  end
+
   def market_csgo_api_key_not_found?
     @active_steam_account&.market_csgo_api_key.blank?
   end
