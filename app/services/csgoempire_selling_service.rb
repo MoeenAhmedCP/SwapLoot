@@ -149,20 +149,24 @@ class CsgoempireSellingService < ApplicationService
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
       minimum_desired_price = (minimum_desired_price / 0.614).round(2)
       current_listed_price = item[:market_value]
-      price_empire_item = PriceEmpire.find_by(item_name: item[:market_name])
-      if price_empire_item.present?
-        price_empire_item_buff_price = ((price_empire_item.buff["price"] / 100.to_f) / 0.614).round(2)
-        lowest_price = price_empire_item_buff_price ? price_empire_item_buff_price : nil
-      end
+      # price_empire_item = PriceEmpire.find_by(item_name: item[:market_name])
+      # if price_empire_item.present?
+      #   price_empire_item_buff_price = ((price_empire_item.buff["price"] / 100.to_f) / 0.614).round(2)
+      #   lowest_price = price_empire_item_buff_price ? price_empire_item_buff_price : nil
+      # end
 
-      unless lowest_price || price_empire_item.present?
+      lowest_price = search_items_by_name_on_csgoempire(item[:market_name])
+      sleep(4) # Due to rate limit of the API used in the above function 
+      unless lowest_price.present?
         suggested_items = waxpeer_suggested_prices
         result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
         lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
       end
 
-      if lowest_price > minimum_desired_price && lowest_price < current_listed_price
+      if lowest_price >= minimum_desired_price && lowest_price < current_listed_price
         filtered_items_for_deposit << item.merge(lowest_price: (lowest_price - 0.01) * 100)
+      elsif lowest_price < minimum_desired_price && lowest_price < current_listed_price
+        filtered_items_for_deposit << item.merge(lowest_price: (minimum_desired_price - 0.01) * 100)
       end
     end
 
@@ -173,7 +177,22 @@ class CsgoempireSellingService < ApplicationService
 
     # Re-list for sale items after price cutting
     items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "id"=> filtered_item[:item_id], "coin_value"=> filtered_item[:lowest_price]  } }
-    deposit_items_for_resale(items_to_deposit)
+    deposit_items_for_resale(items_to_deposit) if items_to_deposit.present?
+  end
+
+  def search_items_by_name_on_csgoempire(item_name)
+    suggested_price = nil
+    url = "https://csgoempire.com/api/v2/trading/items?per_page=100&page=1&search=#{item_name}"
+    response = HTTParty.get(url, headers: headers)
+
+    if response['success'] == false
+      report_api_error(response, [self&.class&.name, __method__.to_s])
+    else
+      if response['data'].present?
+        suggested_price = (response['data'].first['suggested_price'].to_f / 100)
+      end
+    end
+    suggested_price
   end
 
   #Function for search items by (:market_name) from Waxpeer API 
@@ -237,7 +256,7 @@ class CsgoempireSellingService < ApplicationService
     inventory.each do |inventory_item|
       item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
       if item_found_from_price_empire
-        buff_price = item_found_from_price_empire["buff"]["avg30"]
+        buff_price = item_found_from_price_empire["buff"]["price"] + (item_found_from_price_empire["buff"]["price"] * 0.1)
         matching_item = {
           'id' => inventory_item.item_id,
           'name' => inventory_item.market_name,
