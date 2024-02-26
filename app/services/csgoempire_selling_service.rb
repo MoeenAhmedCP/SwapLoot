@@ -206,7 +206,7 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def batch_process_sale_item(items)
-    items.each_slice(100) do |batch|
+    items.each_slice(20) do |batch|
       batch_hash = {"items" => batch}
       response = HTTParty.post(CSGO_EMPIRE_BASE_URL + '/trading/deposit', headers: headers, body: JSON.generate(batch_hash))
 
