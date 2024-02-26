@@ -250,7 +250,7 @@ class CsgoempireSellingService < ApplicationService
     price_cutting_down_for_listed_items
   end
 
- # function to fetch matching items between Price Empire API data and Inventory Data
+  # function to fetch matching items between Price Empire API data and Inventory Data
   def find_matching_items(response_items, inventory)
     matching_items = []
     inventory.each do |inventory_item|

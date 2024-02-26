@@ -112,27 +112,29 @@ class CsgoempireService < ApplicationService
   def fetch_my_inventory
     if @active_steam_account.present?
       unless csgoempire_key_not_found?
-        get_inventory_from_api("csgo_empire")
+        get_inventory_from_api("csgo_empire", @steam_account)
       end
       unless waxpeer_api_key_not_found?
-        get_inventory_from_api("waxpeer")
+        get_inventory_from_api("waxpeer", @steam_account)
       end
     else
       @current_user.steam_accounts.each do |steam_account|
-        get_inventory_from_api("csgo_empire") if steam_account&.csgoempire_api_key.blank?
-        get_inventory_from_api("waxpeer") if steam_account&.waxpeer_api_key.blank?
+        get_inventory_from_api("csgo_empire", steam_account) unless steam_account&.csgoempire_api_key.blank?
+        get_inventory_from_api("waxpeer", steam_account) unless steam_account&.waxpeer_api_key.blank?
       end
     end
   end
 
-  def get_inventory_from_api(type)
+  def get_inventory_from_api(type, steam_account)
     begin
       case type
       when "csgo_empire"
-        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers_csgo_empire)
+        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" })
+        puts "Error in CSGOEmpire Service get_inventory_from_api csgoempire #{response["error"]}" if response["error"] 
         save_inventory(response, @active_steam_account, "csgo_empire") if response['success'] == true
       when "waxpeer"
-        response = self.class.get(WAXPEER_BASE_URL + '/get-my-inventory', query: @headers_waxpeer)
+        response = self.class.get(WAXPEER_BASE_URL + '/get-my-inventory', query: { api: steam_account&.waxpeer_api_key })
+        puts "Error in CSGOEmpire Service get_inventory_from_api waxpeer #{response["error"]}" if response["error"] 
         save_inventory(response, @active_steam_account, "waxpeer") if response['success'] == true
       else
         raise ArgumentError, "Invalid type of Market: #{type} in CSGO Service <get_inventory_from_api(type)>"
@@ -163,15 +165,15 @@ class CsgoempireService < ApplicationService
       end
     when "waxpeer"
       items_to_insert = []
-      res['items']&.each do |item|
+      res["items"]&.each do |item|
         inventory = Inventory.find_by(item_id: item['item_id'])
         unless inventory.present?
           #ASK PRICE CALCULATION
-          item_price = item['steam_price']['average'] < 0 ? 0 : ((item['steam_price']['average'].to_f / 1000) / 0.614).round(2)
+          item_price = item["steam_price"]["average"] < 0 ? 0 : item["steam_price"]["average"]
           items_to_insert << {
-            item_id: item['item_id'],
+            item_id: item["item_id"],
             steam_id: steam_account&.steam_id,
-            market_name: item['name'],
+            market_name: item["name"],
             market_price: item_price,
             tradable: nil, #ASK
             market_type: type
