@@ -4,7 +4,7 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale, only: [:index]
+    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale, :fetch_waxpeer_item_listed_for_sale, only: [:index]
     before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: [:refresh_balance]
   end
 
@@ -82,7 +82,7 @@ module HomeControllerConcern
       flash[:alert] = "Error: #{item[:msg]}, for waxpeer fetch listed items for sale"
       []
     else
-      item_listed_for_sale_hash = item_listed_for_sale.map do |item|
+      @item_listed_for_sale_hash_waxpeer = item_listed_for_sale.map do |item|
         item.merge('site' => 'Waxpeer')
       end
     end

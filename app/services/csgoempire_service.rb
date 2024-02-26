@@ -6,7 +6,8 @@ class CsgoempireService < ApplicationService
   def initialize(current_user)
     @current_user = current_user
     @active_steam_account = current_user.active_steam_account
-    @headers = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
+    @headers_csgo_empire = { 'Authorization' => "Bearer #{@active_steam_account&.csgoempire_api_key}" }
+    @headers_waxpeer = { api: @active_steam_account&.waxpeer_api_key }
     reset_proxy
     add_proxy(@active_steam_account) if @active_steam_account&.proxy.present?
   end
@@ -21,7 +22,7 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return if csgoempire_key_not_found?
       begin
-        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers)
+        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/metadata/socket', headers: @headers_csgo_empire)
       rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
         return []
       end
@@ -60,7 +61,7 @@ class CsgoempireService < ApplicationService
     if @active_steam_account.present?
       return [] if csgoempire_key_not_found?
       begin
-        res = self.class.get(BASE_URL + '/trading/user/auctions', headers: @headers)
+        res = self.class.get(BASE_URL + '/trading/user/auctions', headers: @headers_csgo_empire)
       rescue => e
         response = [{ success: "false" }]
       end
@@ -110,49 +111,85 @@ class CsgoempireService < ApplicationService
 
   def fetch_my_inventory
     if @active_steam_account.present?
-      return if csgoempire_key_not_found?
-      begin
-        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: @headers)
-        MissingItemsService.new(@current_user).missing_items(response)
-        save_inventory(response, @active_steam_account) if response['success'] == true
-      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-        return []
+      unless csgoempire_key_not_found?
+        get_inventory_from_api("csgo_empire", @steam_account)
+      end
+      unless waxpeer_api_key_not_found?
+        get_inventory_from_api("waxpeer", @steam_account)
       end
     else
       @current_user.steam_accounts.each do |steam_account|
-        next if steam_account&.csgoempire_api_key.blank?
-        begin
-          response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: headers(steam_account.csgoempire_api_key, steam_account))
-          MissingItemsService.new(@current_user).missing_items(response)
-          save_inventory(response, steam_account) if response['success'] == true
-        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
-          return []
-        end
+        get_inventory_from_api("csgo_empire", steam_account) unless steam_account&.csgoempire_api_key.blank?
+        get_inventory_from_api("waxpeer", steam_account) unless steam_account&.waxpeer_api_key.blank?
       end
     end
   end
 
-  def save_inventory(res, steam_account)
-    items_to_insert = []
-    res['data']&.each do |item|
-      inventory = Inventory.find_by(item_id: item['id'])
-      unless inventory.present?
-        item_price = item['market_value'] < 0 ? 0 : ((item['market_value'].to_f / 100) * 0.614).round(2)
-        items_to_insert << {
-          item_id: item['id'],
-          steam_id: steam_account&.steam_id,
-          market_name: item['market_name'],
-          market_price: item_price,
-          tradable: item['tradable']
-        }
+  def get_inventory_from_api(type, steam_account)
+    begin
+      case type
+      when "csgo_empire"
+        response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" })
+        puts "Error in CSGOEmpire Service get_inventory_from_api csgoempire #{response["error"]}" if response["error"] 
+        save_inventory(response, @active_steam_account, "csgo_empire") if response['success'] == true
+      when "waxpeer"
+        response = self.class.get(WAXPEER_BASE_URL + '/get-my-inventory', query: { api: steam_account&.waxpeer_api_key })
+        puts "Error in CSGOEmpire Service get_inventory_from_api waxpeer #{response["error"]}" if response["error"] 
+        save_inventory(response, @active_steam_account, "waxpeer") if response['success'] == true
+      else
+        raise ArgumentError, "Invalid type of Market: #{type} in CSGO Service <get_inventory_from_api(type)>"
       end
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
+  end
+  
+
+  def save_inventory(res, steam_account, type)
+    case type
+    when "csgo_empire"
+      items_to_insert = []
+      res['data']&.each do |item|
+        inventory = Inventory.find_by(item_id: item['id'])
+        unless inventory.present?
+          item_price = item['market_value'] < 0 ? 0 : ((item['market_value'].to_f / 100) * 0.614).round(2)
+          items_to_insert << {
+            item_id: item['id'],
+            steam_id: steam_account&.steam_id,
+            market_name: item['market_name'],
+            market_price: item_price,
+            tradable: item['tradable'],
+            market_type: type
+          }
+        end
+      end
+    when "waxpeer"
+      items_to_insert = []
+      res["items"]&.each do |item|
+        inventory = Inventory.find_by(item_id: item['item_id'])
+        unless inventory.present?
+          #ASK PRICE CALCULATION
+          item_price = item["steam_price"]["average"] < 0 ? 0 : item["steam_price"]["average"]
+          items_to_insert << {
+            item_id: item["item_id"],
+            steam_id: steam_account&.steam_id,
+            market_name: item["name"],
+            market_price: item_price,
+            tradable: nil, #ASK
+            market_type: type
+          }
+        end
+      end
+    else
+      puts "Invalid market type for fetching inventory"
+      return []
     end
     Inventory.insert_all(items_to_insert) unless items_to_insert.empty?
   end
 
   def remove_item(deposit_id)
     begin
-      response = self.class.get("#{BASE_URL}/trading/deposit/#{deposit_id}/cancel", headers: @headers)
+      response = self.class.get("#{BASE_URL}/trading/deposit/#{deposit_id}/cancel", headers: @headers_csgo_empire)
     rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
       return []
     end
@@ -172,7 +209,7 @@ class CsgoempireService < ApplicationService
 
     return if response['data'].blank?
 
-    job_id = SaveTransactionWorker.perform_async(response, steam_account.id, @headers)
+    job_id = SaveTransactionWorker.perform_async(response, steam_account.id, @headers_csgo_empire)
     steam_account.update(sold_item_job_id: job_id)
   end
 
@@ -200,6 +237,10 @@ class CsgoempireService < ApplicationService
 
   def csgoempire_key_not_found?
     @active_steam_account&.csgoempire_api_key.blank?
+  end
+
+  def waxpeer_api_key_not_found?
+    @active_steam_account&.waxpeer_api_key.blank?
   end
 
   def add_proxy(steam_account)

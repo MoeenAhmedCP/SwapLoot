@@ -1,0 +1,48 @@
+<table id="dataItemListedWaxpeer" class="display shadow-md rounded-lg" style="width:100%; border: none;">
+
+    <thead class="bg-blue text-white">
+            <tr>
+                <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
+                <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Market Name</th>
+                <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Price</th>
+                <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 ">Site</th>
+                <th class=" text-sm px-4 py-2 rounded-tr-lg ">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% @item_listed_for_sale_hash_waxpeer&.each do |item| %>
+                <tr>
+                    <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= item["item_id"] %></td>
+                    <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= item["name"] %></td>
+                    <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= item["price"] %></td>
+                    <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2">Waxpeer</td>
+                    <td class=" text-sm text-center px-4 py-2"><%= item["date"].to_datetime.strftime("%d/%B/%Y") %></td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+
+    <script>
+    $(document).ready(function() {
+        $('#dataItemListedWaxpeer').DataTable({
+            paging: <%= item_listed_for_sale_hash.present? ? true : false %>,
+            label: false,
+            pageLength: 10,
+                language: {
+            search: "_INPUT_",
+            searchPlaceholder: "Search...",
+            } // Number of records per page
+            // Other DataTables options...
+        });
+
+        const searchInputs = document.querySelectorAll('input[type="search"]');
+        searchInputs.forEach(function(input) {
+            input.style.marginBottom = '10px'
+        });
+
+        var elements = document.querySelectorAll('.dataTables_length');
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].parentNode.removeChild(elements[i]);
+        }
+     });
+</script>
