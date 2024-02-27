@@ -10,9 +10,10 @@
 
 <div id="steam-tab-content">
   <% @steam_accounts.each_with_index do |steam_account, index| %>
-    <% trade_service = steam_account&.trade_service %>
-    <% selling_status = trade_service&.selling_status %>
-    <% buying_status = trade_service&.buying_status %>
+  <%# fix %>  
+  <%# trade_service = steam_account&.trade_service %>
+    <%# selling_status = trade_service&.selling_status %>
+    <%# buying_status = trade_service&.buying_status %>
     <div class="flex flex-wrap justify-between px-5 steam-content <%= index.zero? ? '' : 'hidden' %>" id="steam<%= index %>" role="tabpanel" aria-labelledby="steam-tab-<%= index %>">
       <% ['CSGOEmpire', 'Waxpeer', 'MarketDotCSGO', 'ShadowPay'].each do |service_name| %>
         <% service_logo = "#{service_name.downcase.gsub('.', '')}_logo.png" %>
