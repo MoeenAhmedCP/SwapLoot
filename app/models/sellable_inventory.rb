@@ -6,6 +6,8 @@ class SellableInventory < ApplicationRecord
     waxpeer: 1,
     marketdotcsgo: 2
   }
+  scope :waxpeer_inventory, -> {where(market_type: "waxpeer")}
+  scope :csgo_empire_inventory, -> {where(market_type: "csgo_empire")}
 
   def self.ransackable_attributes(auth_object = nil)
     ["item_id", "market_name"]

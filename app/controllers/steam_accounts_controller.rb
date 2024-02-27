@@ -151,9 +151,10 @@ class SteamAccountsController < ApplicationController
 
   def set_steam_account_filters
     if @steam_account.present?
-      TradeService.create(steam_account_id: @steam_account.id)
-      SellingFilter.create(steam_account_id: @steam_account.id)
-      BuyingFilter.create(steam_account_id: @steam_account.id)
+      market_types = ["csgo_empire", "waxpeer", "marketdotcsgo"]
+      [TradeService, SellingFilter, BuyingFilter].each do |model_class|
+        model_class.create(market_types.map { |type| { market_type: type, steam_account_id: @steam_account.id } })
+      end
     end
   end
 

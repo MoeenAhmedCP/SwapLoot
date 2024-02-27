@@ -5,7 +5,8 @@ class Inventory < ApplicationRecord
     waxpeer: 1,
     marketdotcsgo: 2
   }
-
+  scope :waxpeer_inventory, -> {where(market_type: "waxpeer")}
+  scope :csgo_empire_inventory, -> {where(market_type: "csgo_empire")}
   scope :soft_deleted_sold, -> { where.not(sold_at: nil) }
   scope :steam_inventories, ->(active_steam_account) {
     where(steam_id: active_steam_account&.steam_id)

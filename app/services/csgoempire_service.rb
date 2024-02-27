@@ -143,7 +143,6 @@ class CsgoempireService < ApplicationService
       return []
     end
   end
-  
 
   def save_inventory(res, steam_account, type)
     case type
@@ -151,8 +150,13 @@ class CsgoempireService < ApplicationService
       items_to_insert = []
       res['data']&.each do |item|
         inventory = Inventory.find_by(item_id: item['id'])
+        price_empire_item = PriceEmpire.find_by(item_name: item['market_name'])
         unless inventory.present?
-          item_price = item['market_value'] < 0 ? 0 : ((item['market_value'].to_f / 100) * 0.614).round(2)
+          if price_empire_item.present? && price_empire_item['buff_avg7'].present?
+            item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : (((price_empire_item['buff_avg7']['price'] * 0.95).to_f / 100) * 0.614).round(2)
+          else
+            item_price = item['market_value'] < 0 ? 0 : ((item['market_value'].to_f / 100) * 0.614).round(2)
+          end
           items_to_insert << {
             item_id: item['id'],
             steam_id: steam_account&.steam_id,
@@ -166,10 +170,15 @@ class CsgoempireService < ApplicationService
     when "waxpeer"
       items_to_insert = []
       res["items"]&.each do |item|
+        price_empire_item = PriceEmpire.find_by(item_name: item['market_name'])
         inventory = Inventory.find_by(item_id: item['item_id'])
         unless inventory.present?
           #ASK PRICE CALCULATION
-          item_price = item["steam_price"]["average"] < 0 ? 0 : item["steam_price"]["average"]
+          if price_empire_item.present?
+            item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : ((price_empire_item['buff_avg7']['price'] * 0.95)).round
+          else
+            item_price = item["steam_price"]["average"] < 0 ? 0 : item["steam_price"]["average"]
+          end
           items_to_insert << {
             item_id: item["item_id"],
             steam_id: steam_account&.steam_id,
@@ -186,6 +195,83 @@ class CsgoempireService < ApplicationService
     end
     Inventory.insert_all(items_to_insert) unless items_to_insert.empty?
   end
+
+  # def save_inventory(res, steam_account, type)
+  #   case type
+  #   when "csgo_empire"
+  #     save_csgo_empire_inventory(res, steam_account)
+  #   when "waxpeer"
+  #     save_waxpeer_inventory(res, steam_account)
+  #   else
+  #     puts "Invalid market type for fetching inventory"
+  #     return []
+  #   end
+  # end
+
+
+  # def save_csgo_empire_inventory(res, steam_account)
+  #   items_to_insert = []
+  
+  #   res['data']&.each do |item|
+  #     inventory = find_inventory_by_item_id(item['id'])
+  #     price_empire_item = find_price_empire_by_item_name(item['market_name'])
+  #     unless inventory.present?
+  #       item_price = calculate_item_price(price_empire_item, item['market_value'])
+  #       items_to_insert << build_inventory_hash(item['id'], steam_account&.steam_id, item['market_name'], item_price, item['tradable'], "csgo_empire")
+  #     end
+  #   end
+  
+  #   insert_inventory(items_to_insert)
+  # end
+
+  # def save_waxpeer_inventory(res, steam_account)
+  #   items_to_insert = []
+  #   res["items"]&.each do |item|
+  #     inventory = find_inventory_by_item_id(item['item_id'])
+  #     price_empire_item = find_price_empire_by_item_name(item['market_name'])
+  #     unless inventory.present?
+  #       item_price = calculate_item_price(price_empire_item, item["steam_price"]["average"])
+  #       items_to_insert << build_inventory_hash(item["item_id"], steam_account&.steam_id, item["name"], item_price, nil, "waxpeer")
+  #     end
+  #   end
+  
+  #   insert_inventory(items_to_insert)
+  # end
+
+  # def find_inventory_by_item_id(item_id)
+  #   Inventory.find_by(item_id: item_id)
+  # end
+  
+  # def find_price_empire_by_item_name(item_name)
+  #   PriceEmpire.find_by(item_name: item_name)
+  # end
+
+  # def build_inventory_hash(item_id, steam_id, market_name, market_price, tradable, market_type)
+  #   {
+  #     item_id: item_id,
+  #     steam_id: steam_id,
+  #     market_name: market_name,
+  #     market_price: market_price,
+  #     tradable: tradable,
+  #     market_type: market_type
+  #   }
+  # end
+  
+  # def insert_inventory(items_to_insert)
+  #   Inventory.insert_all(items_to_insert) unless items_to_insert.empty?
+  # end
+
+  # def calculate_item_price(price_empire_item, market_value)
+  #   return 0 if market_value < 0
+  
+  #   if price_empire_item.present?
+  #     price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : (((price_empire_item['buff_avg7']['price'] * 0.95).to_f / 100) * 0.614).round(2)
+  #   else
+  #     price = ((market_value.to_f / 100) * 0.614).round(2)
+  #   end
+  
+  #   price
+  # end
 
   def remove_item(deposit_id)
     begin
