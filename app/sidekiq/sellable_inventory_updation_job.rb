@@ -8,7 +8,7 @@ class SellableInventoryUpdationJob
 		@users.each do |user|
 			user.steam_accounts.each do |steam_account|
 				begin
-					p "<============= Fetching CSGOEMpire Inventory ================>"
+					p "<============= Fetching CSGOEMpire Inventory for #{steam_account.unique_name} ================>"
 					tradeable_inventory_to_save = SellableInventoryUpdationService.new(steam_account).update_sellable_inventory("csgo_empire")
 					tradeable_inventory_to_save.each do |item|
 						begin
@@ -30,7 +30,7 @@ class SellableInventoryUpdationJob
 				end
 
 				begin
-					p "<============= Fetching Waxpeer Inventory ================>"
+					p "<============= Fetching Waxpeer Inventory for #{steam_account.unique_name} ================>"
 					tradeable_inventory_to_save = SellableInventoryUpdationService.new(steam_account).update_sellable_inventory("waxpeer")
 					tradeable_inventory_to_save.each do |item|
 						begin

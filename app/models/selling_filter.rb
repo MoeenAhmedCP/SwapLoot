@@ -5,6 +5,12 @@ class SellingFilter < ApplicationRecord
   belongs_to :steam_account
   after_update :set_service_status
 
+  enum market_type: {
+    csgo_empire: 0,
+    waxpeer: 1,
+    marketdotcsgo: 2
+  }
+
   def set_service_status
     #fix
     # service_type = self.class.name.gsub(/Filter$/, '').downcase
