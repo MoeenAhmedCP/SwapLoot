@@ -11,9 +11,10 @@
   <% end %>
     <div class="">
     <% @steam_accounts.each_with_index do |steam_account, index| %>
-        <% trade_service = steam_account&.trade_service %>
-        <% selling_status = trade_service&.selling_status %>
-        <% buying_status = trade_service&.buying_status %>
+        <%# fix %>
+        <%# <% trade_service = steam_account&.trade_service %>
+        <%# <% selling_status = trade_service&.selling_status %>
+        <%# <% buying_status = trade_service&.buying_status %>
         
         <div>
             <div class="px-5 flex items-center justify-between bg-white dark:bg-white">

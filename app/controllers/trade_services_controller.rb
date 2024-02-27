@@ -30,13 +30,15 @@ class TradeServicesController < ApplicationController
     if trade_service_params[:selling_status] == SUCCESS
       selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
       price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
-      @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
+      #fix
+      # @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
       flash[:notice] = "Selling service started.."
     else
       RemoveItemListedForSaleJob.perform_async(steam_account.id)
-      delete_enqueued_job(@trade_service&.price_cutting_job_id) if @trade_service&.price_cutting_job_id 
-      delete_enqueued_job(@trade_service&.selling_job_id) if @trade_service&.selling_job_id
-      @trade_service.update(selling_job_id: nil, price_cutting_job_id: nil) if @trade_service&.price_cutting_job_id && @trade_service&.selling_job_id
+      #fix
+      # delete_enqueued_job(@trade_service&.price_cutting_job_id) if @trade_service&.price_cutting_job_id 
+      # delete_enqueued_job(@trade_service&.selling_job_id) if @trade_service&.selling_job_id
+      # @trade_service.update(selling_job_id: nil, price_cutting_job_id: nil) if @trade_service&.price_cutting_job_id && @trade_service&.selling_job_id
       flash[:notice] = "Selling service stopped"
     end
   end

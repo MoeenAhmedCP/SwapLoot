@@ -45,7 +45,7 @@ class WaxpeerSellingService < ApplicationService
 		remaining_items.each do |item|
 			suggested_items = waxpeer_suggested_prices
 			result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-			item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
+			item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price
 			lowest_price = result_item['lowest_price']
 			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 ))
 			if result_item && lowest_price > minimum_desired_price
@@ -57,13 +57,47 @@ class WaxpeerSellingService < ApplicationService
 		end
 	end
 
+
+	def waxpeer_price_cutting
+		response = fetch_waxpeer_active_trades
+		if response['success'] == false
+			report_api_error(response, [self&.class&.name, __method__.to_s])
+		else
+			items_listed_for_sale = []
+			items_listed_for_sale = response["items"].map do |deposit|
+			{
+				item_id: deposit["item_id"],
+				market_name: deposit["name"],
+				total_value: deposit["total_value"],
+				market_value: deposit["price"],
+				updated_at: deposit["date"],
+				suggested_price: deposit["steam_price"]["average"]
+			}
+			end
+			items_for_resale = []
+			items_listed_for_sale.each do |item|
+				if item_ready_to_price_cutting?(item[:updated_at], @steam_account.selling_filter.undercutting_interval)
+					items_for_resale << item
+				end
+			end
+			if items_for_resale.any?
+				cutting_price_and_list_again(items_for_resale)
+			else
+				price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(@steam_account.selling_filter.undercutting_interval.minutes, @steam_account.id)
+				#Fix
+				# @steam_account.trade_service.update(price_cutting_job_id: price_cutting_job_id)
+			end
+		end
+	end
+
 	def deposit_items_for_sale(items)
     items.each_slice(100) do |batch|
       batch_hash = {"items" => batch}
       response = HTTParty.post(WAXPEER_BASE_URL + '/list-items-steam', query: headers, body: JSON.generate(batch_hash))
       if response.code == SUCCESS_CODE
         batch.each do |item|
-          SellableInventory.find_by(item_id: item["item_id"]).update(listed_for_sale: true)
+          puts "Item: #{item["market_name"]} with ID: #{item["item_id"]} is Listed for sale successfully."
+          SellableInventory.find_by(item_id: item["item_id"], market_type: "waxpeer").update(listed_for_sale: true)
         end
         result = JSON.parse(response.body)
       else
@@ -73,6 +107,50 @@ class WaxpeerSellingService < ApplicationService
       # Handle rate limiting (One Request can list 100 items and rate limit is 2 requests per 120 seconds for each item_id)
       sleep(2) # Sleep for 2 seconds between each batch
     end
+  end
+
+	# Function for Cutting Prices of Items and List them again for sale
+	def cutting_price_and_list_again(items)
+		filtered_items_for_deposit = []
+		items.map do |item|
+			item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price.to_f
+			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+			minimum_desired_price = minimum_desired_price.round
+			current_listed_price = item[:market_value]
+			suggested_items = waxpeer_suggested_prices
+			result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
+			lowest_price = result_item['lowest_price']
+			if lowest_price >= minimum_desired_price && lowest_price < current_listed_price
+				filtered_items_for_deposit << item.merge(lowest_price: (lowest_price - 1))
+			elsif lowest_price < minimum_desired_price && lowest_price < current_listed_price
+				filtered_items_for_deposit << item.merge(lowest_price: (minimum_desired_price - 1))
+			end
+		end
+		items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "item_id"=> filtered_item[:item_id], "price"=> filtered_item[:lowest_price]  } } unless filtered_items_for_deposit.empty?
+		# Function to update prices for items after price cutting
+    update_prices(items_to_deposit) if items_to_deposit.present?
+	end
+
+
+	# function to cancel deposit of the items listed for sale
+  def update_prices(items)
+    items.each_slice(50) do |batch|
+      batch_hash = {"items" => batch}
+      response = HTTParty.post(WAXPEER_BASE_URL + '/edit-items', query: headers, body: JSON.generate(batch_hash))
+      if response.code == SUCCESS_CODE
+        batch.each do |item|
+          puts "Price Updated for Item: #{item["market_name"]} with ID: #{item["item_id"]}"
+					SellableInventory.find_by(item_id: item["item_id"], market_type: "waxpeer").update(listed_for_sale: true)
+        end
+        result = JSON.parse(response.body)
+      else
+        report_api_error(response, [self&.class&.name, __method__.to_s])
+        result = API_FAILED
+      end
+      # Handle rate limiting (One Request can list 100 items and rate limit is 2 requests per 120 seconds for each item_id)
+      sleep(2) # Sleep for 2 seconds between each batch
+    end
+		waxpeer_price_cutting
   end
 
 	def fetch_inventory
@@ -108,7 +186,7 @@ class WaxpeerSellingService < ApplicationService
     inventory.map do |item|
       suggested_items = waxpeer_suggested_prices
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-      item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
+      item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price
       lowest_price = result_item['lowest_price']
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 ))
       if result_item && lowest_price > minimum_desired_price
@@ -140,6 +218,15 @@ class WaxpeerSellingService < ApplicationService
 		end
 		return matching_items
 	end
+
+	def item_ready_to_price_cutting?(updated_at, no_of_minutes)
+    estimated_time = updated_at.to_datetime + no_of_minutes.minutes
+    estimated_time <= Time.current
+  end
+
+	def fetch_waxpeer_active_trades
+    HTTParty.get(WAXPEER_BASE_URL + '/list-items-steam', query: headers)
+  end
 
 	# Function to fetch Items and Its Prices from different platforms from Price Empire API
   def fetch_items_from_pirce_empire
