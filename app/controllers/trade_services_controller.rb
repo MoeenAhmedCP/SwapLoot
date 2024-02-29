@@ -33,7 +33,7 @@ class TradeServicesController < ApplicationController
     when "csgoempire"
       if trade_service_params[:selling_status] == SUCCESS
         selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
-        price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
+        price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filters.csgoempire_filter.undercutting_interval.minutes, steam_account.id)
         @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
         flash[:notice] = "CSGOEmpire Selling service started."
       else
@@ -46,7 +46,7 @@ class TradeServicesController < ApplicationController
     when "waxpeer"
       if trade_service_params[:selling_status] == SUCCESS
         selling_job_id = WaxpeerSellingJob.perform_async(steam_account.id)
-        price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
+        price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(steam_account.selling_filters.waxpeer_filter.undercutting_interval.minutes, steam_account.id)
         @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
         flash[:notice] = "Waxpeer Selling service started."
       else
@@ -57,20 +57,18 @@ class TradeServicesController < ApplicationController
         flash[:notice] = "Waxpeer Selling service stopped."
       end
     when "market_csgo"
-      # if trade_service_params[:selling_status] == SUCCESS
-      #   selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
-      #   price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
-      #   @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
-      #   flash[:notice] = "Selling service started."
-      # else
-      #   RemoveItemListedForSaleJob.perform_async(steam_account.id)
-      #   delete_enqueued_job(@trade_service&.price_cutting_job_id) if @trade_service&.price_cutting_job_id 
-      #   delete_enqueued_job(@trade_service&.selling_job_id) if @trade_service&.selling_job_id
-      #   @trade_service.update(selling_job_id: nil, price_cutting_job_id: nil) if @trade_service&.price_cutting_job_id && @trade_service&.selling_job_id
-      #   flash[:notice] = "Selling service stopped."
-      # end
+      if trade_service_params[:selling_status] == SUCCESS
+        selling_job_id = MarketcsgoSellingJob.perform_async(steam_account.id)
+        price_cutting_job_id = MarketcsgoPriceCuttingJob.perform_in(steam_account.selling_filters.market_csgo_filter.undercutting_interval.minutes, steam_account.id)
+        @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
+        flash[:notice] = "Market CSGO Selling service started."
+      else
+        RemoveItemListedForSaleJob.perform_async(steam_account.id)
+        delete_enqueued_job(@trade_service&.price_cutting_job_id) if @trade_service&.price_cutting_job_id 
+        delete_enqueued_job(@trade_service&.selling_job_id) if @trade_service&.selling_job_id
+        @trade_service.update(selling_job_id: nil, price_cutting_job_id: nil) if @trade_service&.price_cutting_job_id && @trade_service&.selling_job_id
+        flash[:notice] = "Market CSGO Selling service stopped."
+      end
     end
   end
 end
-
-
