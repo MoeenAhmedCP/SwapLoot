@@ -4,8 +4,12 @@
 class TradeService < ApplicationRecord
   belongs_to :steam_account
   enum market_type: {
-    csgo_empire: 0,
+    csgoempire: 0,
     waxpeer: 1,
-    marketdotcsgo: 2
+    market_csgo: 2
   }
+
+  scope :waxpeer_trade_service, -> { find_by(market_type: "waxpeer") }
+  scope :csgoempire_trade_service, -> { find_by(market_type: "csgoempire") }
+  scope :market_csgo_trade_service, -> { find_by(market_type: "market_csgo") }  
 end

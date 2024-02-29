@@ -84,8 +84,7 @@ class WaxpeerSellingService < ApplicationService
 				cutting_price_and_list_again(items_for_resale)
 			else
 				price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(@steam_account.selling_filter.undercutting_interval.minutes, @steam_account.id)
-				#Fix
-				# @steam_account.trade_service.update(price_cutting_job_id: price_cutting_job_id)
+				@steam_account.trade_services.waxpeer_trade_service.update(price_cutting_job_id: price_cutting_job_id)
 			end
 		end
 	end

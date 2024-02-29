@@ -4,8 +4,12 @@
 class BuyingFilter < ApplicationRecord
   belongs_to :steam_account
   enum market_type: {
-    csgo_empire: 0,
+    csgoempire: 0,
     waxpeer: 1,
-    marketdotcsgo: 2
+    market_csgo: 2
   }
+
+  scope :csgoempire_filter, -> { find_by(market_type: "csgoempire") }
+  scope :waxpeer_filter, -> { find_by(market_type: "waxpeer") }
+  scope :market_csgo_filter, -> { find_by(market_type: "market_csgo") }
 end

@@ -112,14 +112,14 @@ class CsgoempireService < ApplicationService
   def fetch_my_inventory
     if @active_steam_account.present?
       unless csgoempire_key_not_found?
-        get_inventory_from_api("csgo_empire", @steam_account)
+        get_inventory_from_api("csgoempire", @steam_account)
       end
       unless waxpeer_api_key_not_found?
         get_inventory_from_api("waxpeer", @steam_account)
       end
     else
       @current_user.steam_accounts.each do |steam_account|
-        get_inventory_from_api("csgo_empire", steam_account) unless steam_account&.csgoempire_api_key.blank?
+        get_inventory_from_api("csgoempire", steam_account) unless steam_account&.csgoempire_api_key.blank?
         get_inventory_from_api("waxpeer", steam_account) unless steam_account&.waxpeer_api_key.blank?
       end
     end
@@ -128,10 +128,10 @@ class CsgoempireService < ApplicationService
   def get_inventory_from_api(type, steam_account)
     begin
       case type
-      when "csgo_empire"
+      when "csgoempire"
         response = self.class.get(CSGO_EMPIRE_BASE_URL + '/trading/user/inventory', headers: { 'Authorization' => "Bearer #{steam_account&.csgoempire_api_key}" })
         puts "Error in CSGOEmpire Service get_inventory_from_api csgoempire #{response["error"]}" if response["error"] 
-        save_inventory(response, @active_steam_account, "csgo_empire") if response['success'] == true
+        save_inventory(response, @active_steam_account, "csgoempire") if response['success'] == true
       when "waxpeer"
         response = self.class.get(WAXPEER_BASE_URL + '/get-my-inventory', query: { api: steam_account&.waxpeer_api_key })
         puts "Error in CSGOEmpire Service get_inventory_from_api waxpeer #{response["error"]}" if response["error"] 
@@ -146,7 +146,7 @@ class CsgoempireService < ApplicationService
 
   def save_inventory(res, steam_account, type)
     case type
-    when "csgo_empire"
+    when "csgoempire"
       items_to_insert = []
       res['data']&.each do |item|
         inventory = Inventory.find_by(item_id: item['id'])
@@ -198,7 +198,7 @@ class CsgoempireService < ApplicationService
 
   # def save_inventory(res, steam_account, type)
   #   case type
-  #   when "csgo_empire"
+  #   when "csgoempire"
   #     save_csgo_empire_inventory(res, steam_account)
   #   when "waxpeer"
   #     save_waxpeer_inventory(res, steam_account)
@@ -217,7 +217,7 @@ class CsgoempireService < ApplicationService
   #     price_empire_item = find_price_empire_by_item_name(item['market_name'])
   #     unless inventory.present?
   #       item_price = calculate_item_price(price_empire_item, item['market_value'])
-  #       items_to_insert << build_inventory_hash(item['id'], steam_account&.steam_id, item['market_name'], item_price, item['tradable'], "csgo_empire")
+  #       items_to_insert << build_inventory_hash(item['id'], steam_account&.steam_id, item['market_name'], item_price, item['tradable'], "csgoempire")
   #     end
   #   end
   

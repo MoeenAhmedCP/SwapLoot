@@ -7,13 +7,13 @@ class InventoriesController < ApplicationController
       fetch_inventory
     end
     
-    inventories = Inventory.where(sold_at: nil, steam_id: steam_ids, market_type: "csgo_empire")
+    inventories = Inventory.where(sold_at: nil, steam_id: steam_ids, market_type: "csgoempire")
     inventories = inventories.tradable_steam_inventories(@active_steam_account) if params["tradable"] == "true"
     inventories = inventories.non_tradable_steam_inventories(@active_steam_account) if params["tradable"] == "false"
     inventories = inventories.where(steam_id: steam_ids) if steam_ids.present?
     @q_inventories = inventories.ransack(params[:inventory_search])
     @inventories = @q_inventories.result.order(market_price: :DESC).paginate(page: params[:page], per_page: per_page)
-    @q_sellable_inventory = SellableInventory.where(steam_id: steam_ids, market_type: "csgo_empire").ransack(params[:sellable_inventory_search])
+    @q_sellable_inventory = SellableInventory.where(steam_id: steam_ids, market_type: "csgoempire").ransack(params[:sellable_inventory_search])
     @sellable_inventory = @q_sellable_inventory.result.order(market_price: :DESC).paginate(page: params[:sellable_inventory_page], per_page: per_page)
     @total_market_price = @q_inventories.result.sum(:market_price).round(3)
     @missing_items = current_user.active_steam_account.present? ? current_user.active_steam_account.missing_items : MissingItem.where(steam_account_id: current_user.steam_accounts.pluck(:id))
