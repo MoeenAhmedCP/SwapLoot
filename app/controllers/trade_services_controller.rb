@@ -33,7 +33,7 @@ class TradeServicesController < ApplicationController
     when "csgoempire"
       if trade_service_params[:selling_status] == SUCCESS
         selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
-        price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
+        price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filters.csgoempire_filter.undercutting_interval.minutes, steam_account.id)
         @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
         flash[:notice] = "CSGOEmpire Selling service started."
       else
@@ -46,7 +46,7 @@ class TradeServicesController < ApplicationController
     when "waxpeer"
       if trade_service_params[:selling_status] == SUCCESS
         selling_job_id = WaxpeerSellingJob.perform_async(steam_account.id)
-        price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
+        price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(steam_account.selling_filters.waxpeer_filter.undercutting_interval.minutes, steam_account.id)
         @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
         flash[:notice] = "Waxpeer Selling service started."
       else
@@ -59,7 +59,7 @@ class TradeServicesController < ApplicationController
     when "market_csgo"
       # if trade_service_params[:selling_status] == SUCCESS
       #   selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
-      #   price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filter.undercutting_interval.minutes, steam_account.id)
+      #   price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filters.market_csgo_filter.undercutting_interval.minutes, steam_account.id)
       #   @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
       #   flash[:notice] = "Selling service started."
       # else
