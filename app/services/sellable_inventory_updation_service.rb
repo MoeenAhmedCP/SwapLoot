@@ -19,7 +19,6 @@ class SellableInventoryUpdationService < ApplicationService
 				end
 			rescue
 				puts "Something went wrong with Fetch inventory API CSGOEmpire.. retrying in 2 minutes"
-				SellableInventoryUpdationJob.perform_in(2.hour)
 			end
 		when "waxpeer"
 			headers_waxpeer = { api: @steam_account&.waxpeer_api_key }
@@ -32,7 +31,18 @@ class SellableInventoryUpdationService < ApplicationService
 				end
 			rescue
 				puts "Something went wrong with Fetch inventory API WAXPEER.. retrying in 2 minutes"
-				SellableInventoryUpdationJob.perform_in(2.hour)
+			end
+		when "market_csgo"
+			headers = { key: @steam_account.market_csgo_api_key }
+			begin
+				inventory_response = self.class.get(MARKET_CSGO_BASE_URL + '/my-inventory', query: headers)
+				if inventory_response['success'] == false
+					report_api_error(inventory_response, [self&.class&.name, __method__.to_s]) 
+				else
+					tradeable_inventory_to_save = inventory_response["items"].select { |item| item["market_price"] > 0  }
+				end
+			rescue
+				puts "Something went wrong with Fetch inventory API Market.CSGO.. retrying in 2 minutes"
 			end
 		end
 	end
