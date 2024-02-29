@@ -8,9 +8,9 @@ class SellableInventoryUpdationJob
 		@users.each do |user|
 			user.steam_accounts.each do |steam_account|
 				begin
-					p "<============= Fetching CSGOEMpire Inventory ================>"
-					tradeable_inventory_to_save = SellableInventoryUpdationService.new(steam_account).update_sellable_inventory("csgo_empire")
-					tradeable_inventory_to_save.each do |item|
+					p "<============= Fetching CSGOEMpire Inventory for #{steam_account.unique_name} ================>"
+					tradeable_inventory_to_save = SellableInventoryUpdationService.new(steam_account).update_sellable_inventory("csgoempire")
+					tradeable_inventory_to_save&.each do |item|
 						begin
 							SellableInventory.find_or_create_by!(
 							item_id: item["id"]
@@ -19,10 +19,10 @@ class SellableInventoryUpdationJob
 								sellable_inventory.market_price = item["market_value"].to_f / 100 * 0.614
 								sellable_inventory.steam_id = steam_account.steam_id
 								sellable_inventory.listed_for_sale = false
-								sellable_inventory.market_type = "csgo_empire"
+								sellable_inventory.market_type = "csgoempire"
 							end
 						rescue => e
-							puts "Sellable Inventory can not be created due to: #{e}"
+							puts "Sellable Inventory can not be created for CSGOEmpire due to: #{e}"
 						end
 					end
 				rescue => e
@@ -30,9 +30,9 @@ class SellableInventoryUpdationJob
 				end
 
 				begin
-					p "<============= Fetching Waxpeer Inventory ================>"
+					p "<============= Fetching Waxpeer Inventory for #{steam_account.unique_name} ================>"
 					tradeable_inventory_to_save = SellableInventoryUpdationService.new(steam_account).update_sellable_inventory("waxpeer")
-					tradeable_inventory_to_save.each do |item|
+					tradeable_inventory_to_save&.each do |item|
 						begin
 							SellableInventory.find_or_create_by!(
 							item_id: item["item_id"]
@@ -44,11 +44,33 @@ class SellableInventoryUpdationJob
 								sellable_inventory.market_type = "waxpeer"
 							end
 						rescue => e
-							puts "Sellable Inventory can not be created due to: #{e}"
+							puts "Sellable Inventory can not be created for Waxpeer due to: #{e}"
 						end
 					end
 				rescue => e
 					puts "Something went wrong with Fetch inventory API WAXPEER for user #{user.email}: #{e} in Sellable Inventory Updation Job"
+				end
+
+				begin
+					p "<============= Fetching MarketCSGO Inventory for #{steam_account.unique_name} ================>"
+					tradeable_inventory_to_save = SellableInventoryUpdationService.new(steam_account).update_sellable_inventory("market_csgo")
+					tradeable_inventory_to_save&.each do |item|
+						begin
+							SellableInventory.find_or_create_by!(
+							item_id: item["id"]
+							) do |sellable_inventory|
+								sellable_inventory.market_name = item["market_hash_name"]
+								sellable_inventory.market_price = item["market_price"]
+								sellable_inventory.steam_id = steam_account.steam_id
+								sellable_inventory.listed_for_sale = false
+								sellable_inventory.market_type = "market_csgo"
+							end
+						rescue => e
+							puts "Sellable Inventory can not be created for MarketCSGO due to: #{e}"
+						end
+					end
+				rescue => e
+					puts "Something went wrong with Fetch inventory API MARKET.CSGO for user #{user.email}: #{e} in Sellable Inventory Updation Job"
 				end
 			end
 		end

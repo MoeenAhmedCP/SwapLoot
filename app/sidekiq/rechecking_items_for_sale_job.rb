@@ -3,12 +3,12 @@ class RecheckingItemsForSaleJob
 	sidekiq_options retry: false
 	
 	def perform
-		puts "Rechecking Items for sale Job started..."
+		puts "Rechecking Items for sale Job started fro CSGOEmpire..."
 		User.all.each do |user|
 			user.steam_accounts.each do |steam_account|
-				if steam_account.trade_service.selling_job_id.present? && steam_account.trade_service.selling_status
+				if steam_account.trade_services.csgoempire_trade_service.selling_job_id.present? && steam_account.trade_services.csgoempire_trade_service.selling_status
 					selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
-					steam_account.trade_service.update(selling_job_id: selling_job_id)
+					steam_account.trade_services.csgoempire_trade_service.update(selling_job_id: selling_job_id)
 				end
 			end
 		end

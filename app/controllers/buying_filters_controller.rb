@@ -8,8 +8,9 @@ class BuyingFiltersController < ApplicationController
 
   def update
     message = I18n.t("buying_filters.update.#{@buying_filter.update(buying_filter_params) ? 'success' : 'failure'}")
-    if @buying_filter.steam_account.trade_service.buying_status == true
-      @buying_filter.steam_account.trade_service.update(buying_status: false)
+    @trade_service = @buying_filter.steam_account.trade_services.send("#{@buying_filter.market_type}_trade_service")
+    if @trade_service.buying_status == true
+      @trade_service.update(buying_status: false)
       base_url = ENV['NODE_TOGGLE_SERVICE_URL']
       steam_account = @buying_filter.steam_account
       url = "#{base_url}/toggleBuying"

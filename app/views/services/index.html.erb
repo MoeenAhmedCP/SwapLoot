@@ -1,60 +1,94 @@
- <div class="m-10">   <h2 class="text-lg mb-2 text-blue dark:text-white font-[500]">Services</h2>
-
-<div class="shadow-md rounded-b-lg">
-  <% if @steam_accounts.present? %>
-    <div class="flex items-center justify-between bg-blue text-white p-3 rounded-t-lg">
-        <div class="font-[300] text-md px-2">Steam Accounts</div>
-        <div class="font-[300] text-md me-40 ">Services</div>
-    </div>
-  <% else %>
-    <h1 class="p-5 text-gray text-lg">No services available</h1>
-  <% end %>
-    <div class="">
+<div class="mb-4 border-b border-grayDark dark:border-grayDark">
+  <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="steam-tabs" role="tablist">
     <% @steam_accounts.each_with_index do |steam_account, index| %>
-        <% trade_service = steam_account&.trade_service %>
+      <li class="me-2" role="presentation">
+        <button class="text-lg dark:text-white inline-block p-4 rounded-t-lg <%= index.zero? ? 'active' : '' %>" id="steam-tab-<%= index %>" data-tabs-target="#steam<%= index %>" type="button" role="tab" aria-controls="steam<%= index %>" aria-selected="<%= index.zero? %>"><%= steam_account.unique_name %></button>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
+<div id="steam-tab-content">
+  <% @steam_accounts.each_with_index do |steam_account, index| %>
+    <div class="flex flex-wrap gap-3 px-5 steam-content <%= index.zero? ? '' : 'hidden' %>" id="steam<%= index %>" role="tabpanel" aria-labelledby="steam-tab-<%= index %>">
+      <% ['CSGOEmpire', 'Waxpeer', 'Market_Csgo'].each do |service_name| %>
+        <% next unless steam_account.send("#{service_name.downcase}_api_key").present? %>
+        <% service_logo = "#{service_name.downcase.gsub('_', '')}_logo.png" %>
+        <% trade_service = steam_account.trade_services.send("#{service_name.downcase.gsub(".", "")}_trade_service") %>
         <% selling_status = trade_service&.selling_status %>
         <% buying_status = trade_service&.buying_status %>
-        
-        <div>
-            <div class="px-5 flex items-center justify-between bg-white dark:bg-white">
-            <div>
-                <h2 class="text-md"><%= steam_account.unique_name %></h2>
-            </div>
-            <div class="p-3">
+        <% selling_filter = steam_account.selling_filters.send("#{service_name.downcase.gsub(".", "")}_filter") %>
+        <% buying_filter = steam_account.buying_filters.send("#{service_name.downcase.gsub(".", "")}_filter") %>
+        <div class="rounded-lg bg-gray-50 dark:bg-gray-800 py-2">
+          <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <div class="flex flex-col items-center p-5">
+              <%= image_tag(service_logo, class: "w-24 h-24 mb-3 rounded-full shadow-lg") %>
+              <h5 class="mb-1 text-xl font-medium text-grayDark dark:text-grayDark"><%= steam_account.unique_name %></h5>
+              <span class="text-sm text-gray-500 dark:text-gray-400"><%= service_name.titleize %></span>
+              <div class="flex mt-4 md:mt-6 space-x-4 px-5">
+                <span class="px-3 text-sm font-medium text-grayExtraDark dark:text-black">Selling</span>
                 <label class="relative inline-flex items-center me-5 cursor-pointer" data-toggle="tooltip" data-placement="top" title="Tooltip for Enable Selling Service">
-                <%= check_box_tag 'selling', selling_status ? 'on' : 'off', selling_status, class: "steam-checkbox sr-only peer toggle-#{steam_account&.selling_filter&.id}", onchange: "changeSellingStatus('#{steam_account&.selling_filter&.id}', '#{ trade_service&.id }', '#{ steam_account&.id }')" %>
+                  <%= check_box_tag 'selling', selling_status ? 'on' : 'off', selling_status, class: "steam-checkbox sr-only peer toggle-#{selling_filter&.id}", onchange: "changeSellingStatus('#{selling_filter&.id}', '#{ trade_service&.id }', '#{ steam_account&.id }', '#{service_name.downcase.gsub(".", "")}')" %>
                 <div class="w-11 h-6 bg-grayLight rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-grayDark peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-grayDark peer-checked:bg-red-600"></div>
-                  <%if steam_account&.selling_filter %>
-                    <a href="<%= edit_selling_filter_path(steam_account&.selling_filter) %>" class="edit-link" data-remote='true'>
-                      <i class="px-2 fa fa-pen text-grayDark" data-toggle="tooltip" data-placement="top" title="Edit Params for Selling Filter Service"></i>
-                    </a>
-                  <% end %>
-                <span class="ms-3 text-sm font-medium text-grayExtraDark dark:text-black">Selling</span>
+                <%if selling_filter %>
+                  <a href="<%= edit_selling_filter_path(selling_filter) %>" class="edit-link" data-remote='true'>
+                    <i class="px-2 fa fa-pen text-grayDark" data-toggle="tooltip" data-placement="top" title="Edit Params for Selling Filter Service"></i>
+                  </a>
+                <% end %>
                 </label>
 
+                <span class="px-3 text-sm font-medium text-grayExtraDark dark:text-black">Buying</span>
                 <label class="relative inline-flex items-center me-5 cursor-pointer" data-toggle="tooltip" data-placement="top" title="Tooltip for Enable Buying Service">
-                <%= check_box_tag steam_account.id, buying_status ? 'on' : 'off', buying_status, class: "steam-checkbox sr-only peer steam-buying-services toggle-buying#{steam_account&.buying_filter&.id}" ,onchange: "changeBuyingStatus('#{steam_account&.buying_filter&.id}', '#{ trade_service&.id }')" %>
+                  <%= check_box_tag steam_account.id, buying_status ? 'on' : 'off', buying_status, class: "steam-checkbox sr-only peer steam-buying-services toggle-buying#{buying_filter&.id}" ,onchange: "changeBuyingStatus('#{buying_filter&.id}', '#{ trade_service&.id }')" %>
                 <div class="w-11 h-6 bg-grayLight rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-grayDark peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-grayDark peer-checked:bg-green-600"></div>
-                <a href="<%= edit_buying_filter_path(steam_account&.buying_filter) %>" class="edit-link" data-remote="true">
+                <a href="<%= edit_buying_filter_path(buying_filter) %>" class="edit-link" data-remote="true">
                   <i class="px-2 fa fa-pen text-grayDark" data-toggle="tooltip" data-placement="top" title="Edit Params for Buying Filter Service"></i>
                 </a>
-                <span class="ms-3 text-sm font-medium text-grayExtraDark dark:text-black">Buying</span>
                 </label>
-
+              </div>
             </div>
-            </div>
-            <% unless index == @steam_accounts.size - 1 %>
-              <hr class="h-px w-full divider">
-            <% end %>
+          </div>
         </div>
-    <% end %>
+      <% end %>
     </div>
-</div>
+  <% end %>
 </div>
 
 <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get all tab buttons and tab content elements
+    const tabButtons = document.querySelectorAll("[role='tab']");
+    const tabContents = document.querySelectorAll(".steam-content");
 
-  function changeSellingStatus(selling_filter_id, trade_service_id, steam_account_id){
+    // Loop through each tab button
+    tabButtons.forEach(function (button, index) {
+      button.addEventListener("click", function () {
+        const activeTab = document.querySelectorAll('.active')[0]
+        if (activeTab){
+          activeTab.classList.remove('active');
+          this.classList.add('active');
+        }
+        // Hide all tab contents
+        tabContents.forEach(function (content) {
+          content.classList.add("hidden");
+        });
+
+        // Remove the 'active' class from all tab buttons
+        tabButtons.forEach(function (btn) {
+          btn.setAttribute("aria-selected", "false");
+        });
+
+        // Show the clicked tab content
+        tabContents[index].classList.remove("hidden");
+
+        // Add the 'active' class to the clicked tab button
+        button.setAttribute("aria-selected", "true");
+      });
+    });
+  });
+
+
+  function changeSellingStatus(selling_filter_id, trade_service_id, steam_account_id, service_name){
     if(trade_service_id && selling_filter_id){
       selling_status = $(`.toggle-${selling_filter_id}`)[0].checked
       $.ajax({
@@ -62,7 +96,8 @@
         type: 'PATCH',
         data: {
           trade_service: {
-            selling_status: selling_status
+            selling_status: selling_status,
+            service_name: service_name
           },
           steam_account_id: steam_account_id
         },
@@ -104,3 +139,10 @@
             document.getElementById("postForm").submit();
         }
 </script>
+<style>
+  .active {
+    color: #2563EB !important;
+    font-weight: bold;
+    border-bottom: 2px solid  #2563EB;
+  }
+</style>

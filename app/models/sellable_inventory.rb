@@ -2,10 +2,12 @@ class SellableInventory < ApplicationRecord
   after_create :trigger_selling_job
   scope :inventory, ->(steam_account) { where(steam_id: steam_account.steam_id) }
   enum market_type: {
-    csgo_empire: 0,
+    csgoempire: 0,
     waxpeer: 1,
-    marketdotcsgo: 2
+    market_csgo: 2
   }
+  scope :waxpeer_inventory, -> {where(market_type: "waxpeer")}
+  scope :csgoempire_inventory, -> {where(market_type: "csgoempire")}
 
   def self.ransackable_attributes(auth_object = nil)
     ["item_id", "market_name"]
