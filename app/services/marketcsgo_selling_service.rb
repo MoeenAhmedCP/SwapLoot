@@ -102,6 +102,17 @@ class MarketcsgoSellingService < ApplicationService
     deposit_items_for_sale(items_to_deposit) if items_to_deposit.any?
   end
 
+  def remove_listed_items_for_sale
+    response = HTTParty.get(MARKET_CSGO_BASE_URL + '/remove-all-from-sale', query: @params)
+		if response.code == SUCCESS_CODE
+			result = JSON.parse(response.body)
+			puts "Removed: #{result["count"]} items from Market CSGO Listing."
+		else
+			report_api_error(response, [self&.class&.name, __method__.to_s])
+			result = API_FAILED
+		end
+  end
+
   def matching_item_for_price_empire(response_items, inventory_item)
     item_found_from_price_empire = response_items.find_by(item_name: inventory_item['market_hash_name'])
     matching_item = nil
