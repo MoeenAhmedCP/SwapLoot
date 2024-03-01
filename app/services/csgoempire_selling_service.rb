@@ -38,7 +38,7 @@ class CsgoempireSellingService < ApplicationService
 
   # function to fetch matching items data from inventory and price empire api
   def find_matching_data
-    price_empire_response_items = fetch_items_from_pirce_empire
+    price_empire_response_items = fetch_items_from_price_empire
     waxpeer_response_items = waxpeer_suggested_prices if price_empire_response_items.empty?
     inventory = fetch_inventory
     if inventory.present?
@@ -59,7 +59,7 @@ class CsgoempireSellingService < ApplicationService
     unless matching_items
       sell_csgoempire
     end
-    if fetch_items_from_pirce_empire.present?
+    if fetch_items_from_price_empire.present?
       items_to_deposit = matching_items.map do |item|
         if item["average"] > (item["coin_value_bought"] + ((item["coin_value_bought"] * @steam_account.selling_filters.csgoempire_filter.min_profit_percentage) / 100 ).round(2))
           { "id" => item["id"], "coin_value" => item["average"] }
@@ -302,7 +302,7 @@ class CsgoempireSellingService < ApplicationService
   end
 
   # Function to fetch Items and Its Prices from different platforms from Price Empire API
-  def fetch_items_from_pirce_empire
+  def fetch_items_from_price_empire
     response = PriceEmpire.all
   end
 

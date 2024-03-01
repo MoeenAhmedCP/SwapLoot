@@ -27,7 +27,7 @@ class SellableInventoryUpdationService < ApplicationService
 				if inventory_response['success'] == false
 					report_api_error(inventory_response, [self&.class&.name, __method__.to_s]) 
 				else
-					tradeable_inventory_to_save = inventory_response["items"].select { |item| item["steam_price"]["average"] > 0  }
+					tradeable_inventory_to_save = inventory_response["items"].select { |item| item["steam_price"]["current"] > 0  }
 				end
 			rescue
 				puts "Something went wrong with Fetch inventory API WAXPEER.. retrying in 2 minutes"

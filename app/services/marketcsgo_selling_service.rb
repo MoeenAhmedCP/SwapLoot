@@ -17,7 +17,7 @@ class MarketcsgoSellingService < ApplicationService
   end
 
   def find_matching_data
-    price_empire_response_items = fetch_items_from_pirce_empire
+    price_empire_response_items = fetch_items_from_price_empire
     #waxpeer_response_items = waxpeer_suggested_prices if price_empire_response_items.empty?
     inventory = fetch_inventory
     if inventory.present?
@@ -87,7 +87,7 @@ class MarketcsgoSellingService < ApplicationService
     unless matching_items
       sell_market_csgo
     end
-    if fetch_items_from_pirce_empire.present?
+    if fetch_items_from_price_empire.present?
       items_to_deposit = matching_items.map do |item|
         if item["price"] > (item["price_in_dollar"] + ((item["price_in_dollar"] * @steam_account.selling_filters.find_by(market_type: "market_csgo").min_profit_percentage) / 100 ).round(2))
           { "id" => item["id"], "price" => item["price"], 'cur' => 'USD' }
@@ -212,7 +212,7 @@ class MarketcsgoSellingService < ApplicationService
     updated_at >= no_of_minutes
   end
 
-  def fetch_items_from_pirce_empire
+  def fetch_items_from_price_empire
     response = PriceEmpire.all
   end
 
