@@ -48,7 +48,7 @@ class MarketcsgoSellingService < ApplicationService
         cutting_price_and_list_again(items_for_resale)
       else
         price_cutting_job_id = MarketcsgoPriceCuttingJob.perform_in(@steam_account.selling_filters.find_by(market_type: "market_csgo").undercutting_interval.minutes, @steam_account.id)
-        @steam_account.trade_service.market_csgo_trade_service.update(price_cutting_job_id: price_cutting_job_id)
+        @steam_account.trade_services.market_csgo_trade_service.update(price_cutting_job_id: price_cutting_job_id)
       end
     end
   end

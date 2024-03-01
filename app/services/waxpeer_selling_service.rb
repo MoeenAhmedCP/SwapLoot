@@ -295,4 +295,3 @@ class WaxpeerSellingService < ApplicationService
     @active_steam_account&.waxpeer_api_key.blank?
   end
 end
-
