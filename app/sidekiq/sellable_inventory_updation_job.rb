@@ -38,7 +38,7 @@ class SellableInventoryUpdationJob
 							item_id: item["item_id"]
 							) do |sellable_inventory|
 								sellable_inventory.market_name = item["name"]
-								sellable_inventory.market_price = item["steam_price"]["average"]
+								sellable_inventory.market_price = item["steam_price"]["current"]
 								sellable_inventory.steam_id = steam_account.steam_id
 								sellable_inventory.listed_for_sale = false
 								sellable_inventory.market_type = "waxpeer"

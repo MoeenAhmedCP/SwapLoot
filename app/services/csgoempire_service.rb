@@ -183,7 +183,7 @@ class CsgoempireService < ApplicationService
           if price_empire_item.present? && price_empire_item['buff_avg7'].present?
             item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : ((price_empire_item['buff_avg7']['price'] * 0.95)).round
           else
-            item_price = item["steam_price"]["average"] < 0 ? 0 : item["steam_price"]["average"]
+            item_price = item["steam_price"]["current"] < 0 ? 0 : item["steam_price"]["current"]
           end
           items_to_insert << {
             item_id: item["item_id"],

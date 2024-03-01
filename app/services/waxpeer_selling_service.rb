@@ -12,9 +12,9 @@ class WaxpeerSellingService < ApplicationService
 		unless matching_items
 			sell_csgoempire
 		end
-		if fetch_items_from_pirce_empire.present?
+		if fetch_items_from_price_empire.present?
 			items_to_deposit = matching_items.map do |item|
-				if item["average"] > (item["bought_price"] + ((item["bought_price"] * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage) / 100 ))
+				if item["average"] > (item["bought_price"] + ((item["bought_price"] * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage.to_f / 100 )))
 					{ "item_id" => item["id"].to_i, "price" => item["average"] }
 				else
 					next
@@ -36,12 +36,12 @@ class WaxpeerSellingService < ApplicationService
 			result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
 			item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price
 			lowest_price = result_item['lowest_price']
-			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage / 100 ))
+			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage.to_f / 100 ))
 			if result_item && lowest_price > minimum_desired_price
 			filtered_items_for_deposit << JSON.parse(item.to_json).merge(:lowest_price => result_item["lowest_price"])
 			end
 		end
-		remaining_items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "item_id"=> filtered_item["item_id"], "price"=> calculate_pricing(filtered_item) } }
+		remaining_items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "item_id"=> filtered_item["item_id"], "price"=> filtered_item["lowest_price"] } } #Change
 		deposit_items_for_sale(remaining_items_to_deposit) if remaining_items_to_deposit.any?
 		end
 	end
@@ -96,7 +96,7 @@ class WaxpeerSellingService < ApplicationService
 		filtered_items_for_deposit = []
 		items.map do |item|
 			item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price.to_f
-			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage / 100 )).round(2)
+			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage.to_f / 100 ))
 			minimum_desired_price = minimum_desired_price.round
 			current_listed_price = item[:market_value]
 			suggested_items = waxpeer_suggested_prices
@@ -135,7 +135,7 @@ class WaxpeerSellingService < ApplicationService
   end
 	
 	def find_matching_data
-		price_empire_response_items = fetch_items_from_pirce_empire
+		price_empire_response_items = fetch_items_from_price_empire
 		waxpeer_response_items = waxpeer_suggested_prices if price_empire_response_items.empty?
 		inventory = fetch_inventory
 		if inventory.present?
@@ -156,14 +156,14 @@ class WaxpeerSellingService < ApplicationService
       suggested_items = waxpeer_suggested_prices
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
       item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price
-      lowest_price = result_item['lowest_price']
-      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 ))
+      lowest_price = result_item['average']
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage.to_f / 100))
       if result_item && lowest_price > minimum_desired_price
-        matching_items << item.attributes.merge(lowest_price: result_item["lowest_price"])
+        matching_items << item.attributes.merge(lowest_price: result_item["average"])
       end
     end
     matching_items.map do |filtered_item|
-      { "item_id"=> filtered_item["item_id"], "price"=> calculate_pricing(filtered_item) } 
+      { "item_id"=> filtered_item["item_id"], "price"=> filtered_item["lowest_price"] } #Change
     end
   end
 
@@ -228,21 +228,26 @@ class WaxpeerSellingService < ApplicationService
 	end
 
 	def deposit_items_for_sale(items)
-    items.each_slice(100) do |batch|
-      batch_hash = {"items" => batch}
-      response = HTTParty.post(WAXPEER_BASE_URL + '/list-items-steam', query: headers, body: JSON.generate(batch_hash))
-      if response.code == SUCCESS_CODE
-        batch.each do |item|
-          puts "Item: #{item["market_name"]} with ID: #{item["item_id"]} is Listed for sale successfully."
-          SellableInventory.find_by(item_id: item["item_id"], market_type: "waxpeer").update(listed_for_sale: true)
-        end
-        result = JSON.parse(response.body)
-      else
-        report_api_error(response, [self&.class&.name, __method__.to_s])
-        result = API_FAILED
-      end
-      # Handle rate limiting (One Request can list 100 items and rate limit is 2 requests per 120 seconds for each item_id)
-      sleep(2) # Sleep for 2 seconds between each batch
+		items.each_slice(100) do |batch|
+			batch_hash = { 'items' => batch }
+			response = HTTParty.post(
+				'https://api.waxpeer.com/v1/list-items-steam',
+				query: { game: 'csgo', api: @steam_account.waxpeer_api_key },
+				body: batch_hash.to_json,
+				headers: { 'Content-Type' => 'application/json' }
+			)
+			if response.code == SUCCESS_CODE
+				batch.each do |item|
+					puts "Item: #{item["market_name"]} with ID: #{item["item_id"]} is Listed for sale successfully."
+					SellableInventory.find_by(item_id: item["item_id"], market_type: "waxpeer").update(listed_for_sale: true)
+				end
+				result = JSON.parse(response.body)
+			else
+				report_api_error(response, [self&.class&.name, __method__.to_s])
+				result = API_FAILED
+			end
+			# Handle rate limiting (One Request can list 100 items and rate limit is 2 requests per 120 seconds for each item_id)
+			sleep(2) # Sleep for 2 seconds between each batch
     end
   end
 
@@ -268,7 +273,7 @@ class WaxpeerSellingService < ApplicationService
 	end
 
 	# Function to fetch Items and Its Prices from different platforms from Price Empire API
-	def fetch_items_from_pirce_empire
+	def fetch_items_from_price_empire
 		response = PriceEmpire.all
 	end
 	
