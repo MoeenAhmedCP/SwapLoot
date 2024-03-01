@@ -41,7 +41,7 @@ class WaxpeerSellingService < ApplicationService
 			filtered_items_for_deposit << JSON.parse(item.to_json).merge(:lowest_price => result_item["lowest_price"])
 			end
 		end
-		remaining_items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "item_id"=> filtered_item["item_id"], "price"=> calculate_pricing(filtered_item) } }
+		remaining_items_to_deposit = filtered_items_for_deposit.map { |filtered_item| { "item_id"=> filtered_item["item_id"], "price"=> filtered_item["lowest_price"] } }
 		deposit_items_for_sale(remaining_items_to_deposit) if remaining_items_to_deposit.any?
 		end
 	end
@@ -157,13 +157,13 @@ class WaxpeerSellingService < ApplicationService
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
       item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price
       lowest_price = result_item['lowest_price']
-      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 ))
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage / 100 ))
       if result_item && lowest_price > minimum_desired_price
         matching_items << item.attributes.merge(lowest_price: result_item["lowest_price"])
       end
     end
     matching_items.map do |filtered_item|
-      { "item_id"=> filtered_item["item_id"], "price"=> calculate_pricing(filtered_item) } 
+      { "item_id"=> filtered_item["item_id"], "price"=> filtered_item["lowest_price"] }
     end
   end
 
@@ -290,4 +290,3 @@ class WaxpeerSellingService < ApplicationService
     @active_steam_account&.waxpeer_api_key.blank?
   end
 end
-
