@@ -14,7 +14,7 @@ class WaxpeerSellingService < ApplicationService
 		end
 		if fetch_items_from_pirce_empire.present?
 			items_to_deposit = matching_items.map do |item|
-				if item["average"] > (item["bought_price"] + ((item["bought_price"] * @steam_account.selling_filter.min_profit_percentage) / 100 ))
+				if item["average"] > (item["bought_price"] + ((item["bought_price"] * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage) / 100 ))
 					{ "item_id" => item["id"].to_i, "price" => item["average"] }
 				else
 					next
@@ -36,7 +36,7 @@ class WaxpeerSellingService < ApplicationService
 			result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
 			item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price
 			lowest_price = result_item['lowest_price']
-			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 ))
+			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage / 100 ))
 			if result_item && lowest_price > minimum_desired_price
 			filtered_items_for_deposit << JSON.parse(item.to_json).merge(:lowest_price => result_item["lowest_price"])
 			end
@@ -65,14 +65,14 @@ class WaxpeerSellingService < ApplicationService
 			end
 			items_for_resale = []
 			items_listed_for_sale.each do |item|
-				if item_ready_to_price_cutting?(item[:updated_at], @steam_account.selling_filter.undercutting_interval)
+				if item_ready_to_price_cutting?(item[:updated_at], @steam_account.selling_filters.waxpeer_filter.undercutting_interval)
 					items_for_resale << item
 				end
 			end
 			if items_for_resale.any?
 				cutting_price_and_list_again(items_for_resale)
 			else
-				price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(@steam_account.selling_filter.undercutting_interval.minutes, @steam_account.id)
+				price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(@steam_account.selling_filters.waxpeer_filter.undercutting_interval.minutes, @steam_account.id)
 				@steam_account.trade_services.waxpeer_trade_service.update(price_cutting_job_id: price_cutting_job_id)
 			end
 		end
@@ -96,7 +96,7 @@ class WaxpeerSellingService < ApplicationService
 		filtered_items_for_deposit = []
 		items.map do |item|
 			item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price.to_f
-			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+			minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage / 100 )).round(2)
 			minimum_desired_price = minimum_desired_price.round
 			current_listed_price = item[:market_value]
 			suggested_items = waxpeer_suggested_prices
