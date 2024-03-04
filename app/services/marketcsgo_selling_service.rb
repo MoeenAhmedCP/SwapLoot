@@ -137,7 +137,7 @@ class MarketcsgoSellingService < ApplicationService
         'id' => inventory_item.item_id,
         'price' => list_price,
         'cur' => 'USD',
-        'price_in_dollar' => inventory_item.market_price * 100
+        'price_in_dollar' => inventory_item.market_price.to_f * 100
       }
     end
     matching_item
@@ -197,7 +197,6 @@ class MarketcsgoSellingService < ApplicationService
       hash_name: item_name
     }
     response = HTTParty.get(url, query: q_params)
-    sleep(2)
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])
     else
