@@ -56,7 +56,7 @@ class MarketcsgoSellingService < ApplicationService
   def cutting_price_and_list_again(items)
     filtered_items_for_deposit = []
     items.each do |item|
-      item_price = SellableInventory.find_by(item_id: item['item_id']).market_price.to_f
+      item_price = SellableInventory.find_by(item_id: item['assetid']).market_price.to_f
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
 
       current_listed_price = item['price']
