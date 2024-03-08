@@ -56,9 +56,9 @@ class MarketcsgoSellingService < ApplicationService
   def cutting_price_and_list_again(items)
     filtered_items_for_deposit = []
     items.each do |item|
-      # item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price.to_f
-      # minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
-      # minimum_desired_price = (minimum_desired_price / 0.614).round(2)
+      item_price = SellableInventory.find_by(item_id: item['assetid']).market_price.to_f
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+
       current_listed_price = item['price']
       price_empire_item = PriceEmpire.find_by(item_name: item['market_hash_name'])
       if price_empire_item.present?
@@ -66,10 +66,11 @@ class MarketcsgoSellingService < ApplicationService
         lowest_price = price_empire_item_buff_price ? price_empire_item_buff_price : nil
       end
       if lowest_price && lowest_price < current_listed_price
-        filtered_items_for_deposit << item.merge("lowest_price" => price_to_list)
+        filtered_items_for_deposit << item.merge("lowest_price" => lowest_price) if lowest_price >= minimum_desired_price
       else
-        price_to_list = current_listed_price - (current_listed_price * 0.05)
-        filtered_items_for_deposit << item.merge("lowest_price" => (price_to_list * 1000))
+        price_to_list = (current_listed_price - (current_listed_price * 0.05)).round(2)
+        lowest_price = (price_to_list * 1000).round
+        filtered_items_for_deposit << item.merge("lowest_price" => lowest_price) if lowest_price >= minimum_desired_price
       end
     end
 
