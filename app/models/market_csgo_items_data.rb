@@ -1,0 +1,2 @@
+class MarketCsgoItemsData < ApplicationRecord
+end
