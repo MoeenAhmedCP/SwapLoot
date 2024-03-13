@@ -61,7 +61,7 @@ class MarketcsgoSellingService < ApplicationService
 
       current_listed_price = item['price']
       price_empire_item = PriceEmpire.find_by(item_name: item['market_hash_name'])
-      if price_empire_item.present?
+      if price_empire_item.present? && price_empire_item.buff.present?
         price_empire_item_buff_price = price_empire_item.buff["price"] * 10
         lowest_price = price_empire_item_buff_price ? price_empire_item_buff_price : nil
       end
@@ -108,12 +108,14 @@ class MarketcsgoSellingService < ApplicationService
 		if response.code == SUCCESS_CODE
 			result = JSON.parse(response.body)
 			puts "Removed: #{result["count"]} items from Market CSGO Listing."
+      SellableInventory.market_csgo_inventory.where(steam_id: @steam_account.steam_id).update_all(listed_for_sale: false)
 		else
 			report_api_error(response, [self&.class&.name, __method__.to_s])
 			result = API_FAILED
 		end
   end
 
+  # ASK
   def matching_item_for_price_empire(response_items, inventory_item)
     item_found_from_price_empire = response_items.find_by(item_name: inventory_item['market_hash_name'])
     matching_item = nil
@@ -125,6 +127,10 @@ class MarketcsgoSellingService < ApplicationService
         'cur' => 'USD',
         'price_in_dollar' => inventory_item['market_price'] * 100
       }
+    else
+      suggested_items = waxpeer_suggested_prices
+      result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
+      lowest_price = result_item['average'] + (result_item['average'] * 0.1)
     end
     matching_item
   end
@@ -176,17 +182,17 @@ class MarketcsgoSellingService < ApplicationService
           cur: item['cur']
         }
         response = HTTParty.post(MARKET_CSGO_BASE_URL + '/add-to-sale', query: batch_hash)
+        if response.code == SUCCESS_CODE
+          batch_hash.each do |item|
+            SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
+          end
+          result = JSON.parse(response.body)
+        else
+          report_api_error(response, [self&.class&.name, __method__.to_s])
+          result = API_FAILED
+        end
       end
 
-      if response.code == SUCCESS_CODE
-        # batch.each do |item|
-        #   SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
-        # end
-        result = JSON.parse(response.body)
-      else
-        report_api_error(response, [self&.class&.name, __method__.to_s])
-        result = API_FAILED
-      end
     end
   end
 

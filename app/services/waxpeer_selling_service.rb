@@ -83,6 +83,7 @@ class WaxpeerSellingService < ApplicationService
 		if response.code == SUCCESS_CODE
 			result = JSON.parse(response.body)
 			puts "Removed: #{result["count"]} items from Waxpeer Listing."
+			SellableInventory.waxpeer_inventory.where(steam_id: @steam_account.steam_id).update_all(listed_for_sale: false)
 		else
 			report_api_error(response, [self&.class&.name, __method__.to_s])
 			result = API_FAILED
@@ -101,7 +102,7 @@ class WaxpeerSellingService < ApplicationService
 			current_listed_price = item[:market_value]
 			suggested_items = waxpeer_suggested_prices
 			result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-			lowest_price = result_item['lowest_price']
+			lowest_price = result_item['lowest_price']/10
 			if lowest_price >= minimum_desired_price && lowest_price < current_listed_price
 				filtered_items_for_deposit << item.merge(lowest_price: (lowest_price - 1))
 			elsif lowest_price < minimum_desired_price && lowest_price < current_listed_price
@@ -136,7 +137,7 @@ class WaxpeerSellingService < ApplicationService
 	
 	def find_matching_data
 		price_empire_response_items = fetch_items_from_price_empire
-		waxpeer_response_items = waxpeer_suggested_prices if price_empire_response_items.empty?
+		waxpeer_response_items = waxpeer_suggested_prices if price_empire_response_items.nil?
 		inventory = fetch_inventory
 		if inventory.present?
 			if price_empire_response_items.present?
@@ -155,11 +156,11 @@ class WaxpeerSellingService < ApplicationService
     inventory.map do |item|
       suggested_items = waxpeer_suggested_prices
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
+      lowest_price = result_item['average'] + (result_item['average'] * 0.1)
       item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price
-      lowest_price = result_item['average']
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage.to_f / 100))
       if result_item && lowest_price > minimum_desired_price
-        matching_items << item.attributes.merge(lowest_price: result_item["average"])
+        matching_items << item.attributes.merge(lowest_price: lowest_price)
       end
     end
     matching_items.map do |filtered_item|
@@ -173,11 +174,17 @@ class WaxpeerSellingService < ApplicationService
 		inventory.each do |inventory_item|
 			item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
 			if item_found_from_price_empire
-				buff_price = item_found_from_price_empire["buff"]["price"]
+				if item_found_from_price_empire["buff"].nil?
+					suggested_items = waxpeer_suggested_prices
+					result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == inventory_item.market_name }
+					price = result_item['average'] + (result_item['average'] * 0.1)
+				else
+					price = item_found_from_price_empire["buff"]["price"] + (item_found_from_price_empire["buff"]["price"] * 0.1) 
+				end
 				matching_item = {
 					'id' => inventory_item.item_id,
 					'name' => inventory_item.market_name,
-					'average' => (buff_price * 10), # in dollar
+					'average' => (price * 10), # in dollar
 					'bought_price' => (inventory_item.market_price.to_i) #saving in dollar from Price Empire or TradeStatus
 				}
 				matching_items << matching_item
@@ -252,7 +259,7 @@ class WaxpeerSellingService < ApplicationService
   end
 
 	def fetch_inventory
-	inventory = fetch_database_inventory_waxpeer
+		inventory = fetch_database_inventory_waxpeer
 		items_listed_for_sale = fetch_items_listed_for_sale
 		unless items_listed_for_sale.empty?
 			api_item_ids = items_listed_for_sale["items"].map { |deposit| deposit["item_id"] }
