@@ -17,14 +17,8 @@ class InventoriesController < ApplicationController
     @sellable_inventory = @q_sellable_inventory.result.order(market_price: :DESC).paginate(page: params[:sellable_inventory_page], per_page: per_page)
     @total_market_price = @q_inventories.result.sum(:market_price).round(3)
     @missing_items = current_user.active_steam_account.present? ? current_user.active_steam_account.missing_items : MissingItem.where(steam_account_id: current_user.steam_accounts.pluck(:id))
-    
     sellable_inventory_result = @q_sellable_inventory.result.sum { |item| item.market_price.to_f }
     @total_market_price_sellable_inventory = sellable_inventory_result.round(2)
-    waxpeer_inventories = Inventory.where(sold_at: nil, steam_id: steam_ids, market_type: "waxpeer")
-    @q_waxpeer_inventory = waxpeer_inventories.ransack(params[:waxpeer_inventory_search])
-    @waxpeer_inventory = @q_waxpeer_inventory.result.order(market_price: :DESC).paginate(page: params[:waxpeer_inventory_page], per_page: per_page)
-    waxpeer_inventory_result = @waxpeer_inventory.sum { |item| item.market_price.to_f }
-    @total_market_price_waxpeer_inventory = waxpeer_inventory_result.round(2)
 
     respond_to do |format|
       format.html

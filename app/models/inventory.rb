@@ -33,7 +33,7 @@ class Inventory < ApplicationRecord
 
   def self.fetch_inventory_for_user(user)
     csgo_service = CsgoempireService.new(user)
-    csgo_service.fetch_my_inventory
+    csgo_service.update_ui_inventory
   end
 
   def self.ransackable_attributes(auth_object = nil)

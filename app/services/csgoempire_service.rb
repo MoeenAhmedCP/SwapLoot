@@ -129,6 +129,18 @@ class CsgoempireService < ApplicationService
     end
   end
 
+  def update_ui_inventory
+    if @active_steam_account.present?
+      unless csgoempire_key_not_found?
+        get_inventory_from_api("csgoempire", @steam_account)
+      end
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        get_inventory_from_api("csgoempire", steam_account) unless steam_account&.csgoempire_api_key.blank?
+      end
+    end
+  end
+
   def get_inventory_from_api(type, steam_account)
     begin
       case type

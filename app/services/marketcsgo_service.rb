@@ -66,6 +66,29 @@ class MarketcsgoService < ApplicationService
     end
   end
 
+  def fetch_items_listed_for_sale_market_csgo
+    resp = []
+    if @active_steam_account.present?
+    return if market_csgo_api_key_not_found?
+      begin
+        resp = self.class.get(MARKET_CSGO_BASE_URL + '/items', query: @params)
+      rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+        return []
+      end
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.market_csgo_api_key.blank?
+        begin
+          response = self.class.get(MARKET_CSGO_BASE_URL + '/items', query: site_params(steam_account))
+          resp << response unless response.nil?
+        rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+          return []
+        end
+      end
+    end
+    resp
+  end
+
   def self.fetch_inventory(steam_account)
     return if steam_account.market_csgo_api_key.blank?
 

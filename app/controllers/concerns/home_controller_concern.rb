@@ -87,4 +87,18 @@ module HomeControllerConcern
       end
     end
   end
+
+  def fetch_market_csgo_items_listed_for_sale
+    market_csgo_service = MarketcsgoService.new(current_user)
+    item_listed_for_sale = market_csgo_service.fetch_items_listed_for_sale_market_csgo
+    item_listed_for_sale = item_listed_for_sale[0]
+    if item_listed_for_sale["items"]&.present? && item_listed_for_sale["success"] == true
+      @item_listed_for_sale_hash_market_csgo = item_listed_for_sale["items"].map do |item|
+        item.merge('site' => 'market_csgo')
+      end
+    else
+      flash[:alert] = "Error: #{item[:msg]}, for market csgo fetch listed items for sale"
+      []
+    end
+  end
 end

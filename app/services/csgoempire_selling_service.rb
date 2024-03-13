@@ -256,7 +256,7 @@ class CsgoempireSellingService < ApplicationService
     matching_items = []
     inventory.each do |inventory_item|
       item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
-      if item_found_from_price_empire && item_found_from_price_empire["buff"].nil?
+      if item_found_from_price_empire && item_found_from_price_empire["buff"].present?
         buff_price = item_found_from_price_empire["buff"]["price"] + (item_found_from_price_empire["buff"]["price"] * 0.1)
         matching_item = {
           'id' => inventory_item.item_id,
