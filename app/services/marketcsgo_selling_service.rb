@@ -235,8 +235,7 @@ class MarketcsgoSellingService < ApplicationService
     # filtered_response
   end
 
-  private
-
+  
   def fetch_item_listed_for_sale_market_csgo
     url = 'https://market.csgo.com/api/v2/items'
     q_params = {
@@ -255,7 +254,9 @@ class MarketcsgoSellingService < ApplicationService
     end
     item_listed_for_sale
   end
-
+  
+  private
+  
   def fetch_database_inventory
     SellableInventory.inventory(@steam_account).where(listed_for_sale: false, market_type: 'market_csgo')
     # response = MarketcsgoService.fetch_inventory(@steam_account)

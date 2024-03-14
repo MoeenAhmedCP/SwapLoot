@@ -4,7 +4,7 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale, :fetch_waxpeer_item_listed_for_sale, only: [:index]
+    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale, :fetch_waxpeer_item_listed_for_sale, :fetch_market_csgo_items_listed_for_sale, only: [:index]
     before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: [:refresh_balance]
   end
 
@@ -91,14 +91,14 @@ module HomeControllerConcern
   def fetch_market_csgo_items_listed_for_sale
     market_csgo_service = MarketcsgoService.new(current_user)
     item_listed_for_sale = market_csgo_service.fetch_items_listed_for_sale_market_csgo
-    item_listed_for_sale = item_listed_for_sale[0]
-    if item_listed_for_sale["items"]&.present? && item_listed_for_sale["success"] == true
-      @item_listed_for_sale_hash_market_csgo = item_listed_for_sale["items"].map do |item|
-        item.merge('site' => 'market_csgo')
-      end
-    else
-      flash[:alert] = "Error: #{item[:msg]}, for market csgo fetch listed items for sale"
+    if item_listed_for_sale.present? && item_listed_for_sale.first[:success].present?
+      item = item_listed_for_sale.first
+      flash[:alert] = "Error: #{item[:msg]}, for waxpeer fetch listed items for sale"
       []
+    else
+      @item_listed_for_sale_hash_market_csgo = item_listed_for_sale.map do |item|
+        item.merge('site' => 'Market CSGO')
+      end
     end
   end
 end
