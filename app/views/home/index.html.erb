@@ -21,7 +21,6 @@
         <hr class="h-px w-full my-5 mt-20 divider">
     </div>
 
-
     <div class="flex">
         <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">Item Listed for Sale (CSGOEmpire)</h2>
         <div><i class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true" id="refreshitemListed"></i></div>
@@ -38,6 +37,15 @@
     </div>
     <div class="mb-20 " id="dataItemListedforsaleWaxpeer">
         <%= render partial: 'reload_item_listed_for_sale_waxpeer' , locals:{ item_listed_for_sale_hash: @item_listed_for_sale_hash_waxpeer }%> 
+        <hr class="h-px w-full my-5 mt-20 divider">
+    </div>
+
+    <div class="flex">
+        <h2 class="text-2xl mb-4 text-blue dark:text-white font-[500]">Item Listed for Sale (Market.CSGO)</h2>
+        <div><i class="fa fa-refresh cursor-pointer text-blue dark:text-white" aria-hidden="true" id="refreshitemListedMarketCSGO"></i></div>
+    </div>
+    <div class="mb-20 " id="dataItemListedforsaleMarketCSGO">
+        <%= render partial: 'reload_item_listed_for_sale_market_csgo' , locals:{ item_listed_for_sale_hash: @item_listed_for_sale_hash_market_csgo }%> 
         <hr class="h-px w-full my-5 mt-20 divider">
     </div>
 
@@ -63,7 +71,7 @@
             url: '<%= home_reload_item_listed_for_sale_path(format: :js) %>',
             method: 'GET',
             error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Error refreshing table Refresh Balance', textStatus, errorThrown);
+                console.error('Error refreshing table csgo epmire items listed for sale', textStatus, errorThrown);
             }
         });
     });
@@ -75,6 +83,17 @@
             method: 'GET',
             error: function(jqXHR, textStatus, errorThrown) {
                 console.error('Error refreshing table waxpeer items listed for sale', textStatus, errorThrown);
+            }
+        });
+    });
+
+    $('#refreshitemListedMarketCSGO').on('click', function () {
+        this.classList.add('fa-spin');
+        $.ajax({
+            url: '<%= home_reload_item_listed_for_sale_market_csgo_path(format: :js) %>',
+            method: 'GET',
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error refreshing table market csgo items listed for sale', textStatus, errorThrown);
             }
         });
     });

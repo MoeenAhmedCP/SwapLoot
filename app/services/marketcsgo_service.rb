@@ -66,6 +66,32 @@ class MarketcsgoService < ApplicationService
     end
   end
 
+  def fetch_items_listed_for_sale_market_csgo
+    if @active_steam_account.present?
+      return [] if market_csgo_api_key_not_found?
+        response = self.class.get(MARKET_CSGO_BASE_URL + '/items', query: @params)
+      if response["success"] == false
+        report_api_error(res, [self&.class&.name, __method__.to_s])
+        response = [{ success: "false" }]
+      else
+        response = response["items"].present? ? response["items"] : []
+      end
+    else
+      response = []
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.market_csgo_api_key.blank?
+        add_proxy(steam_account) if steam_account.proxy.present?
+          response = self.class.get(MARKET_CSGO_BASE_URL + '/items', query: site_params(steam_account))
+        if response["success"] == false
+          response = [{ success: "false" }]
+          break
+        end
+        response += response["items"].present? ? response["items"] : []
+      end
+    end
+    response
+  end
+
   def self.fetch_inventory(steam_account)
     return if steam_account.market_csgo_api_key.blank?
 

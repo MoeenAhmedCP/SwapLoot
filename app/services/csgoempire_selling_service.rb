@@ -81,8 +81,8 @@ class CsgoempireSellingService < ApplicationService
       remaining_items.each do |item|
         suggested_items = waxpeer_suggested_prices
         result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-        item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "csgoempire").market_price
         lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
+        item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "csgoempire").market_price
         minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.csgoempire_filter.min_profit_percentage / 100 )).round(2)
         if result_item && lowest_price > minimum_desired_price
           filtered_items_for_deposit << JSON.parse(item.to_json).merge(:lowest_price => result_item["lowest_price"])
@@ -123,6 +123,7 @@ class CsgoempireSellingService < ApplicationService
       if items_for_resale.any?
         cutting_price_and_list_again(items_for_resale)
       else
+        puts "Price cutting from -> CSGOEMpire Selling Service"
         price_cutting_job_id = PriceCuttingJob.perform_in(@steam_account.selling_filters.csgoempire_filter.undercutting_interval.minutes, @steam_account.id)
         @steam_account.trade_services.csgoempire_trade_service.update(price_cutting_job_id: price_cutting_job_id)
       end
@@ -255,7 +256,7 @@ class CsgoempireSellingService < ApplicationService
     matching_items = []
     inventory.each do |inventory_item|
       item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
-      if item_found_from_price_empire
+      if item_found_from_price_empire && item_found_from_price_empire["buff"].present?
         buff_price = item_found_from_price_empire["buff"]["price"] + (item_found_from_price_empire["buff"]["price"] * 0.1)
         matching_item = {
           'id' => inventory_item.item_id,
@@ -277,8 +278,8 @@ class CsgoempireSellingService < ApplicationService
     inventory.map do |item|
       suggested_items = waxpeer_suggested_prices
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-      item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "csgoempire").market_price
       lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
+      item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "csgoempire").market_price
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.csgoempire_filter.min_profit_percentage / 100 )).round(2)
       if result_item && lowest_price > minimum_desired_price
         matching_items << item.attributes.merge(lowest_price: result_item["lowest_price"])

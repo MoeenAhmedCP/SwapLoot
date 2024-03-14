@@ -7,6 +7,7 @@ class Inventory < ApplicationRecord
   }
   scope :waxpeer_inventory, -> {where(market_type: "waxpeer")}
   scope :csgoempire_inventory, -> {where(market_type: "csgoempire")}
+  scope :market_csgo_inventory, -> {where(market_type: "market_csgo")}
   scope :soft_deleted_sold, -> { where.not(sold_at: nil) }
   scope :steam_inventories, ->(active_steam_account) {
     where(steam_id: active_steam_account&.steam_id)
@@ -32,7 +33,7 @@ class Inventory < ApplicationRecord
 
   def self.fetch_inventory_for_user(user)
     csgo_service = CsgoempireService.new(user)
-    csgo_service.fetch_my_inventory
+    csgo_service.update_ui_inventory
   end
 
   def self.ransackable_attributes(auth_object = nil)

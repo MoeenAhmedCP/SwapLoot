@@ -8,6 +8,7 @@ class SellableInventory < ApplicationRecord
   }
   scope :waxpeer_inventory, -> {where(market_type: "waxpeer")}
   scope :csgoempire_inventory, -> {where(market_type: "csgoempire")}
+  scope :market_csgo_inventory, -> {where(market_type: "market_csgo")}
 
   def self.ransackable_attributes(auth_object = nil)
     ["item_id", "market_name"]
@@ -30,7 +31,8 @@ class SellableInventory < ApplicationRecord
             selling_job_id = CsgoSellingJob.perform_async(steam_account.id)
             trade_service.update(selling_job_id: selling_job_id)
           end
-          if trade_service.price_cutting_job_id.present?
+          if trade_service.selling_status == true && trade_service.price_cutting_job_id.present?
+            puts "Price Cutting from -> Sellable Inventory"
             price_cutting_job_id = PriceCuttingJob.perform_in(steam_account.selling_filters.csgoempire_filter.undercutting_interval.minutes, steam_account.id)
             trade_service.update(price_cutting_job_id: price_cutting_job_id)
           end
@@ -39,7 +41,7 @@ class SellableInventory < ApplicationRecord
             selling_job_id = WaxpeerSellingJob.perform_async(steam_account.id)
             trade_service.update(selling_job_id: selling_job_id)
           end
-          if trade_service.price_cutting_job_id.present?
+          if trade_service.selling_status == true && trade_service.price_cutting_job_id.present?
             price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(steam_account.selling_filters.csgoempire_filter.undercutting_interval.minutes, steam_account.id)
             trade_service.update(price_cutting_job_id: price_cutting_job_id)
           end
@@ -48,7 +50,7 @@ class SellableInventory < ApplicationRecord
             selling_job_id = MarketcsgoSellingJob.perform_async(steam_account.id)
             trade_service.update(selling_job_id: selling_job_id)
           end
-          if trade_service.price_cutting_job_id.present?
+          if trade_service.selling_status == true && trade_service.price_cutting_job_id.present?
             price_cutting_job_id = MarketcsgoPriceCuttingJob.perform_in(steam_account.selling_filters.csgoempire_filter.undercutting_interval.minutes, steam_account.id)
             trade_service.update(price_cutting_job_id: price_cutting_job_id)
           end

@@ -1,10 +1,9 @@
 <div class="p-6">
   <div class="container mx-auto px-4  py-4">
-    <h1 class="text-3xl text-yellow-500 dark:text-yellow-500 shadow-md p-4 rounded text-center mb-3 bg-yellow-50 font-[500]">CSGOEmpire Section</h1>
     <div class="flex item-center">
       <div class= "flex items-center justify-between w-[100%] mb-5">
         <div class="flex items-center justify-center">
-          <h2 class="text-2xl text-blue dark:text-white font-[500]">Inventory</h2>  
+          <h2 class="text-2xl text-blue dark:text-white font-[500]">Inventory</h2>
           <i id="refreshTable" class="fa fa-refresh cursor-pointer text-blue dark:text-white " aria-hidden="true"></i>
         </div>
         <h3 class="mt-[8px] ml-[75px] text-black dark:text-white">Total Worth: <%= "$#{@total_market_price}" %></h3>
@@ -31,6 +30,8 @@
           <% end %>
         </div>
       </div>
+
+
     
       <table id="inventoryTable" class="display shadow-md rounded-lg" style="width:100%; border: none;">
         <thead class="bg-blue text-white">
@@ -78,7 +79,7 @@
           <% end %>
         </div>
     </div>
-    <div class="flex py-2" style="justify-content:flex-end !important;">
+<div class="flex py-2" style="justify-content:flex-end !important;">
       <div class="text-md text-blue dark:text-white font-[500]"><%= "Total Worth: $ #{@total_market_price_sellable_inventory}" %></div>
     </div>
     <table id="SellableInventoryTable" class="display shadow-md rounded-lg" style="width:100%; border: none;">
@@ -106,7 +107,8 @@
                 inner_window: 3,
                 outer_window: 1,
                 renderer: WillPaginate::ActionView::LinkRenderer,
-                class: 'flex items-center space-x-2'
+                class: 'flex items-center space-x-2',
+                param_name: :sellable_inventory_page
             %>
           </div>
           </div>
@@ -120,77 +122,7 @@
     </div>
       <%= render partial: 'missing_items' , locals:{ missing_items: @missing_items }%>
   </div>
-
- <%# ==================== WAXPEER SECTION ======================== %>
-  <div class="p-6">
-    <h1 class="text-3xl text-green-500 dark:text-green-500 shadow-md p-4 rounded text-center mb-3 bg-green-50 font-[500]">Waxpeer Section</h1>
-    <div class="flex item-center">
-      <div class= "flex items-center justify-between w-[100%] mb-5">
-        <div class="flex items-center justify-center">
-          <h2 class="text-2xl text-blue dark:text-white font-[500]">Inventory</h2>
-          <i id="refreshTableWaxpeer" class="fa fa-refresh cursor-pointer text-blue dark:text-white " aria-hidden="true"></i>
-        </div>
-        <div style="margin-left: auto;">
-    <div class="flex py-2" style="justify-content: flex-end !important;">
-      <div class="text-md text-blue dark:text-white font-[500]"><%= "Total Worth: $ #{@total_market_price_waxpeer_inventory}" %></div>
-    </div>
-          <%= search_form_for @q_waxpeer_inventory, as: :waxpeer_inventory_search, url: inventories_path(format: :js), remote: true do |f| %>
-            <div class="dataTables_wrapper no-footer">
-              <div id="dataTableInventory_filter" class="dataTables_filter">
-                <label>
-                  <%= f.search_field :item_id_or_market_name_cont, id: "waxpeer_inventory_search", placeholder: "Search...", oninput: 'searchInventory()' %>
-                </label>
-              </div>
-            </div>
-            <%= f.submit "Submit", data: { disable_with: false }, class: "hidden"%>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-      <table id="inventoryTableWaxpeer" class="display shadow-md rounded-lg" style="width:100%; border: none;">
-        <thead class="bg-blue text-white">
-            <tr>
-                <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
-                <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Market Name</th>
-                <th class="text-sm px-4 py-2 rounded-tr-lg">Market Price</th>
-            </tr>
-        </thead>
-        <tbody class="inventoryTableBodyWaxpeer">
-            <%= render partial: 'inventory_waxpeer' , locals:{ inventories: @waxpeer_inventory }%> 
-        </tbody>   
-      </table>
-         
-         <div class="apple_pagination flex justify-center justify-between">
-          <div class="page_info">
-            <%= page_entries_info @waxpeer_inventory %>
-          </div>
-          <div>
-            <%= will_paginate @waxpeer_inventory, 
-                previous_label: 'Previous', 
-                next_label: 'Next',
-                inner_window: 3,
-                outer_window: 1,
-                renderer: WillPaginate::ActionView::LinkRenderer,
-                class: 'flex items-center space-x-2',
-                param_name: :waxpeer_inventory_page
-            %>
-          </div>
-          </div>
-  </div>
-
-
-
-
-
-  </div>
 </div>
-
-
-
-
-
-
 
 <script>
     $(document).ready(function() {
@@ -204,7 +136,7 @@
             elements[i].parentNode.removeChild(elements[i]);
         }
 
-    $('#refreshTable').click(function () {
+      $('#refreshTable').click(function () {
         var refreshButton = this;
         var lastRequestTimestamp = localStorage.getItem('lastRequestTimestamp');
 
@@ -217,19 +149,19 @@
             }
         }
         refreshButton.classList.add("fa-spin");
-        $.ajax({
-            url: '<%= inventories_path(format: :js) %>',
-            method: 'GET',
-            data: { refresh: true },
-            success: function (data) {
-                refreshButton.classList.remove("fa-spin");
-                localStorage.setItem('lastRequestTimestamp', new Date().getTime());
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.error('Error refreshing table', textStatus, errorThrown);
-            }
+            $.ajax({
+                url: '<%= inventories_path(format: :js) %>',
+                method: 'GET',
+                data: { refresh: true },
+                success: function (data) {
+                 refreshButton.classList.remove("fa-spin");
+localStorage.setItem('lastRequestTimestamp', new Date().getTime());
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error('Error refreshing table', textStatus, errorThrown);
+                }
+            });
         });
-      });
     });
 
     function submitinvForm() {
@@ -244,10 +176,6 @@
       $('.inventory_search input[type=submit]').click();
     }
 
-    function searchWaxpeerInventory(){
-      $('.waxpeer_inventory_search input[type=submit]').click();
-    }
-
     function searchSellableInventory(){
       $('.sellable_inventory_search input[type=submit]').click();
     }
@@ -258,15 +186,6 @@
             info: false,
             searching: false,
         });
-
-
-            var dataTable = $('#inventoryTableWaxpeer').DataTable({
-            "order": [[2, 'desc']],
-            paging: false,
-            info: false,
-            searching: false,
-        });
-        
 
         var dataTable = $('#SellableInventoryTable').DataTable({
             "order": [[2, 'desc']],
