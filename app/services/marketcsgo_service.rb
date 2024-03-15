@@ -7,12 +7,20 @@ class MarketcsgoService < ApplicationService
     @params = {
       key: "#{@active_steam_account&.market_csgo_api_key}"
     }
+    @active_trade_query = {
+      key: "#{@active_steam_account&.market_csgo_api_key}",
+      extended: 1
+    }
     reset_proxy
     add_proxy(@active_steam_account) if @active_steam_account&.proxy.present?
   end
 
   def site_params(steam_account)
     { key: "#{steam_account&.market_csgo_api_key}" }
+  end
+
+  def site_active_trade_params(steam_account)
+    { key: "#{steam_account&.market_csgo_api_key}", extended: 1 }
   end
 
   def fetch_balance
@@ -94,28 +102,66 @@ class MarketcsgoService < ApplicationService
       return []
     end
   end
+    
+  def active_trades
+    response = []
+    if @active_steam_account.present?
+      return [] if market_csgo_api_key_not_found?
+      begin
+        res = self.class.get(MARKET_CSGO_BASE_URL + '/trades', query: @active_trade_query)
+      rescue => e
+        response = [{ success: "false" }]
+      end
+      if res['success'] == false
+        report_api_error(res, [self&.class&.name, __method__.to_s])
+        response = [{ success: "false" }]
+      else
+        response = res['trades'] if res['trades'].present?
+      end
+    else
+      @current_user.steam_accounts.each do |steam_account|
+        next if steam_account&.market_csgo_api_key.blank?
+        begin
+          res = self.class.get(MARKET_CSGO_BASE_URL + '/trades', query: site_active_trade_params(steam_account))
+          if res['success'] == true
+            if res['trades'].present?
+              res['trades'].each do |auctions|
+                response << auctions
+              end
+            end
+          else
+            response = [{ success: "false" }]
+            break
+          end
+        rescue => e
+          response = [{ success: "false" }]
+        end
+      end
+    end
+    response 
+  end
 
   def fetch_items_listed_for_sale_market_csgo
     if @active_steam_account.present?
       return [] if market_csgo_api_key_not_found?
-        response = self.class.get(MARKET_CSGO_BASE_URL + '/items', query: @params)
-      if response["success"] == false
+        res = self.class.get(MARKET_CSGO_BASE_URL + '/items', query: @params)
+      if res["success"] == false
         report_api_error(res, [self&.class&.name, __method__.to_s])
         response = [{ success: "false" }]
       else
-        response = response["items"].present? ? response["items"] : []
+        response = res["items"].present? ? res["items"] : []
       end
     else
       response = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.market_csgo_api_key.blank?
         add_proxy(steam_account) if steam_account.proxy.present?
-          response = self.class.get(MARKET_CSGO_BASE_URL + '/items', query: site_params(steam_account))
-        if response["success"] == false
+        res = self.class.get(MARKET_CSGO_BASE_URL + '/items', query: site_params(steam_account))
+        if res["success"] == false
           response = [{ success: "false" }]
           break
         end
-        response += response["items"].present? ? response["items"] : []
+        response += res["items"].present? ? res["items"] : []
       end
     end
     response
