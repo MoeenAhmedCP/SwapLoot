@@ -74,6 +74,35 @@ class MarketcsgoService < ApplicationService
     end
   end
 
+  def sold_item_params(steam_account)
+    { 
+      key: "#{steam_account&.market_csgo_api_key}",
+      date: Date.today.strftime("%d-%m-%Y")
+    }
+  end
+
+  def save_sold_items(data, steam_account)
+    data.each do |item|
+      if item['event'] == 'sell' && item['stage'] == '2'
+        sold_item = SoldItem.find_by(item_id: id)
+        inventory_item = SellableInventory.find_by(item_id: item['item_id'])
+        bought_price = inventory_item.present? ? inventory_item.market_price.to_f : 0
+        SoldItem.create(item_id: item['item_id'], item_name: item['market_hash_name'], bought_price: bought_price, sold_price: item['received'] / 1000.to_f, date: Date.today.strftime("%d-%m-%Y"), steam_account: steam_account) unless sold_item.present?
+      end
+    end
+  end
+
+  def self.fetch_sold_item_market_csgo(steam_account)
+    begin
+      response = self.class.get(MARKET_CSGO_BASE_URL + '/history', query: sold_item_params(steam_account))
+      if response['success'] == true
+        save_sold_items(response['data'], steam_account) if response['data'].present?
+      end
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, Net::OpenTimeout, Net::ReadTimeout => e
+      return []
+    end
+  end
+    
   def active_trades
     response = []
     if @active_steam_account.present?
