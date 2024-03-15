@@ -55,15 +55,15 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const tabButtons = document.querySelectorAll("[role='tab']");
-    const tabContents = document.querySelectorAll(".steam-content");
+    console.log("DOMCONTENT LOADEDDDD>>>>>>>>>>>>>")
+     tabButtons = document.querySelectorAll("[role='tab']");
+     tabContents = document.querySelectorAll(".steam-content");
 
     // Check if there's a stored active tab index
-    const storedTabIndex = localStorage.getItem("activeTabIndex");
+     storedTabIndex = localStorage.getItem("activeTabIndex");
 
     // Set the active tab based on the stored index or default to 0
-    const activeTabIndex = storedTabIndex !== null ? parseInt(storedTabIndex) : 0;
+     activeTabIndex = storedTabIndex !== null ? parseInt(storedTabIndex) : 0;
     
     // Function to deactivate all tabs and hide contents
     function deactivateTabs() {
@@ -94,7 +94,6 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("activeTabIndex", index.toString());
       });
     });
-  });
 
   function changeSellingStatus(selling_filter_id, trade_service_id, steam_account_id, service_name){
     if(trade_service_id && selling_filter_id){

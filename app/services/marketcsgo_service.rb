@@ -84,7 +84,7 @@ class MarketcsgoService < ApplicationService
     end
   end
 
-  def fetch_sold_item_market_csgo(steam_account)
+  def self.fetch_sold_item_market_csgo(steam_account)
     begin
       response = self.class.get(MARKET_CSGO_BASE_URL + '/history', query: sold_item_params(steam_account))
       if response['success'] == true
