@@ -87,7 +87,7 @@ class MarketcsgoService < ApplicationService
         sold_item = SoldItem.find_by(item_id: id)
         inventory_item = SellableInventory.find_by(item_id: item['item_id'])
         bought_price = inventory_item.present? ? inventory_item.market_price.to_f : 0
-        SoldItem.create(item_id: item['item_id'], item_name: item['market_hash_name'], bought_price: bought_price, sold_price: item['received'] / 1000.to_f, date: Date.today.strftime("%d-%m-%Y"), steam_account: steam_account) unless sold_item.present?
+        SoldItem.create(item_id: item['item_id'], item_name: item['market_hash_name'], bought_price: (bought_price / 100).to_f, sold_price: (item['received'] / 1000).to_f, date: Date.today.strftime("%d-%m-%Y"), steam_account: steam_account) unless sold_item.present?
       end
     end
   end
