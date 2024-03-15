@@ -16,7 +16,7 @@
                     <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= item["market_hash_name"] %></td>
                     <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= item["price"] %></td>
                     <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2">Market CSGO</td>
-                    <td class=" text-sm text-center px-4 py-2"><%= (Time.now - item["live_time"]).strftime("%d/%B/%Y") %></td>
+                    <td class=" text-sm text-center px-4 py-2"><%= (Time.now - item["live_time"])&.strftime("%d/%B/%Y") if item["live_time"].present? %></td>
                 </tr>
             <% end %>
         </tbody>

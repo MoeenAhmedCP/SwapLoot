@@ -4,8 +4,11 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale, :fetch_waxpeer_item_listed_for_sale, :fetch_market_csgo_items_listed_for_sale, only: [:index]
-    before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: [:refresh_balance]
+    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale,
+                  :fetch_waxpeer_item_listed_for_sale, :fetch_market_csgo_items_listed_for_sale,
+                  :fetch_market_csgo_listed_items, only: [:index]
+    before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance,
+                  :all_site_balance, only: [:refresh_balance]
   end
 
   private
@@ -67,6 +70,30 @@ module HomeControllerConcern
       @auction_items_hash = []
     end
     @auction_items_hash
+  end
+
+  def fetch_market_csgo_listed_items
+    csgoempire_service = MarketcsgoService.new(current_user)
+    response = csgoempire_service.active_trades
+    if response.present?
+      if response.first[:success].present?
+        @active_trades = []
+      else
+        @active_trades = response&.map do |auction_item|
+          item = MarketCsgoItemsData.where(class_id: trade["classid"], instance_id: trade["instanceid"])
+          {
+            'item_id' => item.id,
+            'market_name' => item.market_hash_name,
+            'price' => item.price,
+            'site' => 'Market CSGO',
+            'date' => Time.at(trade["timestamp"]).to_datetime.strftime('%d/%B/%Y')
+          }
+        end
+      end
+    else
+      @active_trades = []
+    end
+    @active_trades
   end
 
   def fetch_item_listed_for_sale
