@@ -183,8 +183,14 @@ class CsgoempireSellingService < ApplicationService
 
   def search_items_by_name_on_csgoempire(item_name)
     suggested_price = nil
-    url = "https://csgoempire.com/api/v2/trading/items?per_page=100&page=1&search=#{item_name}"
-    response = HTTParty.get(url, headers: headers)
+    converted_name = item_name.encode('utf-8')
+    q_params = {
+      per_page: 100,
+      page: 1,
+      search: converted_name
+    }
+    url = "https://csgoempire.com/api/v2/trading/items"
+    response = HTTParty.get(url, query: q_params, headers: headers)
 
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])

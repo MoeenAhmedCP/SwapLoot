@@ -28,7 +28,7 @@ class SendNotificationsJob
       p "<=========== Notification sending ===================>"
       current_user = User.find(user_id)
       @notification = current_user.notifications.create(title: "Item #{notification_type}", body: "#{item["name"]} #{notification_type} with ID: (#{item["item_id"]}) at price (#{(item["price"].to_f)}) dollars", notification_type: notification_type)
-      ActionCable.server.broadcast("flash_messages_channel_#{current_user.id}", { message: "#{item["name"]} #{notification_type} with ID: (#{item["item_id"]}) at price (#{(item["price"].to_f)}) dollars" })
+      ActionCable.server.broadcast("flash_messages_channel_#{current_user.id}", { message: "#{item["name"]} #{notification_type} with ID: (#{item["item_id"]}) at price (#{(item["price"] / 1000.to_f)}) dollars" })
       p "<=========== Discord Notification sending ===================>"
       notify_discord(current_user, @notification.body) if current_user.discord_bot_token.present? && current_user.discord_channel_id.present?
       if notification_type == "Sold"

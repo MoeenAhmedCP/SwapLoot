@@ -144,7 +144,7 @@ class MarketcsgoSellingService < ApplicationService
         'id' => inventory_item.item_id,
         'price' => list_price,
         'cur' => 'USD',
-        'price_in_dollar' => inventory_item.market_price.to_f * 100
+        'price_in_dollar' => inventory_item.market_price.to_f * 10
       }
     end
     matching_item
@@ -183,9 +183,7 @@ class MarketcsgoSellingService < ApplicationService
         }
         response = HTTParty.post(MARKET_CSGO_BASE_URL + '/add-to-sale', query: batch_hash)
         if response.code == SUCCESS_CODE
-          batch_hash.each do |item|
-            SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
-          end
+          SellableInventory.find_by(item_id: batch_hash[:id]).update(listed_for_sale: true)
           result = JSON.parse(response.body)
         else
           report_api_error(response, [self&.class&.name, __method__.to_s])
