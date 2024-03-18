@@ -39,7 +39,13 @@ export default class extends Controller {
                 listed_item: "true"
               },
             });
-          }else{
+          }else if(data.type){
+            $('#toast-danger').removeClass('hidden').find('.error_message').text(data.message);
+            setTimeout(function() {
+              $('#toast-danger').addClass('hidden');
+            }, 10000);
+          }
+          else{
             $('#toast-success').removeClass('hidden').find('.success_message').text(data.message);
             setTimeout(function() {
               $('#toast-success').addClass('hidden');

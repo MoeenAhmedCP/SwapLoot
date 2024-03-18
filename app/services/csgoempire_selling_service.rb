@@ -71,7 +71,13 @@ class CsgoempireSellingService < ApplicationService
       items_to_deposit = matching_items
     end
     items_to_deposit = items_to_deposit.compact
-    deposit_items_for_sale(items_to_deposit) if items_to_deposit.any?
+    if items_to_deposit.any?
+      deposit_items_for_sale(items_to_deposit)
+    else
+      user = @steam_account.user
+      user.notifications.create(title: "Selling Alert", body: "No item available for sale on account #{@steam_account.unique_name.titleize}", notification_type: "CSGOEmpire")
+      ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: "CSGOEmpire: No item available for sale on account #{@steam_account.unique_name.titleize}", type: "selling_failed"})
+    end
 
     # Items list from waxpeer that were not found on PriceEmpire
     @inventory = fetch_database_inventory
