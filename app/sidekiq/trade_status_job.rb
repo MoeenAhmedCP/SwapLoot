@@ -54,8 +54,8 @@ class TradeStatusJob
               begin
                 ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: 'Item Sold Successfully', item_id: item['item_id'], steam_account_id: steam_account.id })
                 inventory_item = SellableInventory.find_by(item_id: item['item_id'])
-                bought_price = inventory_item.market_price.to_f if inventory_item.present?
-                create_item(item['item_id'], item['name'], bought_price, item['price'], item['sent_time'], steam_account)
+                bought_price = inventory_item.present? ? inventory_item.market_price.to_f : 0
+                create_item(item['item_id'], item['name'], (bought_price / 100.to_f), (item['price'] / 1000.to_f), item['sent_time'], steam_account)
               rescue StandardError => e
                 ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: "#{e.message}", item_id: item['item_id'], steam_account_id: steam_account.id })
               end
@@ -67,7 +67,6 @@ class TradeStatusJob
         end
       rescue => e
       end
-    when "market_csgo"
     end
   end
 
