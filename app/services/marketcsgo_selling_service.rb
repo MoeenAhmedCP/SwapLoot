@@ -100,7 +100,13 @@ class MarketcsgoSellingService < ApplicationService
       items_to_deposit = matching_items
     end
     items_to_deposit = items_to_deposit.compact
-    deposit_items_for_sale(items_to_deposit) if items_to_deposit.any?
+    if items_to_deposit.any?
+      deposit_items_for_sale(items_to_deposit) 
+    else
+      user = @steam_account.user
+			user.notifications.create(title: "Selling Alert", body: "No item available for selling on account #{@steam_account.unique_name.titleize}", notification_type: "Market.CSGO")
+      ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: "Market.CSGO: No item available for sale on account #{@steam_account.unique_name.titleize}", type: "selling_failed"})
+    end
   end
 
   def remove_listed_items_for_sale
