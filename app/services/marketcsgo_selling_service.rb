@@ -18,16 +18,42 @@ class MarketcsgoSellingService < ApplicationService
 
   def find_matching_data
     price_empire_response_items = fetch_items_from_price_empire
-    #waxpeer_response_items = waxpeer_suggested_prices if price_empire_response_items.empty?
+    waxpeer_response_items = waxpeer_suggested_prices if price_empire_response_items.empty?
     inventory = fetch_inventory
     if inventory.present?
-      #if price_empire_response_items.present?
+      if price_empire_response_items.present?
         matching_items = find_matching_items(price_empire_response_items, inventory)
-      # elsif waxpeer_response_items.present?
-      #   matching_items = find_waxpeer_matching_items(waxpeer_response_items, inventory)
-      # end
+      elsif waxpeer_response_items.present?
+        matching_items = find_matching_items_from_waxpeer(waxpeer_response_items, inventory)
+      end
     else
       matching_items = []
+    end
+    matching_items
+  end
+
+  def find_matching_items_from_waxpeer(waxpeer_response_items, inventory)
+    matching_items = []
+    return matching_items unless waxpeer_response_items.present?
+    inventory.each do |item|
+      suggested_items = waxpeer_response_items
+      result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
+      lowest_price = result_item['average'] + (result_item['average'] * 0.1)
+      item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "market_csgo").market_price
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.market_csgo_filter.min_profit_percentage.to_f / 100))
+      if result_item && (lowest_price / 10.to_f) > minimum_desired_price
+        matching_items << item.attributes.merge('lowest_price'=> lowest_price)
+      end
+    end
+    if matching_items.present?
+      matching_items = matching_items.map do |filtered_item|
+        {
+          'id' => filtered_item['item_id'],
+          'price' => filtered_item['lowest_price'],
+          'cur' => 'USD',
+          'price_in_dollar' => filtered_item['market_price'].to_f / 100
+        }
+      end
     end
     matching_items
   end
@@ -57,7 +83,7 @@ class MarketcsgoSellingService < ApplicationService
     filtered_items_for_deposit = []
     items.each do |item|
       item_price = SellableInventory.find_by(item_id: item['assetid']).market_price.to_f
-      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.market_csgo_filter.min_profit_percentage / 100 )).round(2)
 
       current_listed_price = item['price']
       price_empire_item = PriceEmpire.find_by(item_name: item['market_hash_name'])
@@ -82,6 +108,17 @@ class MarketcsgoSellingService < ApplicationService
     batch_process_sale_item(items, true)
     price_cutting_down_for_listed_items
   end
+
+  def waxpeer_suggested_prices
+		response = HTTParty.get(WAXPEER_BASE_URL + '/suggested-price?game=csgo')
+		if response.code == SUCCESS_CODE
+			result = JSON.parse(response.body)
+		else
+			report_api_error(response, [self&.class&.name, __method__.to_s])
+			result = API_FAILED
+		end
+		result
+	end
 
   def sell_market_csgo
     matching_items = find_matching_data
@@ -228,18 +265,8 @@ class MarketcsgoSellingService < ApplicationService
 
   def fetch_inventory
     response = fetch_database_inventory
-    # online_trades_response = fetch_active_trades
-    # if online_trades_response['success'] == false
-    #   report_api_error(online_trades_response, [self&.class&.name, __method__.to_s])
-    # else
-    #   online_trades = JSON.parse(online_trades_response.read_body)
-    #   api_item_ids = online_trades["data"]["deposits"].map { |deposit| deposit["item_id"] }
-    #   filtered_response = response.reject { |item| api_item_ids.include?(item["id"]) }
-    # end
-    # filtered_response
   end
 
-  
   def fetch_item_listed_for_sale_market_csgo
     url = 'https://market.csgo.com/api/v2/items'
     q_params = {
@@ -258,17 +285,9 @@ class MarketcsgoSellingService < ApplicationService
     end
     item_listed_for_sale
   end
-  
+
   private
-  
   def fetch_database_inventory
     SellableInventory.inventory(@steam_account).where(listed_for_sale: false, market_type: 'market_csgo')
-    # response = MarketcsgoService.fetch_inventory(@steam_account)
-    # if response['success']
-    #   item_response = response['items']
-    # else
-    #   item_response = []
-    # end
-    # item_response
   end
 end

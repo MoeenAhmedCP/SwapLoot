@@ -164,7 +164,7 @@ class WaxpeerSellingService < ApplicationService
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
       lowest_price = result_item['average'] + (result_item['average'] * 0.1)
       item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "waxpeer").market_price
-      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage.to_f / 100))
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.waxpeer_filter.min_profit_percentage.to_f / 100))
       if result_item && lowest_price > minimum_desired_price
         matching_items << item.attributes.merge(lowest_price: lowest_price)
       end
