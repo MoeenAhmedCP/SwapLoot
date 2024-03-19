@@ -43,7 +43,7 @@ class SellableInventoryUpdationJob
 						if price_empire_item.present? && price_empire_item['buff_avg7'].present?
 							item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : ((price_empire_item['buff_avg7']['price'] * 0.95)/100.to_f).round(2)
 						else
-							item_price = item["steam_price"]["current"] < 0 ? 0 : item["steam_price"]["current"]
+							item_price = item["steam_price"]["current"] < 0 ? 0 : (item["steam_price"]["current"]/1000.to_f).round(2)
 						end
 						begin
 							SellableInventory.find_or_create_by!(
