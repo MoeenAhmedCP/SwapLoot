@@ -4,7 +4,7 @@
         <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= inventory.item_id %></td>
         <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= inventory.market_name %></td>
         <td class=" text-sm text-center px-4 py-2"><%= "$#{inventory.market_price&.to_f.round(3)}" %></td>
-        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= inventory.market_type.capitalize %></td>
+        <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= inventory.market_type.titleize %></td>
         <td class="border-r border-r-[#acadaf9c] text-sm text-center px-4 py-2"><%= inventory.listed_for_sale %></td>
     </tr>
 <% end %>    
