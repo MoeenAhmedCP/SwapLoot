@@ -41,8 +41,8 @@ class MarketcsgoSellingService < ApplicationService
       lowest_price = result_item['average'] + (result_item['average'] * 0.1)
       item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "market_csgo").market_price
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.market_csgo_filter.min_profit_percentage.to_f / 100))
-      if result_item && (lowest_price/10.to_f) > minimum_desired_price
-        matching_items << item.attributes.merge('lowest_price'=> lowest_price / 1000.to_f)
+      if result_item && (lowest_price / 10.to_f) > minimum_desired_price
+        matching_items << item.attributes.merge('lowest_price'=> lowest_price)
       end
     end
     if matching_items.present?
@@ -128,7 +128,7 @@ class MarketcsgoSellingService < ApplicationService
     if fetch_items_from_price_empire.present?
       items_to_deposit = matching_items.map do |item|
         if item["price"] > (item["price_in_dollar"] + ((item["price_in_dollar"] * @steam_account.selling_filters.find_by(market_type: "market_csgo").min_profit_percentage) / 100 ).round(2))
-          { "id" => item["id"], "price" => item["price"] * 1000, 'cur' => 'USD' }
+          { "id" => item["id"], "price" => item["price"], 'cur' => 'USD' }
         else
           next
         end
