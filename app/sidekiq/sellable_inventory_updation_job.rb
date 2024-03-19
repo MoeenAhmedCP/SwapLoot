@@ -41,7 +41,7 @@ class SellableInventoryUpdationJob
 					tradeable_inventory_to_save&.each do |item|
 						price_empire_item = PriceEmpire.find_by(item_name: item['name'])
 						if price_empire_item.present? && price_empire_item['buff_avg7'].present?
-							item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : ((price_empire_item['buff_avg7']['price'] * 0.95)).round
+							item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : ((price_empire_item['buff_avg7']['price'] * 0.95)/100.to_f).round(2)
 						else
 							item_price = item["steam_price"]["current"] < 0 ? 0 : item["steam_price"]["current"]
 						end
@@ -70,7 +70,7 @@ class SellableInventoryUpdationJob
 						begin
 							price_empire_item = PriceEmpire.find_by(item_name: item['market_hash_name'])
 							if price_empire_item.present? && price_empire_item['buff_avg7'].present?
-								item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : ((price_empire_item['buff_avg7']['price'] * 0.95)).round
+								item_price = price_empire_item['buff_avg7']['price'] < 0 ? 0 : ((price_empire_item['buff_avg7']['price'] * 0.95)/100.to_f).round(2)
 							else
 								item_price = item["market_price"] < 0 ? 0 : item["market_price"]
 							end

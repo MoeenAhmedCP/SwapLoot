@@ -11,7 +11,7 @@ every 3.minutes do
   runner "PriceEmpireSuggestedPriceJob.perform_async", output: 'log/cron.log'
 end
 
-every 2.minutes do
+every 1.hour do
   runner "FetchSoldItemsMarketCsgoJob.perform_async", output: 'log/cron.log'
 end
 
