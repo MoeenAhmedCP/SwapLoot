@@ -1,5 +1,8 @@
-<% if params[:inventory_search].present? || params[:refresh] = "true" %>
+<% if params[:inventory_search].present? %>
   $('.inventoryTableBody').html("<%= escape_javascript(render(partial: 'inventory', locals: { inventories: @inventories})) %>");
+<% end %>
+<% if params[:refresh].present? %>
+  window.location.reload();
 <% end %>
 <% if params[:sellable_inventory_search].present? %>
   $('.sellableinventoryTableBody').html("<%= escape_javascript(render(partial: 'sellable_inventory', locals: { sellable_inventory: @sellable_inventory })) %>");
