@@ -112,13 +112,13 @@ class CsgoempireService < ApplicationService
   def fetch_my_inventory
     if @active_steam_account.present?
       unless csgoempire_key_not_found?
-        get_inventory_from_api("csgoempire", @steam_account)
+        get_inventory_from_api("csgoempire", @active_steam_account)
       end
       unless waxpeer_api_key_not_found?
-        get_inventory_from_api("waxpeer", @steam_account)
+        get_inventory_from_api("waxpeer", @active_steam_account)
       end
       unless market_csgo_api_key_not_found?
-        get_inventory_from_api("market_csgo", @steam_account)
+        get_inventory_from_api("market_csgo", @active_steam_account)
       end
     else
       @current_user.steam_accounts.each do |steam_account|
@@ -132,7 +132,7 @@ class CsgoempireService < ApplicationService
   def update_ui_inventory
     if @active_steam_account.present?
       unless csgoempire_key_not_found?
-        get_inventory_from_api("csgoempire", @steam_account)
+        get_inventory_from_api("csgoempire", @active_steam_account)
       end
     else
       @current_user.steam_accounts.each do |steam_account|
