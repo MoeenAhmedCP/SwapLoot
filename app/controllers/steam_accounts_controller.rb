@@ -118,10 +118,14 @@ class SteamAccountsController < ApplicationController
 
   def logout_steam
     if @steam_account.valid_account
-      base_url = ENV['NODE_TOGGLE_SERVICE_URL']
-      url = "#{base_url}/logOutSteam"
-      params = { id: @steam_account.id }
-      HTTParty.post(url, query: params)
+      begin
+        base_url = ENV['NODE_TOGGLE_SERVICE_URL']
+        url = "#{base_url}/logOutSteam"
+        params = { id: @steam_account.id }
+        HTTParty.post(url, query: params)
+      rescue
+        flash[:alert] = "Error Connecting to Node server."
+      end
     end
   end
 
