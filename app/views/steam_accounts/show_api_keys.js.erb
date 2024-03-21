@@ -2,6 +2,7 @@ id = <%= @steam_account.id %>;
 document.querySelector(`#verifying-div-${id}`).classList.add('hidden');
 <% if @success %>
   document.querySelector(`#keys-div-${id}`).classList.remove('hidden');
+  document.querySelector(`#steamWebApiKeyModal-${id} > div.bg-white.dark\\:bg-grayDark.rounded-lg.overflow-hidden.shadow-xl.transform.transition-all.max-w-3xl.mx-auto.p-6 > input`).classList.add("hidden");
   if (!document.querySelector(`#error-div-${id}`).classList.contains('hidden')){
     document.querySelector(`#error-div-${id}`).classList.add('hidden');
   }
