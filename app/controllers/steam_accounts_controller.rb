@@ -124,7 +124,7 @@ class SteamAccountsController < ApplicationController
         params = { id: @steam_account.id }
         HTTParty.post(url, query: params)
       rescue
-        flash[:alert] = "Error Connecting to Node server."
+        puts "****** Error Connecting to Node server **********"
       end
     end
   end
