@@ -38,7 +38,7 @@ class CsgoempireSellingService < ApplicationService
 
   # function to fetch matching items data from inventory and price empire api
   def find_matching_data
-    price_empire_response_items = fetch_items_from_pirce_empire
+    price_empire_response_items = fetch_items_from_price_empire
     waxpeer_response_items = waxpeer_suggested_prices if price_empire_response_items.empty?
     inventory = fetch_inventory
     if inventory.present?
@@ -59,9 +59,9 @@ class CsgoempireSellingService < ApplicationService
     unless matching_items
       sell_csgoempire
     end
-    if fetch_items_from_pirce_empire.present?
+    if fetch_items_from_price_empire.present?
       items_to_deposit = matching_items.map do |item|
-        if item["average"] > (item["coin_value_bought"] + ((item["coin_value_bought"] * @steam_account.selling_filter.min_profit_percentage) / 100 ).round(2))
+        if item["average"] > (item["coin_value_bought"] + ((item["coin_value_bought"] * @steam_account.selling_filters.csgoempire_filter.min_profit_percentage) / 100 ).round(2))
           { "id" => item["id"], "coin_value" => item["average"] }
         else
           next
@@ -71,7 +71,13 @@ class CsgoempireSellingService < ApplicationService
       items_to_deposit = matching_items
     end
     items_to_deposit = items_to_deposit.compact
-    deposit_items_for_sale(items_to_deposit) if items_to_deposit.any?
+    if items_to_deposit.any?
+      deposit_items_for_sale(items_to_deposit)
+    else
+      user = @steam_account.user
+      user.notifications.create(title: "Selling Alert", body: "No item available for sale on account #{@steam_account.unique_name.titleize}", notification_type: "CSGOEmpire")
+      ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: "CSGOEmpire: No item available for sale on account #{@steam_account.unique_name.titleize}", type: "selling_failed"})
+    end
 
     # Items list from waxpeer that were not found on PriceEmpire
     @inventory = fetch_database_inventory
@@ -81,9 +87,9 @@ class CsgoempireSellingService < ApplicationService
       remaining_items.each do |item|
         suggested_items = waxpeer_suggested_prices
         result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-        item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
         lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
-        minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+        item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "csgoempire").market_price
+        minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.csgoempire_filter.min_profit_percentage / 100 )).round(2)
         if result_item && lowest_price > minimum_desired_price
           filtered_items_for_deposit << JSON.parse(item.to_json).merge(:lowest_price => result_item["lowest_price"])
         end
@@ -116,15 +122,16 @@ class CsgoempireSellingService < ApplicationService
       end
       items_for_resale = []
       items_listed_for_sale.each do |item|
-        if item_ready_to_price_cutting?(item[:updated_at], @steam_account.selling_filter.undercutting_interval)
+        if item_ready_to_price_cutting?(item[:updated_at], @steam_account.selling_filters.csgoempire_filter.undercutting_interval)
           items_for_resale << item
         end
       end
       if items_for_resale.any?
         cutting_price_and_list_again(items_for_resale)
       else
-        price_cutting_job_id = PriceCuttingJob.perform_in(@steam_account.selling_filter.undercutting_interval.minutes, @steam_account.id)
-        @steam_account.trade_service.update(price_cutting_job_id: price_cutting_job_id)
+        puts "Price cutting from -> CSGOEMpire Selling Service"
+        price_cutting_job_id = PriceCuttingJob.perform_in(@steam_account.selling_filters.csgoempire_filter.undercutting_interval.minutes, @steam_account.id)
+        @steam_account.trade_services.csgoempire_trade_service.update(price_cutting_job_id: price_cutting_job_id)
       end
     end
   end
@@ -133,7 +140,7 @@ class CsgoempireSellingService < ApplicationService
   def cancel_item_deposit(item)
     response = HTTParty.post(CSGO_EMPIRE_BASE_URL + "/trading/deposit/#{item[:deposit_id]}/cancel", headers: headers)
     if response['success'] == true
-      sellable_item = SellableInventory.find_by(item_id: item[:item_id])
+      sellable_item = SellableInventory.find_by(item_id: item[:item_id], market_type: "csgoempire")
       sellable_item.update(listed_for_sale: false) if sellable_item.present?
     else
       report_api_error(response, [self&.class&.name, __method__.to_s])
@@ -145,8 +152,8 @@ class CsgoempireSellingService < ApplicationService
   def cutting_price_and_list_again(items)
     filtered_items_for_deposit = []
     items.map do |item|
-      item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price.to_f
-      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+      item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "csgoempire").market_price.to_f
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.csgoempire_filter.min_profit_percentage / 100 )).round(2)
       minimum_desired_price = (minimum_desired_price / 0.614).round(2)
       current_listed_price = item[:market_value]
       # price_empire_item = PriceEmpire.find_by(item_name: item[:market_name])
@@ -182,8 +189,14 @@ class CsgoempireSellingService < ApplicationService
 
   def search_items_by_name_on_csgoempire(item_name)
     suggested_price = nil
-    url = "https://csgoempire.com/api/v2/trading/items?per_page=100&page=1&search=#{item_name}"
-    response = HTTParty.get(url, headers: headers)
+    converted_name = item_name.encode('utf-8')
+    q_params = {
+      per_page: 100,
+      page: 1,
+      search: converted_name
+    }
+    url = "https://csgoempire.com/api/v2/trading/items"
+    response = HTTParty.get(url, query: q_params, headers: headers)
 
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])
@@ -231,7 +244,7 @@ class CsgoempireSellingService < ApplicationService
 
       if response.code == SUCCESS_CODE
         batch.each do |item|
-          SellableInventory.find_by(item_id: item["id"]).update(listed_for_sale: true)
+          SellableInventory.find_by(item_id: item["id"], market_type: "csgoempire").update(listed_for_sale: true)
         end
         result = JSON.parse(response.body)
       else
@@ -250,12 +263,12 @@ class CsgoempireSellingService < ApplicationService
     price_cutting_down_for_listed_items
   end
 
- # function to fetch matching items between Price Empire API data and Inventory Data
+  # function to fetch matching items between Price Empire API data and Inventory Data
   def find_matching_items(response_items, inventory)
     matching_items = []
     inventory.each do |inventory_item|
       item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
-      if item_found_from_price_empire
+      if item_found_from_price_empire && item_found_from_price_empire["buff"].present?
         buff_price = item_found_from_price_empire["buff"]["price"] + (item_found_from_price_empire["buff"]["price"] * 0.1)
         matching_item = {
           'id' => inventory_item.item_id,
@@ -277,9 +290,9 @@ class CsgoempireSellingService < ApplicationService
     inventory.map do |item|
       suggested_items = waxpeer_suggested_prices
       result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
-      item_price = SellableInventory.find_by(item_id: item[:item_id]).market_price
       lowest_price = (result_item['lowest_price'].to_f / 1000 / 0.614).round(2)
-      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filter.min_profit_percentage / 100 )).round(2)
+      item_price = SellableInventory.find_by(item_id: item[:item_id], market_type: "csgoempire").market_price
+      minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.csgoempire_filter.min_profit_percentage / 100 )).round(2)
       if result_item && lowest_price > minimum_desired_price
         matching_items << item.attributes.merge(lowest_price: result_item["lowest_price"])
       end
@@ -302,7 +315,7 @@ class CsgoempireSellingService < ApplicationService
   end
 
   # Function to fetch Items and Its Prices from different platforms from Price Empire API
-  def fetch_items_from_pirce_empire
+  def fetch_items_from_price_empire
     response = PriceEmpire.all
   end
 
@@ -343,6 +356,6 @@ class CsgoempireSellingService < ApplicationService
   end
 
   def fetch_database_inventory
-    SellableInventory.inventory(@steam_account).where(listed_for_sale: false)
+    SellableInventory.inventory(@steam_account).where(listed_for_sale: false, market_type: "csgoempire")
   end
 end

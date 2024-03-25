@@ -32,7 +32,10 @@ Rails.application.routes.draw do
   post '/home/update_active_account', to: 'home#update_active_account'
   get '/refresh_balance', to: 'home#refresh_balance', as: 'refresh_balance'
   get '/home/active_trades_reload', to: 'home#active_trades_reload'
+  get '/home/active_trades_market_csgo_reload', to: 'home#active_trades_market_csgo_reload'
   get '/home/reload_item_listed_for_sale', to: 'home#reload_item_listed_for_sale'
+  get '/home/reload_item_listed_for_sale_waxpeer', to: 'home#reload_item_listed_for_sale_waxpeer'
+  get '/home/reload_item_listed_for_sale_market_csgo', to: 'home#reload_item_listed_for_sale_market_csgo'
   get '/home/fetch_all_steam_accounts', to: 'home#fetch_all_steam_accounts'
   put '/mark_all_as_read', to: 'notifications#mark_all_as_read'
   post '/read_ma_file/:id', to: 'steam_accounts#read_ma_file', as: "read_ma_file"

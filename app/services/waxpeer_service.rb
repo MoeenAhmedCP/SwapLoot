@@ -65,7 +65,7 @@ class WaxpeerService < ApplicationService
       response = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.waxpeer_api_key.blank?
-        set_proxy(steam_account) if steam_account.proxy.present?
+        add_proxy(steam_account) if steam_account.proxy.present?
         res = self.class.get(WAXPEER_BASE_URL + '/list-items-steam', query: site_params(steam_account))
         if res['success'] == false
           response = [{ success: "false", msg: res['msg'] }]

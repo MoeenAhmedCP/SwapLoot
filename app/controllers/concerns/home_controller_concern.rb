@@ -4,8 +4,11 @@
 module HomeControllerConcern
   extend ActiveSupport::Concern
   included do
-    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale, only: [:index]
-    before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance, :all_site_balance, only: [:refresh_balance]
+    before_action :fetch_items_bid_history, :fetch_item_listed_for_sale,
+                  :fetch_waxpeer_item_listed_for_sale, :fetch_market_csgo_items_listed_for_sale,
+                  :fetch_market_csgo_listed_items, only: [:index]
+    before_action :fetch_csgo_empire_balance, :fetch_csgo_market_balance, :fetch_waxpeer_balance,
+                  :all_site_balance, only: [:refresh_balance]
   end
 
   private
@@ -69,6 +72,30 @@ module HomeControllerConcern
     @auction_items_hash
   end
 
+  def fetch_market_csgo_listed_items
+    csgoempire_service = MarketcsgoService.new(current_user)
+    response = csgoempire_service.active_trades
+    if response.present?
+      if response.first[:success].present?
+        @active_trades = []
+      else
+        @active_trades = response&.map do |auction_item|
+          item = MarketCsgoItemsData.where(class_id: trade["classid"], instance_id: trade["instanceid"])
+          {
+            'item_id' => item.id,
+            'market_name' => item.market_hash_name,
+            'price' => item.price,
+            'site' => 'Market CSGO',
+            'date' => Time.at(trade["timestamp"]).to_datetime.strftime('%d/%B/%Y')
+          }
+        end
+      end
+    else
+      @active_trades = []
+    end
+    @active_trades
+  end
+
   def fetch_item_listed_for_sale
     steam_account_ids = @active_steam_account.respond_to?(:each) ? @active_steam_account.map(&:id) : [@active_steam_account.id]
     @item_listed_for_sale_hash = ListedItem.where(steam_account_id: steam_account_ids)
@@ -82,8 +109,22 @@ module HomeControllerConcern
       flash[:alert] = "Error: #{item[:msg]}, for waxpeer fetch listed items for sale"
       []
     else
-      item_listed_for_sale_hash = item_listed_for_sale.map do |item|
+      @item_listed_for_sale_hash_waxpeer = item_listed_for_sale.map do |item|
         item.merge('site' => 'Waxpeer')
+      end
+    end
+  end
+
+  def fetch_market_csgo_items_listed_for_sale
+    market_csgo_service = MarketcsgoService.new(current_user)
+    item_listed_for_sale = market_csgo_service.fetch_items_listed_for_sale_market_csgo
+    if item_listed_for_sale.present? && item_listed_for_sale.first[:success].present?
+      item = item_listed_for_sale.first
+      flash[:alert] = "Error: #{item[:msg]}, for waxpeer fetch listed items for sale"
+      []
+    else
+      @item_listed_for_sale_hash_market_csgo = item_listed_for_sale.map do |item|
+        item.merge('site' => 'Market CSGO')
       end
     end
   end

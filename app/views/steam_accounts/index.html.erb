@@ -62,11 +62,14 @@
                                                 <% end %>
                                             <% else %>
                                                 <%= form_for steam_account, url: read_ma_file_path(id: steam_account), method: :post, local: true, html: { class: 'file-form', id: "file-upload-form-#{steam_account.id}", multipart: true } do |form| %>
-                                                    <div style="display:flex; flex-direction: column;">
-                                                        <div class="mb-4 dark:text-black">
-                                                            <%= form.file_field :ma_file, class: 'file-input', accept: '.maFile' %>
+																										<div style="display:flex; flex-direction: column;">
+																												<div class="flex mb-1 text-red-500">
+																													<span>Please Upload your MAFile to proceed *</span>
+																												</div>
+                                                        <div class="flex mb-4 dark:text-black">
+																														<%= form.file_field :ma_file, class: 'file-input', accept: '.maFile', onchange: "handleInputMAFile('#{steam_account.id}')" %>
                                                         </div>
-                                                        <%= button_tag 'Upload', type: 'button', class: "submit-btn bg-blue mb-2" ,id: "submit-btn-#{steam_account.id}", onclick: "submitForm(#{steam_account.id})" %>
+                                                        <%= button_tag 'Upload', type: 'button', class: "submit-btn bg-blue mb-2" ,id: "submit-btn-#{steam_account.id}", onclick: "submitForm(#{steam_account.id})", disabled: true %>
                                                     </div>
                                                 <% end %>
                                             <% end %>
@@ -107,7 +110,10 @@
                                 <p class="text-gray-700 dark:text-white mb-8">Enter current password to see API Keys</p>
                                 <form action="#" method="get" data-remote="true" data-local="false">
                                     <label for="current_password" class="block font-bold mb-2 dark:text-white text-black">Current Password</label>
-                                    <input type="password" name="current_password" class="w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue" id="current_password-<%= steam_account.id %>">
+                                    <div class="relative">
+																			<input type="password" name="current_password" class="current_password_field w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue" id="current_password-<%= steam_account.id %>">
+																			<i class="fa fa-eye text-grayDark current_password_eye absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"></i>
+																		</div>
                                     <input type="submit" value="Submit" class="show-api-keys-submit mt-3 dark:text-white cursor-pointer bg-blue text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue" data-steam_account_id="<%= steam_account.id %>">
                                     <div class="flex item-center hidden gap-2 py-2" id="verifying-div-<%= steam_account.id %>">
                                     <div class="dark:text-white">Verifying...</div>
@@ -164,8 +170,12 @@
                                     <p class="text-gray-700 dark:text-white mb-8">Enter current password to see API Keys</p>
                                     <form action="#" method="get" data-remote="true" data-local="false">
                                         <label for="current_password" class="block font-bold mb-2 dark:text-white text-black">Current Password</label>
-                                        <input type="password" name="current_password" class="w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue" id="current_password-<%= steam_account.id %>">
-                                        <input type="submit" value="Submit" class="edit-api-keys-submit mt-3 dark:text-white cursor-pointer bg-blue text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue" data-steam_account_id="<%= steam_account.id %>">
+                                        <div class="relative">
+																					<input type="password" name="current_password" class="current_password_field w-full px-4 py-2 border rounded-lg shadow-md focus:outline-none focus:ring focus:ring-blue" id="current-password-<%= steam_account.id %>">
+																					<i class="fa fa-eye text-grayDark current_password_eye absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"></i>
+																				</div>
+																				
+																				<input type="submit" value="Submit" class="edit-api-keys-submit mt-3 dark:text-white cursor-pointer bg-blue text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue" data-steam_account_id="<%= steam_account.id %>">
                                         <div class="flex item-center hidden gap-2 py-2" id="edit-verifying-div-<%= steam_account.id %>">
                                             <div class="dark:text-white">Verifying...</div>
                                             <div><i class="dark:text-white fa fa-spinner fa-spin"></i></div>
@@ -193,7 +203,10 @@
     <div class="modal-content p-4">
         <span class="close absolute top-2 right-2 text-2xl cursor-pointer" onclick="closePasswordModal()">&times;</span>
         <label for="password" class="text-gray-700 text-lg">Enter Steam Account Password:</label>
-        <input type="password" id="password" name="password" class="border border-gray-300 px-3 py-2 w-full rounded-md focus:outline-none focus:border-blue-500">
+				<div class="relative">
+						<input type="password" id="password" name="password" class="border border-gray-300 px-3 py-2 w-full rounded-md focus:outline-none focus:border-blue-500">
+						<i class="fa fa-eye current_password_eye text-grayDark absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"></i>
+				</div>
         <button id="submitPassword" class="bg-blue text-white px-4 py-2 rounded-md mt-4">Submit</button>
     </div>
 </div>
@@ -263,6 +276,14 @@
 
 <script>
 
+	function handleInputMAFile(id){
+		file = this.event.target.value;
+		if (file){
+			submitButton = document.querySelector(`#submit-btn-${id}`);
+			submitButton.removeAttribute("disabled");
+		}
+	}
+
     function openUploadFileModal(id){
         var uploadModalId = document.getElementById(`uploadModal-${id}`)
         uploadModalId.style.display = 'block';
@@ -309,6 +330,27 @@
     }
 
     $(document).ready(function() {
+			
+				const alleyes = document.querySelectorAll(".current_password_eye");
+        alleyes.forEach((el) => {
+            el.addEventListener("click", togglePasswordField)
+        })
+
+				function togglePasswordField(){
+					const passwordInput = this.previousElementSibling;
+					const eyeIcon = this;
+
+					if (passwordInput.type === "password") {
+							passwordInput.type = "text";
+							eyeIcon.classList.remove("fa-eye");
+							eyeIcon.classList.add("fa-eye-slash");
+					} else {
+							passwordInput.type = "password";
+							eyeIcon.classList.remove("fa-eye-slash");
+							eyeIcon.classList.add("fa-eye");
+					}
+				}
+
 
         const allRows = document.querySelectorAll(".show-api-keys-submit");
         allRows.forEach((el) => {
@@ -317,7 +359,7 @@
 
         function validateUser() {
             this.nextElementSibling.classList.remove("hidden");
-            var password = event.target.previousElementSibling.value
+            var password = this.closest("div").querySelector('input[name=current_password]').value
             var steamAccountId = this.dataset.steam_account_id
             $.ajax({
                 url: '<%= show_api_key_path(format: :js) %>',
@@ -338,7 +380,7 @@
         })
 
         function validateUserEdit() {
-            var password = event.target.previousElementSibling.value
+            var password = this.closest("div").querySelector('input[name=current_password]').value
             var steamAccountId = this.dataset.steam_account_id
             if (!document.querySelector(`#edit-error-div-${steamAccountId}`).classList.contains('hidden')){
                 document.querySelector(`#edit-error-div-${steamAccountId}`).classList.add('hidden');
@@ -436,6 +478,8 @@
     function closeKeyModal(steamAccountId) {
         var modal = document.getElementById("steamWebApiKeyModal-" + steamAccountId);
         modal.style.display = "none";
+				document.querySelector(`#steamWebApiKeyModal-${steamAccountId} > div.bg-white.dark\\:bg-grayDark.rounded-lg.overflow-hidden.shadow-xl.transform.transition-all.max-w-3xl.mx-auto.p-6 > input`).classList.remove("hidden");
+
     }
 
     // Event listeners for each eye-slash icon

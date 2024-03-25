@@ -26,8 +26,29 @@ class HomeController < ApplicationController
     end
   end
 
+  def active_trades_market_csgo_reload
+    fetch_market_csgo_listed_items
+    respond_to do |format|
+      format.js
+    end
+  end
+
   def reload_item_listed_for_sale
     fetch_item_listed_for_sale
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def reload_item_listed_for_sale_waxpeer
+    fetch_waxpeer_item_listed_for_sale
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def reload_item_listed_for_sale_market_csgo
+    fetch_market_csgo_items_listed_for_sale
     respond_to do |format|
       format.js
     end

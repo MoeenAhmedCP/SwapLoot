@@ -79,6 +79,9 @@
           <% end %>
         </div>
     </div>
+<div class="flex py-2" style="justify-content:flex-end !important;">
+      <div class="text-md text-blue dark:text-white font-[500]"><%= "Total Worth: $ #{@total_market_price_sellable_inventory}" %></div>
+    </div>
     <table id="SellableInventoryTable" class="display shadow-md rounded-lg" style="width:100%; border: none;">
 
         <thead class="bg-blue text-white">
@@ -86,6 +89,7 @@
             <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2 rounded-tl-lg">Item ID</th>
             <th class="border-r border-r-[#acadaf9c] text-sm px-4 py-2">Market Name</th>
             <th class="text-sm px-4 py-2">Market Price</th>
+            <th class="text-sm px-4 py-2">Market Type</th>
             <th class="text-sm px-4 py-2 rounded-tr-lg">Listed for sale</th>
         </tr>
         </thead>
@@ -133,7 +137,7 @@
             elements[i].parentNode.removeChild(elements[i]);
         }
 
-    $('#refreshTable').click(function () {
+      $('#refreshTable').click(function () {
         var refreshButton = this;
         var lastRequestTimestamp = localStorage.getItem('lastRequestTimestamp');
 
@@ -146,19 +150,19 @@
             }
         }
         refreshButton.classList.add("fa-spin");
-        $.ajax({
-            url: '<%= inventories_path(format: :js) %>',
-            method: 'GET',
-            data: { refresh: true },
-            success: function (data) {
-                refreshButton.classList.remove("fa-spin");
-                localStorage.setItem('lastRequestTimestamp', new Date().getTime());
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.error('Error refreshing table', textStatus, errorThrown);
-            }
+            $.ajax({
+                url: '<%= inventories_path(format: :js) %>',
+                method: 'GET',
+                data: { refresh: true },
+                success: function (data) {
+                 refreshButton.classList.remove("fa-spin");
+localStorage.setItem('lastRequestTimestamp', new Date().getTime());
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error('Error refreshing table', textStatus, errorThrown);
+                }
+            });
         });
-      });
     });
 
     function submitinvForm() {

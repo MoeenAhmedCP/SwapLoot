@@ -1,7 +1,7 @@
 class SteamAccountsController < ApplicationController
   require 'httparty'
   before_action :set_steam_account, only: %i[edit update destroy show_api_keys edit_api_keys read_ma_file delete_ma_file]
-  after_action :set_steam_account_filters, only: %i[create]
+  after_action :set_steam_account_filters, only: %i[create update]
   
   def index
     @steam_accounts = SteamAccount.where(user_id: current_user.id).includes(:proxy).paginate(page: params[:page], per_page: 10)
@@ -118,10 +118,14 @@ class SteamAccountsController < ApplicationController
 
   def logout_steam
     if @steam_account.valid_account
-      base_url = ENV['NODE_TOGGLE_SERVICE_URL']
-      url = "#{base_url}/logOutSteam"
-      params = { id: @steam_account.id }
-      HTTParty.post(url, query: params)
+      begin
+        base_url = ENV['NODE_TOGGLE_SERVICE_URL']
+        url = "#{base_url}/logOutSteam"
+        params = { id: @steam_account.id }
+        HTTParty.post(url, query: params)
+      rescue
+        puts "****** Error Connecting to Node server **********"
+      end
     end
   end
 
@@ -150,12 +154,23 @@ class SteamAccountsController < ApplicationController
   end
 
   def set_steam_account_filters
-    if @steam_account.present?
-      TradeService.create(steam_account_id: @steam_account.id)
-      SellingFilter.create(steam_account_id: @steam_account.id)
-      BuyingFilter.create(steam_account_id: @steam_account.id)
+    return unless @steam_account.present?
+    api_key_to_market_type = {
+      waxpeer_api_key: "waxpeer",
+      csgoempire_api_key: "csgoempire",
+      market_csgo_api_key: "market_csgo"
+    }
+    market_types = api_key_to_market_type.select { |key, _| @steam_account.send(key).present? }.values
+  
+    [TradeService, SellingFilter, BuyingFilter].each do |model_class|
+      market_types.each do |type|
+        unless model_class.exists?(market_type: type, steam_account_id: @steam_account.id)
+          model_class.create(market_type: type, steam_account_id: @steam_account.id)
+        end
+      end
     end
   end
+  
 
   def notify_discord(message)
     begin
