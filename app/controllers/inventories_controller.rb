@@ -19,7 +19,6 @@ class InventoriesController < ApplicationController
     @missing_items = current_user.active_steam_account.present? ? current_user.active_steam_account.missing_items : MissingItem.where(steam_account_id: current_user.steam_accounts.pluck(:id))
     sellable_inventory_result = @q_sellable_inventory.result.sum { |item| item.market_price.to_f }
     @total_market_price_sellable_inventory = sellable_inventory_result.round(2)
-
     respond_to do |format|
       format.html
       format.js
