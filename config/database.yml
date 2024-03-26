@@ -23,10 +23,7 @@ default: &default
 
 development:
   <<: *default
-  host: 34.226.119.26
-  database: postgres
-  username: postgres
-  password: 54321
+  database: SwapLoot_development
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -84,6 +81,7 @@ test:
 #
 production:
   <<: *default
-  database: SwapLoot_production
-  username: SwapLoot
-  password: <%= ENV["SWAPLOOT_DATABASE_PASSWORD"] %>
+  host: 18.221.188.160
+  database: postgres
+  username: postgres
+  password: admin54321
