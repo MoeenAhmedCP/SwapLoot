@@ -23,7 +23,7 @@ class TradeStatusJob
                 ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: 'Item listed for sale', item_id: item['item_id'], steam_account_id: steam_account.id })
               end
               if item['data']['status_message'] == 'Sent'
-                SendNotificationsJob.perform_async(user.id, item, "Sold", steam_account.id, "csgo_empire")
+                SendNotificationsJob.perform_async(user.id, item, "Sold", steam_account.id, "csgoempire")
                 begin
                   listed_item = ListedItem.find_by(item_id: item['data']['item_id'])
                   listed_item.destroy if listed_item.present?
@@ -36,7 +36,7 @@ class TradeStatusJob
               end
             end
             if item['data']['status_message'] == 'Completed' && item["type"] == "withdrawal"
-              SendNotificationsJob.perform_async(user.id, item, "Bought", steam_account.id, "csgo_empire")
+              SendNotificationsJob.perform_async(user.id, item, "Bought", steam_account.id, "csgoempire")
             end
           end
         end

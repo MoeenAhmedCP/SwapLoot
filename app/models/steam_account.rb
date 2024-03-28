@@ -40,7 +40,7 @@ class SteamAccount < ApplicationRecord
   end
 
   def check_validity
-    if csgoempire_api_key.present? || waxpeer_api_key.present?
+    if csgoempire_api_key.present? || waxpeer_api_key.present? || market_csgo_api_key.present?
       self.update_column(:valid_account, true)
     end
   end
