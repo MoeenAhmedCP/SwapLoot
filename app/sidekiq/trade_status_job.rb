@@ -20,7 +20,6 @@ class TradeStatusJob
               if item['data']['status'] == 8
                 listed_item = ListedItem.find_by(item_id: item['data']['item_id'])
                 listed_item.destroy if listed_item.present?
-                ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: 'Item listed for sale', item_id: item['item_id'], steam_account_id: steam_account.id })
               end
               if item['data']['status_message'] == 'Sent'
                 SendNotificationsJob.perform_async(user.id, item, "Sold", steam_account.id, "csgoempire")

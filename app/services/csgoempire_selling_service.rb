@@ -244,7 +244,11 @@ class CsgoempireSellingService < ApplicationService
 
       if response.code == SUCCESS_CODE
         batch.each do |item|
-          SellableInventory.find_by(item_id: item["id"], market_type: "csgoempire").update(listed_for_sale: true)
+          sellable_item = SellableInventory.find_by(item_id: item["id"], market_type: "csgoempire")
+          if sellable_item.present?
+            sellable_item.update(listed_for_sale: true) 
+            puts "ID: (#{sellable_item.item_id}), #{sellable_item.market_name} listed for sale successfully at csgoempire"
+          end
         end
         result = JSON.parse(response.body)
       else

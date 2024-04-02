@@ -9,7 +9,15 @@ class TradeService < ApplicationRecord
     market_csgo: 2
   }
 
-  scope :waxpeer_trade_service, -> { find_by(market_type: "waxpeer") }
-  scope :csgoempire_trade_service, -> { find_by(market_type: "csgoempire") }
-  scope :market_csgo_trade_service, -> { find_by(market_type: "market_csgo") }  
+  def self.market_csgo_trade_service
+    where(market_type: :market_csgo).first
+  end
+
+  def self.csgoempire_trade_service
+    where(market_type: :csgoempire).first
+  end
+
+  def self.waxpeer_trade_service
+    where(market_type: :waxpeer).first
+  end
 end

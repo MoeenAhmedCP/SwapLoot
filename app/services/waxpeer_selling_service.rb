@@ -10,7 +10,7 @@ class WaxpeerSellingService < ApplicationService
 		puts ">>>>>>>>> Waxpeer Selling Started...."
 		matching_items = find_matching_data
 		unless matching_items
-			sell_csgoempire
+			sell_waxpeer_items
 		end
 		if fetch_items_from_price_empire.present?
 			items_to_deposit = matching_items.map do |item|
