@@ -18,7 +18,7 @@ class SellableInventoryUpdationService < ApplicationService
 					tradeable_inventory_to_save = inventory_response["data"].select { |item| item["market_value"] != -1 && item["tradable"] == true && item["tradelock"] == false }
 				end
 			rescue
-				puts "Something went wrong with Fetch inventory API CSGOEmpire.. retrying in 2 minutes"
+				puts "Something went wrong with Fetch inventory API CSGOEmpire.."
 			end
 		when "waxpeer"
 			headers_waxpeer = { api: @steam_account&.waxpeer_api_key }
@@ -30,7 +30,7 @@ class SellableInventoryUpdationService < ApplicationService
 					tradeable_inventory_to_save = inventory_response["items"].select { |item| item["steam_price"]["current"] > 0  }
 				end
 			rescue
-				puts "Something went wrong with Fetch inventory API WAXPEER.. retrying in 2 minutes"
+				puts "Something went wrong with Fetch inventory API WAXPEER.."
 			end
 		when "market_csgo"
 			headers = { key: @steam_account.market_csgo_api_key }
@@ -42,7 +42,7 @@ class SellableInventoryUpdationService < ApplicationService
 					tradeable_inventory_to_save = inventory_response["items"].select { |item| item["market_price"] > 0  }
 				end
 			rescue
-				puts "Something went wrong with Fetch inventory API Market.CSGO.. retrying in 2 minutes"
+				puts "Something went wrong with Fetch inventory API Market.CSGO.."
 			end
 		end
 	end
