@@ -19,11 +19,15 @@ class SteamAccountsController < ApplicationController
         base_url = ENV['NODE_TOGGLE_SERVICE_URL']
         url = "#{base_url}/toggleStatusService"
         params = { id: @steam_account.id }
-        response = HTTParty.post(url, query: params)
-        if response['success'] == 'true'
-          response_message.present? ? flash[:alert] = "Steam Account Successfully created but " + response_message : flash[:notice] = 'Steam Account Successfully created.'
-        else
-          flash[:alert] = response['message']
+        begin
+          response = HTTParty.post(url, query: params)
+          if response['success'] == 'true'
+            response_message.present? ? flash[:alert] = "Steam Account Successfully created but " + response_message : flash[:notice] = 'Steam Account Successfully created.'
+          else
+            flash[:alert] = response['message']
+          end
+        rescue => e
+          flash[:notice] = "Steam account is created but status sockets are not initialized."
         end
       else
         flash[:alert] = "Steam Account successfully created but " + response_message if response_message.present?
