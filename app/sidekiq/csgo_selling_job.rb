@@ -1,6 +1,6 @@
 class CsgoSellingJob
     include Sidekiq::Job
-    sidekiq_options queue: 'csgoempire_selling', retry: false
+    sidekiq_options retry: false
     
     def perform(*steam_account_id)
         p "<===========CSGOEmpire Selling Job started ===================>"
