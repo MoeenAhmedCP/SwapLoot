@@ -78,8 +78,18 @@
 
     // Activate the initial or stored active tab
     deactivateTabs();
-    tabButtons[activeTabIndex].classList.add("active");
-    tabContents[activeTabIndex].classList.remove("hidden");
+    if (tabButtons.length > 0 && tabContents.length > 0) {
+      // Check if there are tabs and contents available
+      if (activeTabIndex >= 0 && activeTabIndex < tabButtons.length) {
+        // Ensure activeTabIndex is within bounds
+        tabButtons[activeTabIndex].classList.add("active");
+        tabContents[activeTabIndex].classList.remove("hidden");
+      } else {
+        // If activeTabIndex is out of bounds, default to the first tab
+        tabButtons[0].classList.add("active");
+        tabContents[0].classList.remove("hidden");
+      }
+    }
 
     tabButtons.forEach(function (button, index) {
       button.addEventListener("click", function () {
