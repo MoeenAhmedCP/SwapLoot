@@ -106,7 +106,7 @@ class MarketcsgoSellingService < ApplicationService
 
   def deposit_items_for_resale(items)
     batch_process_sale_item(items, true)
-    price_cutting_down_for_listed_items
+    price_cutting_down_for_listed_items if @steam_account.trade_services.market_csgo_trade_service.selling_status
   end
 
   def waxpeer_suggested_prices

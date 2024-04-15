@@ -51,10 +51,10 @@ class TradeServicesController < ApplicationController
         @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
         flash[:notice] = "Waxpeer Selling service started."
       else
-        RemoveWaxpeerItemsFromListingJob.perform_async(steam_account.id)
         delete_enqueued_job(@trade_service&.price_cutting_job_id) if @trade_service&.price_cutting_job_id 
         delete_enqueued_job(@trade_service&.selling_job_id) if @trade_service&.selling_job_id
         @trade_service.update(selling_job_id: nil, price_cutting_job_id: nil) if @trade_service&.price_cutting_job_id && @trade_service&.selling_job_id
+        RemoveWaxpeerItemsFromListingJob.perform_async(steam_account.id)
         flash[:notice] = "Waxpeer Selling service stopped."
       end
     when "market_csgo"

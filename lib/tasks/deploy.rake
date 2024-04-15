@@ -6,6 +6,7 @@ namespace :deploy do
     Sidekiq::ScheduledSet.new.clear
     Sidekiq::RetrySet.new.clear
     Sidekiq::DeadSet.new.clear
+    Sidekiq.redis(&:flushall)
     TradeService.update_all(selling_status: false)
     TradeService.update_all(buying_status: false)
     TradeService.update_all(selling_job_id: false)
