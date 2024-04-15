@@ -22,7 +22,7 @@ class SteamAccountsController < ApplicationController
         begin
           response = HTTParty.post(url, query: params)
           if response['success'] == 'true'
-            response_message.present? ? flash[:alert] = "Steam Account Successfully created but " + response_message : flash[:notice] = 'Steam Account Successfully created.'
+            response_message.present? ? flash[:alert] = "Steam Account Successfully created but " + response_message + "Please Attach your MA File." : flash[:notice] = 'Steam Account Successfully created. Please Attach your MA File.'
           else
             flash[:alert] = response['message']
           end
@@ -30,11 +30,8 @@ class SteamAccountsController < ApplicationController
           flash[:notice] = "Steam account is created but status sockets are not initialized."
         end
       else
-				ActionCable.server.broadcast("flash_messages_channel_#{@steam_account.user.id}", { 
-          message: "You need to attach MA file in order to automate trade offer and get sales
-                  enabled on the marketCSGO and Waxpeer."
-        })
-        flash[:alert] = "Steam Account successfully created but " + response_message if response_message.present?
+        flash[:alert] = "Steam Account successfully created but " + response_message + "You need to attach MA file in order to automate trade offer and get sales
+        enabled on the marketCSGO and Waxpeer." if response_message.present?
       end
       redirect_to steam_accounts_path
     else
