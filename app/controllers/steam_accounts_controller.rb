@@ -30,6 +30,10 @@ class SteamAccountsController < ApplicationController
           flash[:notice] = "Steam account is created but status sockets are not initialized."
         end
       else
+				ActionCable.server.broadcast("flash_messages_channel_#{@steam_account.user.id}", { 
+          message: "You need to attach MA file in order to automate trade offer and get sales
+                  enabled on the marketCSGO and Waxpeer."
+        })
         flash[:alert] = "Steam Account successfully created but " + response_message if response_message.present?
       end
       redirect_to steam_accounts_path

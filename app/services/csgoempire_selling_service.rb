@@ -101,6 +101,7 @@ class CsgoempireSellingService < ApplicationService
 
   # fucntion to get active trades and prepare items which are ready for price cutting
   def price_cutting_down_for_listed_items
+    puts "CSGOEmpire Price Cutting Started.."
     response = fetch_active_trades
     if response['success'] == false
       report_api_error(response, [self&.class&.name, __method__.to_s])
@@ -264,7 +265,7 @@ class CsgoempireSellingService < ApplicationService
   # Function to List Items again for resale after price cutting algorithm
   def deposit_items_for_resale(items)
     batch_process_sale_item(items)
-    price_cutting_down_for_listed_items
+    price_cutting_down_for_listed_items if @steam_account.trade_services.csgoempire_trade_service.selling_status
   end
 
   # function to fetch matching items between Price Empire API data and Inventory Data

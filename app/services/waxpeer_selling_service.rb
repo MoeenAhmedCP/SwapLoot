@@ -131,14 +131,17 @@ class WaxpeerSellingService < ApplicationService
 					SellableInventory.find_by(item_id: item["item_id"], market_type: "waxpeer").update(listed_for_sale: true)
         end
         result = JSON.parse(response.body)
+				# Handle rate limiting (One Request can list 100 items and rate limit is 2 requests per 120 seconds for each item_id)
+				sleep(2) # Sleep for 2 seconds between each batch
+				waxpeer_price_cutting if @steam_account.trade_services.waxpeer_trade_service.selling_status
       else
-        report_api_error(response, [self&.class&.name, __method__.to_s])
+				price_cutting_job_id = WaxpeerPriceCuttingJob.perform_in(@steam_account.selling_filters.waxpeer_filter.undercutting_interval.minutes, @steam_account.id)
+				@steam_account.trade_services.waxpeer_trade_service.update(price_cutting_job_id: price_cutting_job_id)
+				ActionCable.server.broadcast("flash_messages_channel_#{@steam_account.user.id}", { message: "#{response["msg"]} for #{@steam_account.unique_name.capitalize} in Waxpeer", type: "Waxpeer Selling"})
+        report_api_error(response, [self&.class&.name, __method__.to_s]) # Todo (Remove these line for no error logging)
         result = API_FAILED
       end
-      # Handle rate limiting (One Request can list 100 items and rate limit is 2 requests per 120 seconds for each item_id)
-      sleep(2) # Sleep for 2 seconds between each batch
     end
-		waxpeer_price_cutting
   end
 	
 	def find_matching_data
@@ -256,6 +259,7 @@ class WaxpeerSellingService < ApplicationService
 				end
 				result = JSON.parse(response.body)
 			else
+				ActionCable.server.broadcast("flash_messages_channel_#{@steam_account.user.id}", { message: "#{response["msg"]} for #{@steam_account.unique_name.capitalize} in Waxpeer", type: "Waxpeer Selling"})
 				report_api_error(response, [self&.class&.name, __method__.to_s])
 				result = API_FAILED
 			end
