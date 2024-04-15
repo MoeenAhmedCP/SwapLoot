@@ -125,7 +125,7 @@ class WaxpeerSellingService < ApplicationService
     items.each_slice(50) do |batch|
       batch_hash = {"items" => batch}
       response = HTTParty.post(WAXPEER_BASE_URL + '/edit-items', query: headers, body: JSON.generate(batch_hash))
-      if response.code == SUCCESS_CODE
+      if response.code == SUCCESS_CODE && response["success"]
         batch.each do |item|
           puts "Price Updated for Item: #{item["market_name"]} with ID: #{item["item_id"]}"
 					SellableInventory.find_by(item_id: item["item_id"], market_type: "waxpeer").update(listed_for_sale: true)
@@ -249,7 +249,7 @@ class WaxpeerSellingService < ApplicationService
 				body: batch_hash.to_json,
 				headers: { 'Content-Type' => 'application/json' }
 			)
-			if response.code == SUCCESS_CODE
+			if response.code == SUCCESS_CODE && response["success"]
 				batch.each do |item|
 					puts "Item: #{item["market_name"]} with ID: #{item["item_id"]} is Listed for sale successfully."
 					SellableInventory.find_by(item_id: item["item_id"], market_type: "waxpeer").update(listed_for_sale: true)
