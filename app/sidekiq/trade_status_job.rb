@@ -43,7 +43,7 @@ class TradeStatusJob
               end
             end
             if item["type"] == "withdrawal"
-              if item['data']['status_message'] == 'Sent'
+              if item['data']['status_message'] == 'Sending'
                 SentReceivedItem.create(item_id: item['data']['item_id'], trade_offer_id: item['data']['tradeoffer_id'], market_name: item['data']['item']['market_name'], trade_type: 1)
               end
               if item['data']['status_message'] == 'Completed'
