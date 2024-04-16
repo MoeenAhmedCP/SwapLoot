@@ -62,7 +62,9 @@ class MarketcsgoSellingService < ApplicationService
   def price_cutting_down_for_listed_items
     response = fetch_item_listed_for_sale_market_csgo
     if response.empty?
-      report_api_error(response, [self&.class&.name, __method__.to_s])
+      report_api_error("No Items avaibale for price cutting in Market.CSGO", [self&.class&.name, __method__.to_s])
+      price_cutting_job_id = MarketcsgoPriceCuttingJob.perform_in(@steam_account.selling_filters.find_by(market_type: "market_csgo").undercutting_interval.minutes, @steam_account.id)
+      @steam_account.trade_services.market_csgo_trade_service.update(price_cutting_job_id: price_cutting_job_id)
     else
       items_for_resale = []
       response.each do |item|
