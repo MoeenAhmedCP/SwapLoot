@@ -6,6 +6,6 @@ class ServicesController < ApplicationController
   private
 
   def set_steam_account
-    @steam_accounts = current_user.steam_accounts.where(valid_account: true)
+    @steam_accounts = current_user.steam_accounts.where(valid_account: true).order(created_at: :asc)
   end
 end
