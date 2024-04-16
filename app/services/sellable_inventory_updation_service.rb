@@ -15,7 +15,7 @@ class SellableInventoryUpdationService < ApplicationService
 				if inventory_response['success'] == false
 					report_api_error(inventory_response, [self&.class&.name, __method__.to_s]) 
 				else
-					tradeable_inventory_to_save = inventory_response["data"].select { |item| item["market_value"] != -1 && item["tradable"] == true && item["tradelock"] == false }
+					tradeable_inventory_to_save = inventory_response["data"].select { |item| item["market_value"] != -1 && item["tradable"] == true && item["tradelock"] == false } unless item["invalid"].present?
 				end
 			rescue
 				puts "Something went wrong with Fetch inventory API CSGOEmpire.."

@@ -10,6 +10,20 @@ class SellableInventory < ApplicationRecord
   scope :csgoempire_inventory, -> {where(market_type: "csgoempire")}
   scope :market_csgo_inventory, -> {where(market_type: "market_csgo")}
 
+  def self.csgoempire_steam_inventories
+    where(market_type: "csgoempire")
+  end
+
+  def self.waxpeer_steam_inventories
+    where(market_type: "waxpeer")
+  end
+
+  def self.market_csgo_steam_inventories
+    where(market_type: "market_csgo")
+  end
+
+
+
   def self.ransackable_attributes(auth_object = nil)
     ["item_id", "market_name"]
   end
