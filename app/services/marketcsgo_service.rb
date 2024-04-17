@@ -37,7 +37,6 @@ class MarketcsgoService < ApplicationService
       response_data = []
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.market_csgo_api_key.blank?
-        
         response = self.class.get(MARKET_CSGO_BASE_URL + '/get-money', query: site_params(steam_account))
         response_hash = {
           account_id: steam_account.id,
@@ -63,7 +62,6 @@ class MarketcsgoService < ApplicationService
       @current_user.steam_accounts.each do |steam_account|
         next if steam_account&.market_csgo_api_key.blank?
         begin
-
           response = self.class.get(MARKET_CSGO_BASE_URL + '/my-inventory', query: site_params(steam_account))
           # MissingItemsService.new(@current_user).missing_items(response)
           # save_inventory(response, steam_account) if response['success'] == true
@@ -81,20 +79,23 @@ class MarketcsgoService < ApplicationService
     }
   end
 
-  def save_sold_items(data, steam_account)
+  def self.save_sold_items(data, steam_account)
     data.each do |item|
       if item['event'] == 'sell' && item['stage'] == '2'
-        sold_item = SoldItem.find_by(item_id: id)
+        sold_item = SoldItem.find_by(item_id: item['item_id'])
         inventory_item = SellableInventory.find_by(item_id: item['item_id'])
         bought_price = inventory_item.present? ? inventory_item.market_price.to_f : 0
-        SoldItem.create(item_id: item['item_id'], item_name: item['market_hash_name'], bought_price: (bought_price / 100.to_f), sold_price: (item['received'] / 1000.to_f), date: Date.today.strftime("%d-%m-%Y"), steam_account: steam_account) unless sold_item.present?
+        SoldItem.create(item_id: item['item_id'], item_name: item['market_hash_name'], bought_price: (bought_price / 100.to_f), sold_price: (item['received'].to_i / 1000.to_f), date: Date.today.strftime("%d-%m-%Y"), steam_account: steam_account) unless sold_item.present?
       end
     end
   end
 
   def self.fetch_sold_item_market_csgo(steam_account)
     begin
-      response = self.class.get(MARKET_CSGO_BASE_URL + '/history', query: sold_item_params(steam_account))
+      response = HTTParty.get(MARKET_CSGO_BASE_URL + '/history', query: { 
+        key: "#{steam_account&.market_csgo_api_key}",
+        date: Date.today.strftime("%d-%m-%Y")
+      })
       if response['success'] == true
         save_sold_items(response['data'], steam_account) if response['data'].present?
       end
