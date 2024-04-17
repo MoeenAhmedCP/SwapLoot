@@ -27,6 +27,7 @@ class InventoriesController < ApplicationController
   private
 
   def fetch_inventory
-    Inventory.fetch_inventory_for_user(current_user)
+    # Inventory.fetch_inventory_for_user(current_user)
+    SellableInventoryUpdationJob.perform_sync
   end
 end
