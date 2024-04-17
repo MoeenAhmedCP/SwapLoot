@@ -202,7 +202,7 @@ class CsgoempireService < ApplicationService
             steam_id: steam_account&.steam_id,
             market_name: item["name"],
             market_price: item_price,
-            tradable: nil,
+            tradable: true,
             market_type: type
           }
         end
@@ -222,7 +222,7 @@ class CsgoempireService < ApplicationService
             steam_id: steam_account&.steam_id,
             market_name: item["market_hash_name"],
             market_price: item_price,
-            tradable: nil,
+            tradable: true,
             market_type: type
           }
         end
