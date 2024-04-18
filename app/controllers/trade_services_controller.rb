@@ -38,10 +38,10 @@ class TradeServicesController < ApplicationController
         @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
         flash[:notice] = "CSGOEmpire Selling service started."
       else
-        RemoveItemListedForSaleJob.perform_async(steam_account.id)
         delete_enqueued_job(@trade_service&.price_cutting_job_id) if @trade_service&.price_cutting_job_id 
         delete_enqueued_job(@trade_service&.selling_job_id) if @trade_service&.selling_job_id
         @trade_service.update(selling_job_id: nil, price_cutting_job_id: nil) if @trade_service&.price_cutting_job_id && @trade_service&.selling_job_id
+        RemoveItemListedForSaleJob.perform_async(steam_account.id)
         flash[:notice] = "CSGOEmpire Selling service stopped."
       end
     when "waxpeer"
@@ -64,10 +64,10 @@ class TradeServicesController < ApplicationController
         @trade_service.update(selling_job_id: selling_job_id, price_cutting_job_id: price_cutting_job_id)
         flash[:notice] = "Market CSGO Selling service started."
       else
-        RemoveItemListedForSaleMarketcsgo.perform_async(steam_account.id)
         delete_enqueued_job(@trade_service&.price_cutting_job_id) if @trade_service&.price_cutting_job_id 
         delete_enqueued_job(@trade_service&.selling_job_id) if @trade_service&.selling_job_id
         @trade_service.update(selling_job_id: nil, price_cutting_job_id: nil) if @trade_service&.price_cutting_job_id && @trade_service&.selling_job_id
+        RemoveItemListedForSaleMarketcsgo.perform_async(steam_account.id)
         flash[:notice] = "Market CSGO Selling service stopped."
       end
     end
