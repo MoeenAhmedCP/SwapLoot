@@ -29,16 +29,16 @@ export default class extends Controller {
         received(data) {
           // Called when there's incoming data on the websocket for this channel
           if(data.item_id){
-            $.ajax({
-              url: `/home/reload_item_listed_for_sale`,
-              method: 'GET',
-              type: 'JS',
-              data: {
-                item_id: data.item_id,
-                steam_account_id: data.steam_account_id,
-                listed_item: "true"
-              },
-            });
+            // $.ajax({
+            //   url: `/home/reload_item_listed_for_sale`,
+            //   method: 'GET',
+            //   type: 'JS',
+            //   data: {
+            //     item_id: data.item_id,
+            //     steam_account_id: data.steam_account_id,
+            //     listed_item: "true"
+            //   },
+            // });
           }else if(data.type){
             $('#toast-danger').removeClass('hidden').find('.error_message').text(data.message);
             setTimeout(function() {
