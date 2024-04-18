@@ -22,16 +22,13 @@ class TradeStatusJob
                 listed_item = ListedItem.find_by(item_id: item['data']['item_id'])
                 listed_item.destroy if listed_item.present?
               end
-              if item['data']['status_message'] == 'Sending'
-                SentReceivedItem.create(item_id: item['data']['item_id'], trade_offer_id: item['data']['tradeoffer_id'], market_name: item['data']['item']['market_name'], trade_type: 0)
+              if item['data']['status_message'] == 'Sending' || item['data']['status_message'] == 'Confirming'
+                sent_item = SentReceivedItem.find_by(trade_offer_id: item['data']['id'])
+                SentReceivedItem.create(item_id: item['data']['item_id'], trade_offer_id: item['data']['id'], market_name: item['data']['item']['market_name'], trade_type: 0) unless sent_item.present?
               end
               if item['data']['status_message'] == 'Sent'
                 SendNotificationsJob.perform_async(user.id, item, "Sold", steam_account.id, "csgoempire")
                 begin
-                  HTTParty.post("https://csgoempire.com/api/v2/trading/deposit/#{item['data']['tradeoffer_id']}/sent", headers: {
-                    'Authorization' => "Bearer #{steam_account.csgoempire_api_key}",
-                    'Content-Type' => 'application/json'
-                  })
                   listed_item = ListedItem.find_by(item_id: item['data']['item_id'])
                   listed_item.destroy if listed_item.present?
                   ActionCable.server.broadcast("flash_messages_channel_#{user.id}", { message: 'Item listed for sale', item_id: item['data']['item_id'], steam_account_id: steam_account.id })
@@ -43,8 +40,9 @@ class TradeStatusJob
               end
             end
             if item["type"] == "withdrawal"
-              if item['data']['status_message'] == 'Sending'
-                SentReceivedItem.create(item_id: item['data']['item_id'], trade_offer_id: item['data']['tradeoffer_id'], market_name: item['data']['item']['market_name'], trade_type: 1)
+              if item['data']['status_message'] == 'Sending' || item['data']['status_message'] == 'Confirming'
+                bought_item = SentReceivedItem.find_by(trade_offer_id: item['data']['tradeoffer_id'])
+                SentReceivedItem.create(item_id: item['data']['item_id'], trade_offer_id: item['data']['tradeoffer_id'], market_name: item['data']['item']['market_name'], trade_type: 1) unless bought_item.present?
               end
               if item['data']['status_message'] == 'Completed'
                 SendNotificationsJob.perform_async(user.id, item, "Bought", steam_account.id, "csgoempire")
