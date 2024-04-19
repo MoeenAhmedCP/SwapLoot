@@ -1552,13 +1552,13 @@
 
 .loginDiv{
   background-color: #f6f8fa;
-  border-color: #d0d7deb3;
+  border-color: hsla(210, 18%, 84%, 0.702);
 }
 
-/* .loginDiv{
-  background-color: #000;
+.dark .loginDiv{
+  background-color: rgb(31 41 55);
   border-color: #d0d7deb3;
-} */
+}
 
 .inputStyle{
   border-color: #d0d7deb3;
@@ -1573,6 +1573,10 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.dark .signin-footer{
+  background-color: rgb(31 41 55);
 }
 
 .custom-form {
