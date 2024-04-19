@@ -12,7 +12,8 @@
 # Fahad
 # Muhammad Ahmed
 
-User.create(email: "muhammad.ahmed@cloudpacer.com", password: "swaploot123!")
+User.create(email: "muhammad.ahmed@cloudpacer.com", password: "swaploot123!", active: true)
+User.create(email: "testing@gmail.com", password: "testing@gmail.com", active: true)
 # User.create(email: "daud@swaploot.com", password: "swaploot123!")
 # User.create(email: "saad@swaploot.com", password: "swaploot123!")
 # User.create(email: "fahad@swaploot.com", password: "swaploot123!")
