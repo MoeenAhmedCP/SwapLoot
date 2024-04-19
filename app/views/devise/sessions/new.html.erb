@@ -1,14 +1,19 @@
 <div data-controller="data" class= "flex flex-row items-start justify-center dark:bg-slate-950 h-[100vh]" >
 <section>
   <div class="flex flex-col items-center justify-center" style="margin-top:32px">
-    <div class="flex flex-shrink-0 items-center mb-5">
+    <div class="flex">
+      <div class="flex flex-shrink-0 items-center mb-5">
         <h1 class="text-white text-xl bg-blue rounded px-1 font-bold dark:text-white">Master</h1>
         <h1 class="text-blue text-xl font-bold dark:text-white">Panel</h1>
       </div>
-     <h1 class="text-xl leading-tight tracking-tight text-gray-900  mb-6 dark:text-white">
-          Sign in to MasterPanel
-        </h1>
-
+    </div>
+      <h1 class="text-xl leading-tight tracking-tight text-gray-900  mb-6 dark:text-white">
+        Sign in to MasterPanel
+      </h1>
+      <div class="dark-mode p-5 absolute top-0 right-0 mr-10">
+        <i class="fas fa-sun text-2xl cursor-pointer" onclick="toggleDarkMode()"></i> <!-- Sun icon -->
+        <i class="fas fa-moon text-2xl cursor-pointer" onclick="toggleDarkMode()"></i> <!-- Moon icon -->
+      </div>
 
     <div class="loginDiv w-ful rounded-lg border md:mt-0 sm:max-w-md xl:p-0" style="width:288px;">
       <div class="p-4 dark:bg-gray">
@@ -33,7 +38,6 @@
             <%= f.submit "Sign in", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm p-1.5 text-center" %>
           </div>
         <% end %>
-       
       </div>
     </div>
 
@@ -41,7 +45,6 @@
          <p class="text-sm font-light text-gray dark:text-white">
           Don't have an account yet? <a href="/users/sign_up" class="font-medium text-blue dark:text-white hover:underline">Sign up</a>
         </p>
-
          <%= link_to "Forgot Password", "#", class: "text-blue dark:text-white underline text-xs", id: "forgot-password-link" %>
           <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-4 md:space-y-6 w-[100%]", id: "password-reset-form" }) do |f| %>
             <%= render "devise/shared/error_messages", resource: resource %>
@@ -54,25 +57,26 @@
             </div>
           <% end %>
     </div>
-
-  
   </div>
 </section>
 </div>
 
 <script>
+  $(document).ready(function () {
+    const forgotPasswordLink = document.getElementById("forgot-password-link");
+    const emailField = document.getElementById("email-field");
+    const submitButton = document.getElementById("submit-button");
 
-$(document).ready(function () {
-  const forgotPasswordLink = document.getElementById("forgot-password-link");
-  const emailField = document.getElementById("email-field");
-  const submitButton = document.getElementById("submit-button");
-
-  forgotPasswordLink.addEventListener("click", function (event) {
-    event.preventDefault();
-    emailField.classList.remove("hidden");
-    submitButton.classList.remove("hidden");
+    forgotPasswordLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      emailField.classList.remove("hidden");
+      submitButton.classList.remove("hidden");
+    });
   });
-});
 
-
+  function toggleDarkMode() {
+    const body = document.body;
+    const isDarkMode = body.classList.toggle('dark');
+    localStorage.setItem('darkMode', isDarkMode);
+  }
 </script>
