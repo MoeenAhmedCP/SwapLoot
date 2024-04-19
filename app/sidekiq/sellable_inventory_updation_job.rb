@@ -4,7 +4,7 @@ class SellableInventoryUpdationJob
 	
 	def perform
 		p "<============= Sellable Inventory Updation Database Job started... ================>"
-		SellableInventory.destroy_all
+		SellableInventory.delete_all
 		@users = User.all
 		@users.each do |user|
 			user.steam_accounts.each do |steam_account|
