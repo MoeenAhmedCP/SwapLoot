@@ -1,4 +1,4 @@
-<div data-controller="data" class= "flex flex-row items-start justify-center dark:bg-black h-[100vh]" >
+<div data-controller="data" class= "flex flex-row items-start justify-center dark:bg-slate-950 h-[100vh]" >
 <section>
   <div class="flex flex-col items-center justify-center" style="margin-top:32px">
     <div class="flex flex-shrink-0 items-center mb-5">
@@ -9,18 +9,17 @@
           Sign in to MasterPanel
         </h1>
 
-        <%# <button onclick="toggleDarkMode()">Toggle Dark Mode</button> %>
 
     <div class="loginDiv w-ful rounded-lg border md:mt-0 sm:max-w-md xl:p-0" style="width:288px;">
-      <div class="p-4">
+      <div class="p-4 dark:bg-gray">
         <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4 md:space-y-6" }) do |f| %>
           <div style="margin:0px 0px 20px; 0px">
             <%= f.label :email, class: "block mb-2 text-sm text-gray-900 dark:text-white" %>
-            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "inputStyle bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", placeholder: "name@company.com", required: true %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "inputStyle bg-gray-50 border dark:bg-slate-950 dark:text-white  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", required: true %>
           </div>
           <div style="margin:0px 0px 10px; 0px">
             <%= f.label :password, class: "block mb-2 text-sm text-gray-900 dark:text-white" %>
-            <%= f.password_field :password, autocomplete: "current-password", class: "inputStyle bg-gray-50 border text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", placeholder: "••••••••", required: true %>
+            <%= f.password_field :password, autocomplete: "current-password", class: "inputStyle bg-gray-50 border dark:bg-slate-950 dark:text-white text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", required: true %>
           </div>
           <% if devise_mapping.rememberable? %>
             <div style="margin:0px 0px 15px; 0px">
@@ -43,12 +42,12 @@
           Don't have an account yet? <a href="/users/sign_up" class="font-medium text-blue dark:text-white hover:underline">Sign up</a>
         </p>
 
-         <%= link_to "Forgot Password", "#", class: "text-blue dark:text-white underline text-sm", id: "forgot-password-link" %>
+         <%= link_to "Forgot Password", "#", class: "text-blue dark:text-white underline text-xs", id: "forgot-password-link" %>
           <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-4 md:space-y-6 w-[100%]", id: "password-reset-form" }) do |f| %>
             <%= render "devise/shared/error_messages", resource: resource %>
             <div class="field hidden" id="email-field">
               <%= f.label :email, class: "block mb-2 text-sm  text-gray-900 dark:text-white" %>
-              <%= f.email_field :email,  autofocus: true, autocomplete: "email", id: "reset-password-email", class: "inputStyle bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", placeholder: "name@company.com" %>
+              <%= f.email_field :email,  autofocus: true, autocomplete: "email", id: "reset-password-email", class: "inputStyle bg-gray-50 border dark:bg-slate-950 dark:text-white text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", placeholder: "youremail@example.com" %>
             </div>
             <div class="actions hidden" id="submit-button">
               <%= f.submit "Reset", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm p-1.5 text-center" %>
