@@ -22,8 +22,6 @@ class SellableInventory < ApplicationRecord
     where(market_type: "market_csgo")
   end
 
-
-
   def self.ransackable_attributes(auth_object = nil)
     ["item_id", "market_name"]
   end

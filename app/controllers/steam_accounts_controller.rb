@@ -1,7 +1,7 @@
 class SteamAccountsController < ApplicationController
   require 'httparty'
   before_action :set_steam_account, only: %i[edit update destroy show_api_keys edit_api_keys read_ma_file delete_ma_file]
-  after_action :set_steam_account_filters, only: %i[create update]
+  after_action :set_steam_account_filters, :update_sellable_inventory, only: %i[create update]
   
   def index
     @steam_accounts = SteamAccount.where(user_id: current_user.id).includes(:proxy).paginate(page: params[:page], per_page: 10)
@@ -135,6 +135,11 @@ class SteamAccountsController < ApplicationController
   end
 
   private
+
+  def update_sellable_inventory
+    debugger
+    SellableInventoryUpdationJob.fetch_sellable_inventory(@steam_account)
+  end
 
   def remove_ma_file_data
     @steam_account.ma_file.purge
