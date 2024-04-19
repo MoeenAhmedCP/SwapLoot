@@ -53,6 +53,7 @@ class SteamAccountsController < ApplicationController
 
   def destroy
     logout_steam
+    destroy_inventory(@steam_account)
     if @steam_account.destroy
       redirect_to steam_accounts_path, notice: 'Steam account was successfully deleted.'
     end
@@ -121,6 +122,10 @@ class SteamAccountsController < ApplicationController
     redirect_to steam_accounts_path
   end
 
+  def destroy_inventory(steam_account)
+    SellableInventory.where(steam_id: steam_account.steam_id).destroy_all
+  end
+
   def logout_steam
     if @steam_account.valid_account
       begin
@@ -137,7 +142,6 @@ class SteamAccountsController < ApplicationController
   private
 
   def update_sellable_inventory
-    debugger
     SellableInventoryUpdationJob.fetch_sellable_inventory(@steam_account)
   end
 
