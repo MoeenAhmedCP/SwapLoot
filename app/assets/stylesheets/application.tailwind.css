@@ -1550,3 +1550,32 @@
 
 /* ===================== */
 
+.loginDiv{
+  background-color: #f6f8fa;
+  border-color: #d0d7deb3;
+}
+
+/* .loginDiv{
+  background-color: #000;
+  border-color: #d0d7deb3;
+} */
+
+.inputStyle{
+  border-color: #d0d7deb3;
+}
+
+.signin-footer{
+  border-color: #d0d7deb3;
+  background-color: transparent;
+  padding: 16px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.custom-form {
+  font-size: 12px;
+  color: red;
+}

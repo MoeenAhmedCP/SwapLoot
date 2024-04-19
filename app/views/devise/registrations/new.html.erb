@@ -1,39 +1,47 @@
-<div class= "bg-image" style="background-image: radial-gradient(circle, lightblue, aliceblue, black);">
+<div class= "flex flex-row items-start justify-center dark:bg-grayExtraDark">
 <section>
-  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-      <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0" style="width:400px;">
-          <div class="p-6 space-y-4 md:space-y-6 sm:p-8"> 
-              <h1 class="text-xl font-bold leading-tight tracking-tight text-grayExtraDark md:text-2xl">
+  <div class="flex flex-col items-center justify-center" style="margin-top:32px">
+   <div class="flex flex-shrink-0 items-center mb-5">
+        <h1 class="text-white text-xl bg-blue rounded px-1 font-bold dark:text-white">Master</h1>
+        <h1 class="text-blue text-xl font-bold dark:text-white">Panel</h1>
+      </div>
+
+       <h1 class="text-xl leading-tight tracking-tight text-gray-900  mb-6">
                   Create an account
               </h1>
-              <%= form_for(resource, as: resource_name, url: registration_path(resource_name), class: "space-y-4 md:space-y-6") do |f| %>
+
+      <div class="loginDiv w-ful rounded-lg border md:mt-0 sm:max-w-md xl:p-0" style="width:288px;">
+          <div class="p-4"> 
+             
+              <%= form_for(resource, as: resource_name, url: registration_path(resource_name), class: "space-y-4 md:space-y-6 " ) do |f| %>
                 <%= render "devise/shared/error_messages", resource: resource %>
-                  <div>
-                      <%= f.label :email, class: "block text-sm font-medium text-grayExtraDark mb-1" %>
-                      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "bg-grayLight border border-gray text-grayExtraDark sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 mb-3", placeholder: "name@company.com", required: true %>
+                  <div style="margin:0px 0px 20px; 0px">
+                      <%= f.label :email, class: "block mb-2 text-sm text-gray-900" %>
+                      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "inputStyle bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", placeholder: "name@company.com", required: true %>
                   </div>
-                  <div>
-                        <%= f.label :password, class: "block text-sm font-medium text-grayExtraDark mb-1" %>
-                        <% if @minimum_password_length %>
-                        <em>(<%= @minimum_password_length %> characters minimum)</em>
-                        <% end %>
-                        <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••", class: "bg-grayLight border border-gray text-grayExtraDark sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 mb-3", required: true %>
+                  <div style="margin:0px 0px 10px; 0px">
+                        <%= f.label :password, class: "block mb-2 text-sm text-gray-900" %>
+                        <%# <% if @minimum_password_length %>
+                        <%# <em>(<%= @minimum_password_length %>
+                         <%# characters minimum)</em> %>
+                        <%# <% end %> 
+                        <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••", class: "inputStyle bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", required: true %>
                   </div>
-                  <div>
-                        <%= f.label :password_confirmation, class: "block text-sm font-medium text-grayExtraDark mb-1" %>
-                        <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "••••••••", class: "bg-grayLight border border-gray text-grayExtraDark sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 mb-3", required: true %>
+                  <div style="margin:0px 0px 10px; 0px">
+                        <%= f.label :password_confirmation, class: "block mb-2 text-sm text-gray-900" %>
+                        <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "••••••••", class: "inputStyle bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", required: true %>
                   </div>
-                  <div class="flex items-start">
+                  <div class="flex items-center" style="margin:0px 0px 10px; 0px">
                       <div class="flex items-center h-5">
                         <input id="terms" aria-describedby="terms" type="checkbox" class="w-4 h-4 border border-gray rounded bg-grayLight focus:ring-3 focus:ring-primary-300" required>
                       </div>
-                      <div class="ml-3 text-sm">
-                        <label for="terms" class="font-light text-gray">I accept the <a class="font-medium text-blue hover:underline" href="#">Terms and Conditions</a></label>
+                      <div class="ml-3">
+                        <label for="terms" class="font-light text-gray" style="font-size:14px">I accept the <a class="font-medium text-blue hover:underline"  style="font-size:13px" href="#">Terms and Conditions</a></label>
                       </div>
                   </div>
-                  <%= f.submit "Sign up", class: "w-full my-5 text-white bg-blue hover:bg-blue focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
-                  <p class="text-sm font-light text-gray">
-                      Already have an account? <a href="/users/sign_in" class="font-medium text-blue hover:underline"><b>Login here<b></a>
+                  <%= f.submit "Sign up", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm p-1.5 text-center" %>
+                  <p class="text-sm font-light text-gray" style="margin:15px 0px 0px; 0px">
+                      Already have an account? <a href="/users/sign_in" class="font-medium text-blue hover:underline">Login here</a>
                   </p>
               <% end %>
           </div>
