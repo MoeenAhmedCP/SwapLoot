@@ -842,6 +842,129 @@
    }
   
 
+
+/* ========================= */
+
+
+#balancePartialDataTable_filter input::placeholder {
+  font-size:14px;
+  color: rgb(156, 163, 175); 
+}
+
+#balancePartialDataTable_filter input {
+  width:300px !important;
+  border: 1px solid rgb(156, 163, 175); 
+  border-radius: 4px; 
+  padding: 5px; 
+}
+
+#balancePartialDataTable_paginate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffff; 
+  margin-top: 10px; 
+}
+
+#balancePartialDataTable_paginate .paginate_button {
+  margin: 0 5px; 
+  padding: 2px 10px;
+  font-size: 14px; 
+  background-color: transparent; 
+  color: rgb(75, 85, 99) !important; 
+  border: 1px solid rgb(37, 99, 235);
+  border-radius: 4px; 
+}
+
+#balancePartialDataTable_paginate .paginate_button.current {
+  background-color: transparent ; 
+  color: #000 !important; 
+  border: 1px solid #095b9e;
+}
+
+
+#balancePartialDataTable_paginate .paginate_button.current:hover {
+  background-color: transparent ; 
+  color: #000 !important; 
+  border: 1px solid #095b9e; 
+}
+
+#balancePartialDataTable_paginate .paginate_button:hover {
+  color: #ffff !important; 
+  background-color: #095b9e; 
+  border: 1px solid #095b9e; 
+}
+
+#balancePartialDataTable_info {
+  font-size: 14px; 
+  color: rgb(75, 85, 99); 
+}
+
+.dark #balancePartialDataTable_filter input::placeholder {
+  /* Change placeholder color */
+  color: #ffff; /* Your desired placeholder color */
+}
+
+.dark #balancePartialDataTable_filter input {
+  /* Change search input border color */
+  border: 1px solid #ffff; /* Your desired search input border color */
+  border-radius: 4px; /* Adjust border radius as needed */
+  padding: 5px; /* Adjust padding as needed */
+  color:#ffff
+}
+
+/* Customize DataTables Pagination styles */
+.dark #balancePartialDataTable_paginate {
+  /* Add your custom styles here */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffff; 
+  margin-top: 10px; /* Adjust margin as needed */
+}
+
+.dark  #balancePartialDataTable_paginate .paginate_button {
+  margin: 0 5px; /* Adjust margin as needed */
+  padding: 2px 10px;
+  background-color: rgb(31, 41, 55); /* Your desired background color */
+  color: #ffff !important; /* Your desired text color */
+  border: 1px solid rgb(37, 99, 235); /* Your desired border color */
+  border-radius: 4px; /* Adjust border radius as needed */
+}
+
+ .dark #balancePartialDataTable_paginate .paginate_button.current {
+  /* Styles for the current/active page button */
+  background-color: transparent ; /* Your desired current background color */
+  color: #000 !important; /* Your desired current text color */
+  border: 1px solid #095b9e; /* Your desired current border color */
+}
+
+
+.dark #balancePartialDataTable_paginate .paginate_button:hover {
+  /* Styles for the pagination button on hover */
+  color: #ffff; 
+  background-color: #095b9e; /* Your desired hover background color */
+  border: 1px solid #095b9e; /* Your desired hover border color */
+}
+
+
+
+
+.dark #balancePartialDataTable_info {
+  /* Add your custom styles here */
+  font-size: 14px; /* Adjust font size as needed */
+  color: #fff; /* Your desired text color */
+}
+
+#balancePartialDataTable_paginate .ellipsis{
+  color:black 
+ }
+ 
+.dark #balancePartialDataTable_paginate .ellipsis{
+  color:#ffff 
+ }
+
+
  /* =============== */
 
 
@@ -1440,12 +1563,18 @@
 }
 
 .uploadModal{
-  width: 30%;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9;
 }
 
 /* Style for the modal content */
 .modal-content {
   text-align: center;
+  position: relative;
 }
 
 /* Style for the close button */
@@ -1493,4 +1622,87 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+
+/* #SellableInventoryTable */
+
+/* .dark  .page_info {
+  color:#fff !important;
+} */
+
+
+.dark .apple_pagination {
+  background: grayDark;
+  text-align: center;
+  padding: 1em;
+  cursor: default; }
+  .dark .apple_pagination a, .apple_pagination span {
+  padding: 0.2em 0.3em; }
+.apple_pagination .disabled {
+  color: #fff; }
+  .dark .apple_pagination .current {
+  background-color: #ffff;
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+  line-height: 1.5;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  border-radius: 1em;
+  text-shadow: rgba(255, 255, 255, 0.8) 1px 1px 1px; }
+  .dark .apple_pagination a {
+  text-decoration: none;
+  color: #ffff; }
+  .dark .apple_pagination a:hover, .apple_pagination a:focus {
+  text-decoration: underline; }
+  .dark .page_info{
+  color: #ffff; 
+}
+.dark .next_page, .previous_page{
+  border: 1px solid #ffff;
+  border-radius: 5px;
+  padding: 2px;
+  color: #ffff !important;
+}
+.dark .current{
+  color: #2564ec;
+  
+  background-color: #ffff !important;
+}
+
+/* ===================== */
+
+.loginDiv{
+  background-color: #f6f8fa;
+  border-color: hsla(210, 18%, 84%, 0.702);
+}
+
+.dark .loginDiv{
+  background-color: rgb(31 41 55);
+  border-color: #d0d7deb3;
+}
+
+.inputStyle{
+  border-color: #d0d7deb3;
+}
+
+.signin-footer{
+  border-color: #d0d7deb3;
+  background-color: transparent;
+  padding: 16px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.dark .signin-footer{
+  background-color: rgb(31 41 55);
+}
+
+.custom-form {
+  font-size: 12px;
+  color: red;
 }

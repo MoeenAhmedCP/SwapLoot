@@ -15,8 +15,11 @@ class SellableInventoryUpdationService < ApplicationService
 				if inventory_response['success'] == false
 					report_api_error(inventory_response, [self&.class&.name, __method__.to_s]) 
 				else
-					tradeable_inventory_to_save = inventory_response["data"].each do |item| 
-						item["market_value"] != -1 && item["tradable"] == true && item["tradelock"] == false unless item["invalid"].present?
+					tradeable_inventory_to_save = inventory_response["data"].select do |item|
+            item["market_value"] != -1 && 
+            item["tradable"] == true && 
+            item["tradelock"] == false &&
+            !item.key?("invalid")
 					end
 				end
 			rescue
