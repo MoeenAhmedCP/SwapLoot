@@ -1,64 +1,82 @@
-<div class= "bg-image flex flex-row items-center justify-center" style="background-image: radial-gradient(circle, lightblue, aliceblue, black);" >
+<div data-controller="data" class= "flex flex-row items-start justify-center dark:bg-slate-950 h-[100vh]" >
 <section>
-  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-    <div class="w-full bg-white rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0" style="width:400px;">
-      <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-          Sign in to your account
-        </h1>
+  <div class="flex flex-col items-center justify-center" style="margin-top:32px">
+    <div class="flex">
+      <div class="flex flex-shrink-0 items-center mb-5">
+        <h1 class="text-white text-xl bg-blue rounded px-1 font-bold dark:text-white">Master</h1>
+        <h1 class="text-blue text-xl font-bold dark:text-white">Panel</h1>
+      </div>
+    </div>
+      <h1 class="text-xl leading-tight tracking-tight text-gray-900  mb-6 dark:text-white">
+        Sign in to MasterPanel
+      </h1>
+      <div class="dark-mode p-5 absolute top-0 right-0 mr-10">
+        <i class="fas fa-sun text-2xl cursor-pointer" onclick="toggleDarkMode()"></i> <!-- Sun icon -->
+        <i class="fas fa-moon text-2xl cursor-pointer" onclick="toggleDarkMode()"></i> <!-- Moon icon -->
+      </div>
+
+    <div class="loginDiv w-ful rounded-lg border md:mt-0 sm:max-w-md xl:p-0" style="width:288px;">
+      <div class="p-4 dark:bg-gray">
         <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4 md:space-y-6" }) do |f| %>
-          <div class="mb-4">
-            <%= f.label :email, class: "block mb-2 text-sm font-medium text-gray-900" %>
-            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ", placeholder: "name@company.com", required: true %>
+          <div style="margin:0px 0px 20px; 0px">
+            <%= f.label :email, class: "block mb-2 text-sm text-gray-900 dark:text-white" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "inputStyle bg-gray-50 border dark:bg-slate-950 dark:text-white  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", required: true %>
           </div>
-          <div class="mb-4">
-            <%= f.label :password, class: "block mb-2 text-sm font-medium text-gray-900" %>
-            <%= f.password_field :password, autocomplete: "current-password", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ", placeholder: "••••••••", required: true %>
+          <div style="margin:0px 0px 10px; 0px">
+            <%= f.label :password, class: "block mb-2 text-sm text-gray-900 dark:text-white" %>
+            <%= f.password_field :password, autocomplete: "current-password", class: "inputStyle bg-gray-50 border dark:bg-slate-950 dark:text-white text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", required: true %>
           </div>
           <% if devise_mapping.rememberable? %>
-            <div class="mb-4">
+            <div style="margin:0px 0px 15px; 0px">
               <div class="flex items-center">
-                <%= f.check_box :remember_me, class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300" %>
-                <%= f.label :remember_me, class: "ml-3 text-sm text-gray-500" %>
+                <%= f.check_box :remember_me, class: "w-4 h-4 border border-gray-300 dark:border-white rounded bg-gray-50 focus:ring-3 focus:ring-primary-300" %>
+                <%= f.label :remember_me, class: "ml-3 text-sm text-gray-500 dark:text-white" %>
               </div>
             </div> 
           <% end %>
-          <div class="mb-4">
-            <%= f.submit "Sign in", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
+          <div style="margin:0px 0px 10px; 0px">
+            <%= f.submit "Sign in", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm p-1.5 text-center" %>
           </div>
         <% end %>
-        <p class="text-sm font-light text-gray ">
-          Don't have an account yet? <a href="/users/sign_up" class="font-medium text-blue hover:underline">Sign up</a>
-        </p>
+      </div>
+    </div>
 
-         <%= link_to "Forgot Password", "#", class: "text-blue underline", id: "forgot-password-link" %>
-          <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-4 md:space-y-6", id: "password-reset-form" }) do |f| %>
+    <div class="signin-footer w-ful rounded-lg border md:mt-0 sm:max-w-md xl:p-0" style="width:288px;">
+         <p class="text-sm font-light text-gray dark:text-white">
+          Don't have an account yet? <a href="/users/sign_up" class="font-medium text-blue dark:text-white hover:underline">Sign up</a>
+        </p>
+         <%= link_to "Forgot Password", "#", class: "text-blue dark:text-white underline text-xs", id: "forgot-password-link" %>
+          <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-4 md:space-y-6 w-[100%]", id: "password-reset-form" }) do |f| %>
             <%= render "devise/shared/error_messages", resource: resource %>
             <div class="field hidden" id="email-field">
-              <%= f.label :email, class: "block mb-2 text-sm font-medium text-gray-900" %>
-              <%= f.email_field :email,  autofocus: true, autocomplete: "email", id: "reset-password-email", class: "bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ", placeholder: "name@company.com" %>
+              <%= f.label :email, class: "block mb-2 text-sm  text-gray-900 dark:text-white" %>
+              <%= f.email_field :email,  autofocus: true, autocomplete: "email", id: "reset-password-email", class: "inputStyle bg-gray-50 border dark:bg-slate-950 dark:text-white text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-1.5 ", placeholder: "youremail@example.com" %>
             </div>
             <div class="actions hidden" id="submit-button">
-              <%= f.submit "Send me reset password instructions", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
+              <%= f.submit "Reset", class: "w-full text-white bg-blue hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm p-1.5 text-center" %>
             </div>
           <% end %>
-      </div>
     </div>
   </div>
 </section>
 </div>
 
 <script>
+  $(document).ready(function () {
+    const forgotPasswordLink = document.getElementById("forgot-password-link");
+    const emailField = document.getElementById("email-field");
+    const submitButton = document.getElementById("submit-button");
 
-$(document).ready(function () {
-  const forgotPasswordLink = document.getElementById("forgot-password-link");
-  const emailField = document.getElementById("email-field");
-  const submitButton = document.getElementById("submit-button");
-
-  forgotPasswordLink.addEventListener("click", function (event) {
-    event.preventDefault();
-    emailField.classList.remove("hidden");
-    submitButton.classList.remove("hidden");
+    forgotPasswordLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      emailField.classList.remove("hidden");
+      submitButton.classList.remove("hidden");
+    });
   });
-});
+
+  function toggleDarkMode() {
+    const body = document.body;
+    const isDarkMode = body.classList.toggle('dark');
+    localStorage.setItem('darkMode', isDarkMode);
+  }
 </script>
