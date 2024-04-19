@@ -15,7 +15,7 @@
       </div>
 
       <div class="loginDiv w-ful rounded-lg border md:mt-0 sm:max-w-md xl:p-0" style="width:288px;">
-          <div class="p-4 dark:bg-gray"> 
+          <div class="p-4"> 
               <%= form_for(resource, as: resource_name, url: registration_path(resource_name), class: "space-y-4 md:space-y-6 " ) do |f| %>
                 <%= render "devise/shared/error_messages", resource: resource %>
                   <div style="margin:0px 0px 20px; 0px">
@@ -48,3 +48,13 @@
   </div>
 </section>
 </div>
+
+
+<script>
+  
+  function toggleDarkMode() {
+    const body = document.body;
+    const isDarkMode = body.classList.toggle('dark');
+    localStorage.setItem('darkMode', isDarkMode);
+  }
+</script>
