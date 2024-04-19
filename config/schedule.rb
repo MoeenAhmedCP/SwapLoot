@@ -16,6 +16,6 @@ every 1.hour do
 end
 
 every 1.day, at: '12:00 am' do
-  runner "SellableInventoryUpdationJob.perform_async", output: 'log/cron.log'
+  runner "CheckNewSellableItemJob.perform_async", output: 'log/cron.log'
   runner "PermanentDeleteJob.perform_async", output: 'log/cron.log'
 end
