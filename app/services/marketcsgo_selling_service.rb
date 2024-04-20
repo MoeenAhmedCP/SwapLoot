@@ -84,21 +84,25 @@ class MarketcsgoSellingService < ApplicationService
   def cutting_price_and_list_again(items)
     filtered_items_for_deposit = []
     items.each do |item|
-      item_price = SellableInventory.find_by(item_id: item['assetid']).market_price.to_f
+      inventory_item = SellableInventory.find_by(item_id: item['assetid'])
+      item_price = inventory_item.market_price.to_f
       minimum_desired_price = (item_price.to_f + (item_price.to_f * @steam_account.selling_filters.market_csgo_filter.min_profit_percentage / 100 )).round(2)
 
       current_listed_price = item['price']
+      matching_item = matching_item_for_marketcsgo(inventory_item)
       price_empire_item = PriceEmpire.find_by(item_name: item['market_hash_name'])
       if price_empire_item.present? && price_empire_item.buff.present?
         price_empire_item_buff_price = price_empire_item.buff["price"] * 10
-        lowest_price = price_empire_item_buff_price ? price_empire_item_buff_price : nil
-      end
-      if lowest_price && lowest_price < current_listed_price
-        filtered_items_for_deposit << item.merge("lowest_price" => lowest_price) if lowest_price >= minimum_desired_price
-      else
-        price_to_list = (current_listed_price - (current_listed_price * 0.05)).round(2)
-        lowest_price = (price_to_list * 1000).round
-        filtered_items_for_deposit << item.merge("lowest_price" => lowest_price) if lowest_price >= minimum_desired_price
+        lowest_price = matching_item['price']
+        if lowest_price > price_empire_item_buff_price
+          if lowest_price && (lowest_price / 1000) < current_listed_price
+            filtered_items_for_deposit << item.merge("lowest_price" => lowest_price) if lowest_price >= (minimum_desired_price * 1000)
+          else
+            price_to_list = (current_listed_price - (current_listed_price * 0.01))
+            lowest_price = (price_to_list * 1000).round
+            filtered_items_for_deposit << item.merge("lowest_price" => lowest_price) if lowest_price >= (minimum_desired_price * 1000)
+          end
+        end
       end
     end
 
@@ -162,19 +166,19 @@ class MarketcsgoSellingService < ApplicationService
 
   # ASK
   def matching_item_for_price_empire(response_items, inventory_item)
-    item_found_from_price_empire = response_items.find_by(item_name: inventory_item['market_hash_name'])
+    item_found_from_price_empire = response_items.find_by(item_name: inventory_item.market_name)
     matching_item = nil
     if item_found_from_price_empire && item_found_from_price_empire["buff"].present?
-      buff_price = item_found_from_price_empire["buff"]["price"] + (item_found_from_price_empire["buff"]["price"] * 0.1)
+      buff_price = item_found_from_price_empire["buff"]["price"] * 1.15
       matching_item = {
-        'id' => inventory_item['id'],
+        'id' => inventory_item.item_id,
         'price' => buff_price * 10,
         'cur' => 'USD',
-        'price_in_dollar' => inventory_item['market_price'] * 100
+        'price_in_dollar' => inventory_item.market_price.to_f * 100
       }
     else
       suggested_items = waxpeer_suggested_prices
-      result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == item[:market_name] }
+      result_item = suggested_items['items'].find { |suggested_item| suggested_item['name'] == inventory_item[:market_name] }
       lowest_price = result_item['average'] + (result_item['average'] * 0.1)
     end
     matching_item
@@ -184,7 +188,7 @@ class MarketcsgoSellingService < ApplicationService
     market_csgo_suggested_price = search_items_by_name_on_marketcsgo(inventory_item.market_name)
     matching_item = nil
     if market_csgo_suggested_price.present?
-      list_price = market_csgo_suggested_price + (market_csgo_suggested_price * 0.1)
+      list_price = market_csgo_suggested_price + (market_csgo_suggested_price * 0.20)
       matching_item = {
         'id' => inventory_item.item_id,
         'price' => list_price,
@@ -198,7 +202,7 @@ class MarketcsgoSellingService < ApplicationService
   def find_matching_items(response_items, inventory)
     matching_items = []
     inventory.each do |inventory_item|
-      matching_item = matching_item_for_marketcsgo(inventory_item)
+      matching_item = matching_item_for_price_empire(response_items, inventory_item)
       matching_items << matching_item if matching_item.present?
     end
     matching_items
