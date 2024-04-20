@@ -1,5 +1,5 @@
 class SellableInventory < ApplicationRecord
-  after_create :trigger_selling_job
+  #after_create :trigger_selling_job
   scope :inventory, ->(steam_account) { where(steam_id: steam_account.steam_id) }
   enum market_type: {
     csgoempire: 0,

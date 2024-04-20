@@ -1,7 +1,7 @@
 class SteamAccountsController < ApplicationController
   require 'httparty'
   before_action :set_steam_account, only: %i[edit update destroy show_api_keys edit_api_keys read_ma_file delete_ma_file]
-  after_action :set_steam_account_filters, only: %i[create update]
+  after_action :set_steam_account_filters, :update_sellable_inventory, only: %i[create update]
   
   def index
     @steam_accounts = SteamAccount.where(user_id: current_user.id).includes(:proxy).paginate(page: params[:page], per_page: 10)
@@ -53,6 +53,7 @@ class SteamAccountsController < ApplicationController
 
   def destroy
     logout_steam
+    destroy_inventory(@steam_account)
     if @steam_account.destroy
       redirect_to steam_accounts_path, notice: 'Steam account was successfully deleted.'
     end
@@ -121,6 +122,10 @@ class SteamAccountsController < ApplicationController
     redirect_to steam_accounts_path
   end
 
+  def destroy_inventory(steam_account)
+    SellableInventory.where(steam_id: steam_account.steam_id).destroy_all
+  end
+
   def logout_steam
     if @steam_account.valid_account
       begin
@@ -136,6 +141,10 @@ class SteamAccountsController < ApplicationController
 
   private
 
+  def update_sellable_inventory
+    SellableInventoryUpdationJob.fetch_sellable_inventory(@steam_account)
+  end
+  
   def remove_ma_file_data
     @steam_account.ma_file.purge
     @steam_account.update(steam_account_name: nil, steam_password: nil, steam_identity_secret: nil, steam_shared_secret: nil)

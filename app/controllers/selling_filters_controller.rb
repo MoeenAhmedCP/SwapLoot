@@ -6,7 +6,8 @@ class SellingFiltersController < ApplicationController
   end
 
   def update
-    message = I18n.t("selling_filters.update.#{@selling_filter.update(selling_filter_params) ? 'success' : 'failure'}")
+    interval = selling_filter_params["undercutting_interval"] == "0" ? "1" : selling_filter_params["undercutting_interval"]
+    message = I18n.t("selling_filters.update.#{@selling_filter.update(min_profit_percentage: selling_filter_params["min_profit_percentage"], undercutting_interval: interval) ? 'success' : 'failure'}")
     respond_to do |format|
       format.js do
         if message.include?("success")
