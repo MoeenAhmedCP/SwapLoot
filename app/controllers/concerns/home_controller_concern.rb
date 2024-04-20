@@ -37,6 +37,7 @@ module HomeControllerConcern
         mark_balance = @csgo_market_balance.find { |hash| hash[:account_id] == account }
         wax_balance = @waxpeer_balance.find { |hash| hash[:account_id] == account }
         data_hash = {
+          steam_id: steam_account.steam_id,
           account_name: steam_account.unique_name.capitalize
         }
         data_hash.merge!(csgo_empire_balance: "#{e_balance[:balance]} coins") unless e_balance&.dig(:balance).nil?
