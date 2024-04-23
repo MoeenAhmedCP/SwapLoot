@@ -1,2 +1,0 @@
-class MarketCsgoActiveOffer < ApplicationRecord
-end
