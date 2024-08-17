@@ -1,4 +1,7 @@
 # README
+
+A trading bot for the game CSGO to buy and sell items from various e-commerce websites
+
 Swaploot Tech Stack Details
 Rails version: 7.0.8
 Ruby version: 3.2.2
