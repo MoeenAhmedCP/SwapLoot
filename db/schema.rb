@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_19_184931) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_16_162107) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -84,6 +84,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_19_184931) do
     t.integer "min_percentage", default: 7
     t.integer "max_price", default: 100
     t.integer "min_price", default: 50
+    t.integer "market_type"
     t.index ["steam_account_id"], name: "index_buying_filters_on_steam_account_id"
   end
 
@@ -126,6 +127,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_19_184931) do
     t.index ["steam_account_id"], name: "index_listed_items_on_steam_account_id"
   end
 
+  create_table "market_csgo_items_data", force: :cascade do |t|
+    t.string "class_id"
+    t.string "instance_id"
+    t.float "price"
+    t.float "avg_price"
+    t.string "market_hash_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "missing_items", force: :cascade do |t|
     t.string "item_id"
     t.string "market_name"
@@ -153,6 +164,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_19_184931) do
     t.json "waxpeer"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "buff_avg7"
     t.index ["liquidity"], name: "index_price_empires_on_liquidity"
   end
 
@@ -175,6 +187,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_19_184931) do
     t.boolean "listed_for_sale"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "market_type"
   end
 
   create_table "selling_filters", force: :cascade do |t|
@@ -184,7 +197,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_19_184931) do
     t.bigint "steam_account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "market_type"
     t.index ["steam_account_id"], name: "index_selling_filters_on_steam_account_id"
+  end
+
+  create_table "sent_received_items", force: :cascade do |t|
+    t.string "item_id", null: false
+    t.string "trade_offer_id", null: false
+    t.string "market_name", null: false
+    t.integer "trade_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sold_item_histories", force: :cascade do |t|
@@ -246,6 +269,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_19_184931) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "price_cutting_job_id"
+    t.integer "market_type"
     t.index ["steam_account_id"], name: "index_trade_services_on_steam_account_id"
   end
 
