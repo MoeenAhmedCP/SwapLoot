@@ -81,7 +81,7 @@ test:
 #
 production:
   <<: *default
-  host: 18.221.188.160
-  database: postgres
-  username: postgres
-  password: admin54321
+  host: <%= ENV["db_host"] %>
+  database: <%= ENV["db_name"] %>
+  username: <%= ENV["db_username"] %>
+  password: <%= ENV["db_password"] %>
